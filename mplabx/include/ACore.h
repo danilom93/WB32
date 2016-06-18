@@ -65,6 +65,9 @@ namespace AFramework{
             static void updateTime();
             static void delay(const uint32 ms);
             static uint32 currentCentury();
+            static bool outputMap(const uint32 gpio, const uint32 output);
+            static bool inputMap(const uint32 gpio, const uint32 output);
+            static ATime aliveTime();
         private:
             static void scsusp();
             static void scwake();
@@ -90,6 +93,9 @@ namespace AFramework{
             static          ATime           m_toggle;
             static volatile AHardwarePort * m_ledPort;
             static volatile AINT_w *        m_int_reg;
+            static volatile ADEVSPEC_w *    m_dev;
+            static volatile ARPI_w *        m_rpi;      
+            static volatile ARPO_w *        m_rpo;
     };
 
     template <class T> bool System::safeAlloc(T ** ptr, const uint32 & num){

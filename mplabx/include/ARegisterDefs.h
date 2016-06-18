@@ -257,9 +257,15 @@ namespace AFramework{
 //        public:
 //    };
     
-//    class ADEVSPEC_w{
-//        public:
-//    };
+    class ADEVSPEC_w{
+        public:
+            volatile ARegTypes::AxxxReg CFGCON;
+            volatile ARegTypes::APad    pad;
+            volatile ARegTypes::AxxxReg DEVID;
+            volatile ARegTypes::ACSIReg SYSKEY;
+    };
+    
+
     
 //    class APMD_w{
 //        public:
@@ -309,8 +315,6 @@ namespace AFramework{
 //    class ADMACh_w{
 //        public:
 //    };
-    
-#   warning USB is currently unimplemented
     
 #   if defined (__DEVCLASS1__) || defined (__DEVCLASS2__) || defined (__DEVCLASS4__)
     class APORT_w{

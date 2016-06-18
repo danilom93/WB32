@@ -42,7 +42,7 @@ AFramework::AInterruptSource::AInterruptSource(const uint8 IFSVec, const uint8 I
     m_ispos   = ISPos;
 }
 
-bool AFramework::AInterruptSource::enableInterrupt(const Priority p, const SubPriority s) volatile{
+bool AFramework::AInterruptSource::enableInterrupt(const Priority p, const SubPriority s){
     /*  cancello il flag di interrupt                                           */
     m_int_reg->IFS[m_ifsvec].CLR = m_ifsmask;
     /*  imposto le priorità dell'interrupt                                      */

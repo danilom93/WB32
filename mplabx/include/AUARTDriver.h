@@ -36,28 +36,36 @@ namespace AFramework{
             };
             
             AUARTDriver(volatile AUART_w * w, AInterruptSource * erInt, AInterruptSource * rxInt, AInterruptSource * txInt);
-            bool open(const Baud baud, const Data dataLength, const StopSelection stop, const bool idleStop = false) volatile;
+            bool open(const Baud baud, const Data dataLength, const StopSelection stop, const bool idleStop = false);
             bool isOpen() const;
             void close();
-            AInterruptSource * getFaultEventController();
-            AInterruptSource * getReceiverEventController();
-            AInterruptSource * getTransmitEventController();
-            bool write(const AString & str) volatile;
+            AInterruptSource * getFaultEventController() volatile;
+            AInterruptSource * getReceiverEventController() volatile;
+            AInterruptSource * getTransmitEventController() volatile;
+            bool write(const AString & str);
+            AString read() const;
+            bool bufferContains(const AString & pattern, const bool & cs = false);
+            void rxHandler();
+            size_t bytesAvailable() const;
+            void clearBuffer();
+            
             
         private:
             volatile AUART_w * m_reg;
             AInterruptSource * m_erInt;
             AInterruptSource * m_rxInt;
             AInterruptSource * m_txInt;
-                        bool   m_flg;
+            char               m_buffer[__UART_BUFFER_SIZE__];
+            uint16             m_index;
+            bool               m_flg;
     };
     
 #if __HAS_UART1__    
-    extern volatile AUARTDriver UART1;
+    extern AUARTDriver UART1;
 #endif
 
 #if __HAS_UART2__
-    extern volatile AUARTDriver UART2;
+    extern AUARTDriver UART2;
 #endif
 }
 

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <project>                                  
-  <executable name="dist/default/production/WB32.X.production.elf">                 
+  <executable name="dist/default/debug/WB32.X.debug.elf">                 
     <memory name="program">                 
       <units>bytes</units>                 
       <length>263312</length>                 
-      <used>83456</used>                     
-      <free>179856</free>                     
+      <used>82152</used>                     
+      <free>181160</free>                     
     </memory>                              
     <memory name="data">              
       <units>bytes</units>                 
       <length>65536</length>                 
-      <used>5528</used>                     
-      <free>60008</free>                     
+      <used>6016</used>                     
+      <free>59520</free>                     
     </memory>                              
   </executable>                            
 </project>                                 

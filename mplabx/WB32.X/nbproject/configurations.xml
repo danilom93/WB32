@@ -4,6 +4,26 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>../include/A24LC512.h</itemPath>
+      <itemPath>../include/ACommons.h</itemPath>
+      <itemPath>../include/AContainers.h</itemPath>
+      <itemPath>../include/ACore.h</itemPath>
+      <itemPath>../include/ADateTime.h</itemPath>
+      <itemPath>../include/AErrorNotifier.h</itemPath>
+      <itemPath>../include/AI2CDriver.h</itemPath>
+      <itemPath>../include/AIODevice.h</itemPath>
+      <itemPath>../include/AInterruptSource.h</itemPath>
+      <itemPath>../include/ALcd.h</itemPath>
+      <itemPath>../include/APCF8563.h</itemPath>
+      <itemPath>../include/APorts.h</itemPath>
+      <itemPath>../include/ARegisterDefs.h</itemPath>
+      <itemPath>../include/ARemappablePeripheral.h</itemPath>
+      <itemPath>../include/AString.h</itemPath>
+      <itemPath>../include/ASystemConfig.h</itemPath>
+      <itemPath>../include/ATime.h</itemPath>
+      <itemPath>../include/ATimers.h</itemPath>
+      <itemPath>../include/AUARTDriver.h</itemPath>
+      <itemPath>../include/Ap32mx270f256d.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -13,6 +33,21 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.cpp</itemPath>
+      <itemPath>../src/A24LC512.cpp</itemPath>
+      <itemPath>../src/AConfigurationBits.cpp</itemPath>
+      <itemPath>../src/ACore.cpp</itemPath>
+      <itemPath>../src/ADateTime.cpp</itemPath>
+      <itemPath>../src/AErrorNotifier.cpp</itemPath>
+      <itemPath>../src/AI2CDriver.cpp</itemPath>
+      <itemPath>../src/AInterruptSource.cpp</itemPath>
+      <itemPath>../src/ALcd.cpp</itemPath>
+      <itemPath>../src/APCF8563.cpp</itemPath>
+      <itemPath>../src/APorts.cpp</itemPath>
+      <itemPath>../src/AString.cpp</itemPath>
+      <itemPath>../src/ATime.cpp</itemPath>
+      <itemPath>../src/ATimers.cpp</itemPath>
+      <itemPath>../src/AUARTDriver.cpp</itemPath>
+      <itemPath>../src/Ap32mx270f256d.S</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -121,7 +156,7 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
-        <property key="heap-size" value="16392"/>
+        <property key="heap-size" value="1024"/>
         <property key="input-libraries" value=""/>
         <property key="linker-symbols" value=""/>
         <property key="map-file" value="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"/>

@@ -37,7 +37,7 @@ namespace AFramework{
     class AInterruptSource{
         public:
             AInterruptSource(const uint8 IFSVec, const uint8 IECVec, const uint8  IPCVec, const uint32 IFSMask, const uint32 IECMask, const uint32 IPPos, const uint32 ISPos);
-            bool enableInterrupt(const Priority p, const SubPriority s = Isp0) volatile;
+            bool enableInterrupt(const Priority p, const SubPriority s = Isp0);
             bool disableInterrupt() volatile;
             bool hasInterruptOccurred() volatile;
             bool clearFlag() volatile;

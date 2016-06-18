@@ -514,6 +514,8 @@ bool AFramework::AString::clear(){
     }
     /*  libero la memoria                                                       */
     delete [] m_str;
+    /*  imposto a NULL                                                          */
+    m_str = NULL;
     /*  azzero la dimensione                                                    */
     m_dim = 0;
     /*  ritorno true                                                            */

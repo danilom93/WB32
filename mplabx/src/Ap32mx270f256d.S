@@ -45,3 +45,14 @@ UART1_w = 0xBF806000
 //  UART2
 UART2_w = 0xBF806200
     .global UART2_w
+    
+//  DEVSPEC
+DEVSPEC_w = 0xBF80F200
+    .global DEVSPEC_w
+
+//  RPI
+RPI_w = 0xBF80FA04
+    .global RPI_w
+//  RPO
+RPO_w = 0xBF80FB00
+    .global RPO_w

@@ -1262,131 +1262,176 @@
 /**
  * Peripheral Pin Select
  */
-//#define _G1                                         0x00000100
-//#define _G2                                         0x00000200
-//#define _G3                                         0x00000400
-//#define _G4                                         0x00000800
-//
-///*  INPUT PPS                                                                   */
-//
-//#define INT1R                                       (0x00000000 | _G4)
-//#define INT2R                                       (0x00000001 | _G3)
-//#define INT3R                                       (0x00000002 | _G2)
-//#define INT4R                                       (0x00000003 | _G1)
-//#define T2CKR                                       (0x00000005 | _G1)
-//#define T3CKR                                       (0x00000006 | _G2)
-//#define T4CKR                                       (0x00000007 | _G3)
-//#define T5CKR                                       (0x00000008 | _G4)
-//#define IC1R                                        (0x00000009 | _G3)
-//#define IC2R                                        (0x0000000A | _G4)
-//#define IC3R                                        (0x0000000B | _G2)
-//#define IC4R                                        (0x0000000C | _G1)
-//#define IC5R                                        (0x0000000D | _G3)
-//#define OCFAR                                       (0x00000011 | _G4)
-//#define OCFBR                                       (0x00000012 | _G3)
-//#define U1RXR                                       (0x00000013 | _G3)
-//#define U1CTSR                                      (0x00000014 | _G2)
-//#define U2RXR                                       (0x00000015 | _G2)
-//#define U2CTSR                                      (0x00000016 | _G3)
-//#define SDI1R                                       (0x00000020 | _G2)
-//#define SS1R                                        (0x00000021 | _G1)
-//#define SDI2R                                       (0x00000023 | _G3)
-//#define SS2R                                        (0x00000024 | _G4)
-//#define REFCLKIR                                    (0x0000002D | _G1)
-//
-//#define RPA0R_VALUE                                0x00000
-//#define RPB3R_VALUE                                0x00001
-//#define RPB4R_VALUE                                0x00002
-//#define RPB15R_VALUE                               0x00003
-//#define RPB7R_VALUE                                0x00004
-//#define RPC7R_VALUE                                0x00005
-//#define RPC0R_VALUE                                0x00006
-//#define RPC5R_VALUE                                0x00007
-//
-//#define RPA1R_VALUE                                0x00000
-//#define RPB5R_VALUE                                0x00001
-//#define RPB1R_VALUE                                0x00002
-//#define RPB11R_VALUE                               0x00003
-//#define RPB8R_VALUE                                0x00004
-//#define RPA8R_VALUE                                0x00005
-//#define RPC8R_VALUE                                0x00006
-//#define RPA9R_VALUE                                0x00007
-//
-//#define RPA2R_VALUE                                0x00000
-//#define RPA4R_VALUE                                0x00002
-//#define RPB13R_VALUE                               0x00003
-//#define RPB2R_VALUE                                0x00004
-//#define RPC6R_VALUE                                0x00005
-//#define RPC1R_VALUE                                0x00006
-//#define RPC3R_VALUE                                0x00007
-//
-//#define RPA3R_VALUE                                0x00000
-//#define RPB14R_VALUE                               0x00001
-//#define RPB0R_VALUE                                0x00002
-//#define RPB10R_VALUE                               0x00003
-//#define RPB9R_VALUE                                0x00004
-//#define RPC9R_VALUE                                0x00005
-//#define RPC2R_VALUE                                0x00006
-//#define RPC4R_VALUE                                0x00007
-//
-///*  PPS OUTPUT                                                                  */
-//
-//#define RPA0R_POSITION                             0x00000000
-//#define RPA1R_POSITION                             0x00000001
-//#define RPA2R_POSITION                             0x00000002
-//#define RPA3R_POSITION                             0x00000003
-//#define RPA4R_POSITION                             0x00000004
-//#define RPA8R_POSITION                             0x00000008
-//#define RPA9R_POSITION                             0x00000009
-//
-//#define RPB0R_POSITION                             0x0000000B
-//#define RPB1R_POSITION                             0x0000000C
-//#define RPB2R_POSITION                             0x0000000D
-//#define RPB3R_POSITION                             0x0000000E
-//#define RPB4R_POSITION                             0x0000000F
-//#define RPB5R_POSITION                             0x00000010
-//#define RPB7R_POSITION                             0x00000012
-//#define RPB8R_POSITION                             0x00000013
-//#define RPB9R_POSITION                             0x00000014
-//#define RPB10R_POSITION                            0x00000015
-//#define RPB11R_POSITION                            0x00000016
-//#define RPB13R_POSITION                            0x00000018
-//#define RPB14R_POSITION                            0x00000019
-//#define RPB15R_POSITION                            0x0000001A
-//
-//#define RPC0R_POSITION                             0x0000001B
-//#define RPC1R_POSITION                             0x0000001C
-//#define RPC2R_POSITION                             0x0000001D
-//#define RPC3R_POSITION                             0x0000001E
-//#define RPC4R_POSITION                             0x0000001F
-//#define RPC5R_POSITION                             0x00000020
-//#define RPC6R_POSITION                             0x00000021
-//#define RPC7R_POSITION                             0x00000022
-//#define RPC8R_POSITION                             0x00000023
-//#define RPC9R_POSITION                             0x00000024
-//
-//#define _PPS_NOCONNECT_                             (_G1 | _G2 | _G3 | _G4)
-//
-//#define _U1TXR_VALUE                                (0x00000001 | _G1)
-//#define _U2RTSR_VALUE                               (0x00000002 | _G1)
-//#define _SS1OUTR_VALUE                              (0x00000003 | _G1)
-//#define _OC1R_VALUE                                 (0x00000005 | _G1)
-//#define _C2OUTR_VALUE                               (0x00000007 | _G1)
-//
-//#define _SDO1R_VALUE                                (0x00000003 | _G2 | _G3)
-//#define _SDO2R_VALUE                                (0x00000004 | _G2 | _G3)
-//#define _OC2R_VALUE                                 (0x00000005 | _G2)
-//#define _C3OUTR_VALUE                               (0x00000007 | _G2)
-//
-//#define _OC4R_VALUE                                 (0x00000005 | _G3)
-//#define _OC5R_VALUE                                 (0x00000006 | _G3)
-//#define _REFCLKOR_VALUE                             (0x00000007 | _G3)
-//
-//#define _U1RTSR_VALUE                               (0x00000001 | _G4)
-//#define _U2TXR_VALUE                                (0x00000002 | _G4)
-//#define _SS2OUTR_VALUE                              (0x00000004 | _G4)
-//#define _OC3R_VALUE                                 (0x00000005 | _G4)
-//#define _C1OUTR_VALUE                               (0x00000007 | _G4)
+
+
+
+#define _PPS_V_POS_MASK                             0x000000FF
+
+#define _PPS_GROUP_MASK                             0x00000F00
+
+#define _PPS_VALUE_MASK                             0x0000F000
+#define _PPS_VALUE_POSITION                         0x0000000C
+
+#define _OUT                                        0x000F0000
+
+#define _P00                                        0x00000000
+#define _P01                                        0x00000001
+#define _P02                                        0x00000002
+#define _P03                                        0x00000003
+#define _P04                                        0x00000004
+#define _P05                                        0x00000005
+#define _P06                                        0x00000006
+#define _P07                                        0x00000007
+#define _P08                                        0x00000008
+#define _P09                                        0x00000009
+#define _P0A                                        0x0000000A
+#define _P0B                                        0x0000000B
+#define _P0C                                        0x0000000C
+#define _P0D                                        0x0000000D
+#define _P0E                                        0x0000000E
+#define _P0F                                        0x0000000F
+
+#define _P10                                        0x00000010
+#define _P11                                        0x00000011
+#define _P12                                        0x00000012
+#define _P13                                        0x00000013
+#define _P14                                        0x00000014
+#define _P15                                        0x00000015
+#define _P16                                        0x00000016
+#define _P17                                        0x00000017
+#define _P18                                        0x00000018
+#define _P19                                        0x00000019
+#define _P1A                                        0x0000001A
+#define _P1B                                        0x0000001B
+#define _P1C                                        0x0000001C
+#define _P1D                                        0x0000001D
+#define _P1E                                        0x0000001E
+#define _P1F                                        0x0000001F
+
+#define _P20                                        0x00000020
+#define _P21                                        0x00000021
+#define _P22                                        0x00000022
+#define _P23                                        0x00000023
+#define _P24                                        0x00000024
+#define _P25                                        0x00000025
+#define _P26                                        0x00000026
+#define _P27                                        0x00000027
+#define _P28                                        0x00000028
+#define _P29                                        0x00000029
+#define _P2A                                        0x0000002A
+#define _P2B                                        0x0000002B
+#define _P2C                                        0x0000002C
+#define _P2D                                        0x0000002D
+#define _P2E                                        0x0000002E
+#define _P2F                                        0x0000002F
+
+#define _G01                                        0x00000100
+#define _G02                                        0x00000200
+#define _G03                                        0x00000400
+#define _G04                                        0x00000800
+
+#define _V00                                        0x00000000
+#define _V01                                        0x00001000
+#define _V02                                        0x00002000
+#define _V03                                        0x00003000
+#define _V04                                        0x00004000
+#define _V05                                        0x00005000
+#define _V06                                        0x00006000
+#define _V07                                        0x00007000
+#define _V08                                        0x00008000
+#define _V09                                        0x00009000
+#define _V0A                                        0x0000A000
+#define _V0B                                        0x0000B000
+#define _V0C                                        0x0000C000
+#define _V0D                                        0x0000D000
+#define _V0E                                        0x0000E000
+#define _V0F                                        0x0000F000
+
+/*  INPUT PPS                                                                   */
+
+#define INT1R                                       (_P00 | _G04)
+#define INT2R                                       (_P01 | _G03)
+#define INT3R                                       (_P02 | _G02)
+#define INT4R                                       (_P03 | _G01)
+#define T2CKR                                       (_P05 | _G01)
+#define T3CKR                                       (_P06 | _G02)
+#define T4CKR                                       (_P07 | _G03)
+#define T5CKR                                       (_P08 | _G04)
+#define IC1R                                        (_P09 | _G03)
+#define IC2R                                        (_P0A | _G04)
+#define IC3R                                        (_P0B | _G02)
+#define IC4R                                        (_P0C | _G01)
+#define IC5R                                        (_P0D | _G03)
+#define OCFAR                                       (_P11 | _G04)
+#define OCFBR                                       (_P12 | _G03)
+#define U1RXR                                       (_P13 | _G03)
+#define U1CTSR                                      (_P14 | _G02)
+#define U2RXR                                       (_P15 | _G02)
+#define U2CTSR                                      (_P16 | _G03)
+#define SDI1R                                       (_P20 | _G02)
+#define SS1R                                        (_P21 | _G01)
+#define SDI2R                                       (_P23 | _G03)
+#define SS2R                                        (_P24 | _G04)
+#define REFCLKIR                                    (_P24 | _G01)
+
+/*  PPS                                                                         */
+
+#define RPA0R                                       (_P00 | _G01 | _V00)
+#define RPA1R                                       (_P01 | _G02 | _V00)
+#define RPA2R                                       (_P02 | _G03 | _V00)
+#define RPA3R                                       (_P03 | _G04 | _V00)
+#define RPA4R                                       (_P04 | _G03 | _V02)
+#define RPA8R                                       (_P08 | _G02 | _V05)
+#define RPA9R                                       (_P09 | _G02 | _V07)
+
+#define RPB0R                                       (_P0B | _G04 | _V02)
+#define RPB1R                                       (_P0C | _G01 | _V03)
+#define RPB2R                                       (_P0D | _G03 | _V04)
+#define RPB3R                                       (_P0E | _G01 | _V01)
+#define RPB4R                                       (_P0F | _G01 | _V02)
+#define RPB5R                                       (_P10 | _G02 | _V01)
+#define RPB7R                                       (_P12 | _G01 | _V04)
+#define RPB8R                                       (_P13 | _G02 | _V04)
+#define RPB9R                                       (_P14 | _G04 | _V04)
+#define RPB10R                                      (_P15 | _G04 | _V03)
+#define RPB11R                                      (_P16 | _G02 | _V03)
+#define RPB13R                                      (_P18 | _G03 | _V03)
+#define RPB14R                                      (_P19 | _G04 | _V01)
+#define RPB15R                                      (_P1A | _G01 | _V03)
+
+#define RPC0R                                       (_P1B | _G01 | _V06)
+#define RPC1R                                       (_P1C | _G03 | _V06)
+#define RPC2R                                       (_P1D | _G04 | _V06)
+#define RPC3R                                       (_P1E | _G03 | _V07)
+#define RPC4R                                       (_P1F | _G04 | _V07)
+#define RPC5R                                       (_P20 | _G01 | _V07)
+#define RPC6R                                       (_P21 | _G03 | _V05)
+#define RPC7R                                       (_P22 | _G01 | _V05)
+#define RPC8R                                       (_P23 | _G02 | _V06)
+#define RPC9R                                       (_P24 | _G04 | _V05)
+
+#define _PPS_NOCONNECT_                             (_G1 | _G2 | _G3 | _G4)
+
+#define U1TXR                                       (_V01 | _G01 | _OUT)
+#define U2RTSR                                      (_V02 | _G01 | _OUT)
+#define SS1OUTR                                     (_V03 | _G01 | _OUT)
+#define OC1R                                        (_V05 | _G01 | _OUT)
+#define C2OUTR                                      (_V07 | _G01 | _OUT)
+
+#define SDO1R                                       (_V03 | _G02 | _G03 | _OUT)
+#define SDO2R                                       (_V04 | _G02 | _G03 | _OUT)
+#define OC2R                                        (_V05 | _G02 | _OUT)
+#define C3OUTR                                      (_V07 | _G02 | _OUT)
+
+#define OC4R                                        (_V05 | _G03 | _OUT)
+#define OC5R                                        (_V06 | _G03 | _OUT)
+#define REFCLKOR                                    (_V07 | _G03 | _OUT)
+
+#define U1RTSR                                      (_V01 | _G04 | _OUT)
+#define U2TXR                                       (_V02 | _G04 | _OUT)
+#define SS2OUTR                                     (_V04 | _G04 | _OUT)
+#define OC3R                                        (_V05 | _G04 | _OUT)
+#define C1OUTR                                      (_V07 | _G04 | _OUT)
 
 /**
  * Inter Integrated Circuit
@@ -1695,5 +1740,33 @@
 #define _UxSTA_w_POSITION                        0x00000000
 #define _UxSTA_w_MASK                            0xFFFFFFFF
 #define _UxSTA_w_LENGTH                          0x00000020
-        
+
+/**
+ * Device ID, Revision, Config and Syskey
+ */
+
+#define _DEVID_VER_POSITION                      0x0000001C
+#define _DEVID_VER_MASK                          0xF0000000
+#define _DEVID_VER_LENGTH                        0x00000004
+
+#define _CFGCON_TDOEN_POSITION                   0x00000000
+#define _CFGCON_TDOEN_MASK                       0x00000001
+#define _CFGCON_TDOEN_LENGTH                     0x00000001
+
+#define _CFGCON_JTAGEN_POSITION                  0x00000003
+#define _CFGCON_JTAGEN_MASK                      0x00000008
+#define _CFGCON_JTAGEN_LENGTH                    0x00000001
+
+#define _CFGCON_PMDLOCK_POSITION                 0x0000000C
+#define _CFGCON_PMDLOCK_MASK                     0x00001000
+#define _CFGCON_PMDLOCK_LENGTH                   0x00000001
+
+#define _CFGCON_IOLOCK_POSITION                  0x0000000D
+#define _CFGCON_IOLOCK_MASK                      0x00002000
+#define _CFGCON_IOLOCK_LENGTH                    0x00000001
+
+#define _DEVID_DEVID_POSITION                    0x00000000
+#define _DEVID_DEVID_MASK                        0x0FFFFFFF
+#define _DEVID_DEVID_LENGTH                      0x0000001C
+
 #endif // AP32MX270F256D_H
