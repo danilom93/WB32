@@ -32,7 +32,7 @@ AFramework::uint32 pow10(AFramework::uint32 exp){
     AFramework::AUARTDriver AFramework::UART2(&UART2_w, &U2er, &U2rx, &U2tx);
 #endif
     
-AFramework::AUARTDriver::AUARTDriver(volatile AUART_w * w, AInterruptSource * erInt, AInterruptSource * rxInt, AInterruptSource * txInt) : m_reg(w), m_erInt(erInt), m_rxInt(rxInt), m_txInt(txInt), m_index(0), m_flg(false) {
+AFramework::AUARTDriver::AUARTDriver(volatile AUART_w * w, AInterruptSource * erInt, AInterruptSource * rxInt, AInterruptSource * txInt) : m_reg(w), m_erInt(erInt), m_rxInt(rxInt), m_txInt(txInt), m_index(0), m_flg(false), m_baud(NoBaud) {
     /*  chiamo close                                                            */
     close();
 }
@@ -55,7 +55,12 @@ bool AFramework::AUARTDriver::open(const Baud baud, const Data dataLength, const
             /*  115200                                                          */
             tmpBaud = 0x0001C200;
             break;
+        default:
+            return false;
+            break;
     };
+    /*  salvo il baudrate                                                       */
+    m_baud = baud;
     /*  configuro per abilitare il modulo con l'eventuale bit di idle           */
     tmpConf |= _UxMODE_ON_MASK | (idleStop ? _UxMODE_SIDL_MASK : 0x00000000);
     /*  imposto i bit di stop                                                   */
@@ -93,7 +98,7 @@ bool AFramework::AUARTDriver::open(const Baud baud, const Data dataLength, const
     /*  imposto il flag                                                         */
     m_flg = true;
     /*  cancello il buffer                                                      */
-    clearBuffer();
+    bufferClear();
     /*  10 ms di ritarto                                                        */
     System::delay(10);
     /*  ritorno true                                                            */
@@ -116,8 +121,10 @@ void AFramework::AUARTDriver::close(){
     m_reg->UxRXREG.REG = Quick::All;
     /*  cancello il registro BRG                                                */
     m_reg->UxBRG.CLR = Quick::All;
+    /*  cancello il baudrate                                                    */
+    m_baud = NoBaud;
     /*  pulisco il buffer                                                       */
-    clearBuffer();
+    bufferClear();
     /*  metto a false il flag                                                   */
     m_flg = false;
 }
@@ -153,6 +160,11 @@ bool AFramework::AUARTDriver::write(const char * str){
     }
     /*  ritorno true                                                            */
     return true;    
+}
+
+bool AFramework::AUARTDriver::writeln(const char * str){
+    /*  nulla da commentare                                                     */
+    return (write(str) && write("\r\n"));
 }
 
 bool AFramework::AUARTDriver::write(const uint32 num){
@@ -204,7 +216,7 @@ void AFramework::AUARTDriver::rxHandler(){
     /*  se rischio di bucare il buffer                                          */
     if(m_index >= __UART_BUFFER_SIZE__ - 1){
         /*  cancello il buffer                                                  */
-        clearBuffer();
+        bufferClear();
     }
     /*  aggiungo il carattere ricevuto al buffer                                */
     m_buffer[m_index++] = static_cast<char>(m_reg->UxRXREG.REG & 0xFF);
@@ -217,9 +229,14 @@ size_t AFramework::AUARTDriver::bytesAvailable() const{
     return std::strlen(m_buffer);
 }
 
-void AFramework::AUARTDriver::clearBuffer(){
+void AFramework::AUARTDriver::bufferClear(){
     /*  azzero l'indice                                                         */
     m_index = 0;
     /*  cancello il buffer di lettura                                           */
     std::memset(m_buffer, 0x00, __UART_BUFFER_SIZE__);
+}
+
+AFramework::AUARTDriver::Baud AFramework::AUARTDriver::baud() const{
+    /*  ritorno il baud                                                         */
+    return m_baud;
 }

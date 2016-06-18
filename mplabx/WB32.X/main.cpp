@@ -1,8 +1,9 @@
-#include <math.h>
 #include "ACore.h"
-#include "AUARTDriver.h"
-#include "AI2CDriver.h"
+#include "ALcd.h"
+#include "AESP8266.h"
+
 #include <sys/attribs.h>
+
 
 using namespace AFramework;
 
@@ -16,37 +17,74 @@ extern "C"{
 
 int main(int argc, char** argv) {
     
-    System::init(128, &PortB, bit4);
+    System::init(16392, &PortB, bit15);
+    
     AString str;
-
-    UART1.open(AUARTDriver::Baud115200, AUARTDriver::Data8bitNoParity, AUARTDriver::Stop1bit);
+    
+    ALcd lcd(&PortC, bit0, &PortC, bit1, &PortC, bit2, &PortC, bit3, &PortC, bit4, &PortC, bit5, &PortC, bit6);
+    
+    AESP8266 wlan(&UART1);
+    
     UART1.getReceiverEventController()->enableInterrupt(Ip1, Isp0);
     
     System::outputMap(RPA0R, U1TXR);
     System::inputMap(RPA4R, U1RXR);
     
+    System::delay(1000);
+    
+    lcd.lightOn();
+
     while(1){
-        
-        if(UART1.bufferContains("\r\n")){
-            str = UART1.read();
-            str += "\nMemoria: ";
-            str += AString(static_cast<sint32>(System::memstat()));
-            str += "\r\n";
-            if(!str.good()){
-                switch(str.lastError()){
-                    case AErrorNotifier::NoMemory:
-                        UART1.write("Memoria finita\r\n");
-                        break;
-                    default:
-                        UART1.write("Altro\r\n");
-                        break;
+        lcd.clear();
+        lcd << "MEM: " <<AString(static_cast<sint32>(System::memstat()));
+        System::delay(2000);
+        if(wlan.isOk()){
+            lcd.clear();
+            lcd << "Modulo ok";
+            System::delay(1000);
+            lcd.clear();
+            lcd << "Configuro\nstazione...";
+            System::delay(1000);
+
+            if(wlan.setMode(AESP8266::StationMode)){
+                lcd.clear();
+                lcd << "Stazione OK!";
+                System::delay(1000);
+                
+                if(wlan.joinAP("AndroidAP", "danilom93")){
+                    lcd.clear();
+                    lcd << "Connesso!\n";
+                    System::delay(1000);
+                    lcd << "Lascio AP...";
+                    
+                    if(wlan.leaveAP()){
+                        lcd.clear();
+                        lcd << "AP lasciato.";
+                        System::delay(1000);      
+                        
+                    }else{
+                        
+                        lcd.clear();
+                        lcd << "Errore AP.";
+                        System::delay(1000);                        
+                    }
+                }else{
+                    
+                    lcd.clear();
+                    lcd << "Non Connesso!";
+                    System::delay(1000);
                 }
             }else{
-               UART1.write(str.c_str()); 
+                
+                lcd.clear();
+                lcd << "Stazione\nFallita!";
             }
+        }else{
             
-            UART1.clearBuffer();
+            lcd.clear();
+            lcd << "ESP FAIL...";
         }
+        System::delay(2000);
     }
 }
 

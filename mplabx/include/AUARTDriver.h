@@ -21,6 +21,7 @@ namespace AFramework{
                 Baud9600,
                 Baud19200,
                 Baud115200,
+                NoBaud
             };
             
             enum Data{
@@ -43,12 +44,14 @@ namespace AFramework{
             AInterruptSource * getReceiverEventController() volatile;
             AInterruptSource * getTransmitEventController() volatile;
             bool write(const char * str);
+            bool writeln(const char * str);
             bool write(const uint32 num);
             AString read() const;
             bool bufferContains(const AString & pattern, const bool & cs = false);
             void rxHandler();
             size_t bytesAvailable() const;
-            void clearBuffer();
+            void bufferClear();
+            Baud baud() const;
             
             
         private:
@@ -59,6 +62,7 @@ namespace AFramework{
             char               m_buffer[__UART_BUFFER_SIZE__];
             uint16             m_index;
             bool               m_flg;
+            Baud               m_baud;
     };
     
 #if __HAS_UART1__    
