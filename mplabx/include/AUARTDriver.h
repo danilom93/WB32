@@ -42,7 +42,8 @@ namespace AFramework{
             AInterruptSource * getFaultEventController() volatile;
             AInterruptSource * getReceiverEventController() volatile;
             AInterruptSource * getTransmitEventController() volatile;
-            bool write(const AString & str);
+            bool write(const char * str);
+            bool write(const uint32 num);
             AString read() const;
             bool bufferContains(const AString & pattern, const bool & cs = false);
             void rxHandler();

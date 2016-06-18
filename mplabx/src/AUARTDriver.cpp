@@ -4,6 +4,18 @@
 
 #include <cstring>
 
+AFramework::uint32 pow10(AFramework::uint32 exp){
+    
+    AFramework::uint32 res = 10;
+    if(exp == 0){
+        return 1;
+    }
+    while(--exp){
+        res *= 10;
+    }
+    return res;
+}
+
 #if __HAS_UART1__
     AFramework::AInterruptSource U1er(_IFSVEC_U1EIF_POSITION , _IECVEC_U1EIE_POSITION , _IPCVEC_U1IP_POSITION, _IFS_U1EIF_MASK , _IEC_U1EIE_MASK , _IPC_U1IP_POSITION, _IPC_U1IS_POSITION);
     AFramework::AInterruptSource U1rx(_IFSVEC_U1RXIF_POSITION, _IECVEC_U1RXIE_POSITION, _IPCVEC_U1IP_POSITION, _IFS_U1RXIF_MASK, _IEC_U1RXIE_MASK, _IPC_U1IP_POSITION, _IPC_U1IS_POSITION);
@@ -125,17 +137,47 @@ AFramework::AInterruptSource * AFramework::AUARTDriver::getTransmitEventControll
     return m_txInt;
 }
 
-bool AFramework::AUARTDriver::write(const AString & str){
+bool AFramework::AUARTDriver::write(const char * str){
     /*  se la seriale è chiusa                                                  */
     if(!m_flg){
         /*  ritorno false                                                       */
         return false;
     }
-    for(uint32 i = 0; i < str.size(); i++){
+    while(*str){
         /*  aspetto che il buffer di trasmissione si sia svuotato               */
         while(m_reg->UxSTA.REG & _UxSTA_UTXBF_MASK);
         /*  carico il dato nel registro                                         */
-        m_reg->UxTXREG.REG = str[i];
+        m_reg->UxTXREG.REG = (*str++);
+        /*  aspetto che il registro a scorrimento sia vuoto                     */
+        while(!(m_reg->UxSTA.REG & _UxSTA_TRMT_MASK));
+    }
+    /*  ritorno true                                                            */
+    return true;    
+}
+
+bool AFramework::AUARTDriver::write(const uint32 num){
+    uint32 dig   = (num ? 0 : 1);
+    uint32 tmp   = num;
+    uint32 div   = 0;
+    /*  se la seriale è chiusa                                                  */
+    if(!m_flg){
+        /*  ritorno false                                                       */
+        return false;
+    }
+    while(tmp){
+        /*  riassegno al numero la sua divisione per 10                     */
+        tmp /= 10;
+        /*  ed incremento il numero di cifre                                */
+        dig++;
+    }
+    tmp = num;
+    while(dig--){
+        div = pow10(dig);
+        /*  aspetto che il buffer di trasmissione si sia svuotato               */
+        while(m_reg->UxSTA.REG & _UxSTA_UTXBF_MASK);
+        /*  carico il dato nel registro                                         */
+        m_reg->UxTXREG.REG = ((tmp / div) + 0x30);
+        tmp = tmp % div;
         /*  aspetto che il registro a scorrimento sia vuoto                     */
         while(!(m_reg->UxSTA.REG & _UxSTA_TRMT_MASK));
     }

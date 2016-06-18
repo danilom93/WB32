@@ -75,19 +75,31 @@ AFramework::AString::AString(const char * str) : AString(){
     }
 }
 
-AFramework::AString::AString(const sint32 & val) : AString(numToASCII(val, 0)){
+AFramework::AString::AString(const sint32 & val) : AString(){
+    /*  assegno il puntatore dato da numToASCII                                 */
+    m_str = numToASCII(val, 0);
+    /*  imposto la dimensione con strlen                                        */
+    m_dim = strlen(m_str);
     /*  setto l'errore a NoError se la stringa non è null, altrimenti vuol dire */
     /*  che l'allocazione interna a numToASCII è fallita percui metto NoMemory  */
     errset(m_str ? NoError : NoMemory);
 }
 
-AFramework::AString::AString(const float & val, const uint8 & prec) : AString(numToASCII(val, prec)){
+AFramework::AString::AString(const float & val, const uint8 & prec) : AString(){
+    /*  assegno il puntatore dato da numToASCII                                 */
+    m_str = numToASCII(val, prec);
+    /*  imposto la dimensione con strlen                                        */
+    m_dim = strlen(m_str);
     /*  setto l'errore a NoError se la stringa non è null, altrimenti vuol dire */
     /*  che l'allocazione interna a numToASCII è fallita percui metto NoMemory  */
     errset(m_str ? NoError : NoMemory);
 }
 
-AFramework::AString::AString(const double & val, const uint8 & prec) : AString(numToASCII(val, prec)){
+AFramework::AString::AString(const double & val, const uint8 & prec) : AString(){
+    /*  assegno il puntatore dato da numToASCII                                 */
+    m_str = numToASCII(val, prec);
+    /*  imposto la dimensione con strlen                                        */
+    m_dim = strlen(m_str);
     /*  setto l'errore a NoError se la stringa non è null, altrimenti vuol dire */
     /*  che l'allocazione interna a numToASCII è fallita percui metto NoMemory  */
     errset(m_str ? NoError : NoMemory);

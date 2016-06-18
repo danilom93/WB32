@@ -306,12 +306,6 @@ void AFramework::System::kill(){
 
 bool AFramework::System::free(void * ptr){
     
-    size_t      test1 = 0;
-    size_t      test2 = 0;
-    
-    size_t      test3 = 0;
-    size_t      test4 = 0;
-    
     Segment *   nav = NULL;
     Segment *   pre = NULL;
     bool        flg = false;
