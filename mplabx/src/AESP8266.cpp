@@ -11,7 +11,14 @@
 #define __ESP_AT_JOIN_AP    "AT+CWJAP="
 #define __ESP_AT_LEAVE_AP   "AT+CWQAP"
 #define __ESP_AT_LIST_AP    "AT+CWLAP"
-
+#define __ESP_AT_DHCP       "AT+CWDHCP="
+#define __ESP_AT_IP_AP      "AT+CIPAP"
+#define __ESP_AT_IP_ST      "AT+CIPSTA"
+#define __ESP_AT_MUX        "AT+CIPMUX="
+#define __ESP_AT_SERVER     "AT+CIPSERVER="
+#define __ESP_AT_TIMEOUT    "AT+CIPSTO="
+#define __ESP_AT_DATA       "+IPD,"
+#define __ESP_AT_SEND       "AT+CIPSEND="
 
 #define __ESP_AT_OK         "OK"
 #define __ESP_AT_READY      "ready"
@@ -134,7 +141,6 @@ bool AFramework::AESP8266::setMode(const ESPMode mode, const bool rst, const uin
     return reset();
 }
 
-
 bool AFramework::AESP8266::configureAP(const AString & ssid, const AString & pwd, const uint8 channel, const uint32 ms) const{
     AString str = __ESP_AT_CONF_AP;
     /*  controllo che il canale sia valido e che la seriale sia ok              */
@@ -199,7 +205,6 @@ bool AFramework::AESP8266::leaveAP(const uint32 ms) const{
     return wdttmr(__ESP_AT_OK, ms);  
 }
 
-
 bool AFramework::AESP8266::availableAP(AString & res, const uint32 ms) const{
     bool flag = false;
     /*  controllo che la seriale sia ok                                         */
@@ -217,6 +222,252 @@ bool AFramework::AESP8266::availableAP(AString & res, const uint32 ms) const{
     res = m_driver->read();
     /*  ritorno il flag                                                         */
     return flag;
+}
+
+bool AFramework::AESP8266::setDhcp(const bool en, const ESPMode mode, const uint32 ms) const{
+    
+    AString str = __ESP_AT_DHCP;
+    /*  controllo che la seriale sia ok                                         */
+    if(!m_flg){
+        /*  se non è così ritorno false                                         */
+        return false;
+    }
+    /*  controllo la modalità                                                   */
+    switch(mode){
+        
+        case StationMode:
+            
+            str += AString(static_cast<sint32>(1));
+            break;
+            
+        case APMode:
+            
+            str += AString(static_cast<sint32>(0));
+            break;
+            
+        case BothMode:
+            
+            str += AString(static_cast<sint32>(2));
+            break;
+        default:
+            
+            return false;
+    }
+    
+    str += ",";
+    
+    if(en){
+    
+        str += "0";
+    }else{
+        
+        str += "1";
+    }
+    /*  pulisco il buffer                                                       */
+    m_driver->bufferClear();
+    /*  scrivo sulla seriale il comando                                         */
+    m_driver->writeln(str.c_str());
+    /*  ritorno il risultato del WDT                                            */
+    return wdttmr(__ESP_AT_OK, ms);  
+}
+
+bool AFramework::AESP8266::setIp(const AString &addr, const ESPMode mode , const uint32 ms) const{
+    
+    AString str; 
+    /*  controllo che la seriale sia ok                                         */
+    if(!m_flg){
+        /*  se non è così ritorno false                                         */
+        return false;
+    }
+    /*  controllo la modalità                                                   */
+    switch(mode){
+        
+        case StationMode:
+            
+            str += __ESP_AT_IP_ST;
+            break;
+            
+        case APMode:
+            
+            str += __ESP_AT_IP_AP;
+            break;
+           
+        default:
+            
+            return false;
+    }
+    str += "=\"";
+    str += addr;
+    str += "\"";
+    
+    /*  pulisco il buffer                                                       */
+    m_driver->bufferClear();
+    /*  scrivo sulla seriale il comando                                         */
+    m_driver->writeln(str.c_str());
+    /*  ritorno il risultato del WDT                                            */
+    return wdttmr(__ESP_AT_OK, ms);  
+}
+
+bool AFramework::AESP8266::ip(AString &addr, const ESPMode mode, const uint32 ms) const{
+    bool flag = false;
+    AString str; 
+    /*  controllo che la seriale sia ok                                         */
+    if(!m_flg){
+        /*  se non è così ritorno false                                         */
+        return false;
+    }
+    /*  controllo la modalità                                                   */
+    switch(mode){
+        
+        case StationMode:
+            
+            str += __ESP_AT_IP_ST;
+            break;
+            
+        case APMode:
+            
+            str += __ESP_AT_IP_AP;
+            break;
+           
+        default:
+            
+            return false;
+    }
+    
+    str += "?";
+    /*  pulisco il buffer                                                       */
+    m_driver->bufferClear();
+    /*  scrivo sulla seriale il comando                                         */
+    m_driver->writeln(str.c_str());
+    /*  ritorno il risultato del WDT                                            */
+    flag = wdttmr(__ESP_AT_OK, ms); 
+    
+    if(!flag){
+        
+        return false;
+    }
+    
+    str.clear();
+    str = m_driver->read();
+        switch(mode){
+        
+        case StationMode:
+            
+            str.remove("+CIPSTA:");
+            break;
+            
+        case APMode:
+            
+            str.remove("+CIPAP:");
+            break;
+           
+        default:
+            
+            return false;
+    }
+    while(str.remove("\n") || str.remove("\r") || str.remove("OK") || str.remove("\""));
+    
+    addr = str;
+    return true;
+}
+
+bool AFramework::AESP8266::setMultipleConnections(const bool en, const uint32 ms) const{
+    
+    AString str = __ESP_AT_MUX;
+    /*  controllo che la seriale sia ok                                         */
+    if(!m_flg){
+        /*  se non è così ritorno false                                         */
+        return false;
+    }
+    if(en){
+        
+        str += "1";
+    }else{
+        
+        str += "0";
+    }
+    /*  pulisco il buffer                                                       */
+    m_driver->bufferClear();
+    /*  scrivo sulla seriale il comando                                         */
+    m_driver->writeln(str.c_str());
+    /*  ritorno il risultato del WDT                                            */
+    return wdttmr(__ESP_AT_OK, ms);
+}
+
+bool AFramework::AESP8266::openServer(const uint16 port, const uint32 timeout, const uint32 ms)const{
+    
+    bool flag = false;
+    AString str = __ESP_AT_SERVER;
+    /*  controllo che la seriale sia ok                                         */
+    if(!m_flg){
+        /*  se non è così ritorno false                                         */
+        return false;
+    }
+    
+    str += "1,";
+    str += AString(static_cast<sint32>(port));
+    /*  pulisco il buffer                                                       */
+    m_driver->bufferClear();
+    /*  scrivo sulla seriale il comando                                         */
+    m_driver->writeln(str.c_str());
+    /*  ritorno il risultato del WDT                                            */
+    flag = wdttmr(__ESP_AT_OK, ms);
+    if(!flag){
+        return false;
+    }
+    str.clear();
+    str = __ESP_AT_TIMEOUT;
+    str += AString(static_cast<sint32>(timeout));
+    /*  pulisco il buffer                                                       */
+    m_driver->bufferClear();
+    /*  scrivo sulla seriale il comando                                         */
+    m_driver->writeln(str.c_str());
+    /*  ritorno il risultato del WDT                                            */
+    return wdttmr(__ESP_AT_OK, ms);
+}
+
+bool AFramework::AESP8266::waitForData(AString &str, const uint32 ms) const{
+    
+    AString tmp;
+    if(!m_flg){
+        /*  se non è così ritorno false                                         */
+        return false;
+    }
+       
+    if(wdttmr(__ESP_AT_DATA, ms)){
+        
+        tmp = m_driver->read();
+        m_driver->bufferClear();
+        tmp.remove(__ESP_AT_DATA);
+        while(tmp.remove("\n") || tmp.remove("\r"));
+        tmp = tmp.right(tmp.indexOf(":") + 1);
+        str = tmp.left(tmp.size() - 2);
+        return true;
+    }
+    return false;
+
+}
+
+bool AFramework::AESP8266::send(const AString &str, const uint8 numConn) const{
+
+    AString tmp = __ESP_AT_SEND;
+    if(!m_flg || numConn > 4){
+        /*  se non è così ritorno false                                         */
+        return false;
+    }
+    //tmp += AString(static_cast<sint32>(numConn));
+    tmp += "0";
+    tmp += ",";
+    tmp += AString(static_cast<sint32>(str.size()));
+    m_driver->bufferClear();
+    m_driver->writeln(tmp.c_str());
+    if(wdttmr(">", 1000)){
+        
+        m_driver->bufferClear();
+        m_driver->write(str.c_str());
+        return wdttmr(__ESP_AT_OK, 1000); 
+    }
+    return false;
 }
 
 bool AFramework::AESP8266::wdttmr(const char * str, const uint32 ms) const{

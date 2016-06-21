@@ -31,14 +31,14 @@
 
     #pragma config PMDL1WAY     = OFF       //Peripheral Module Disable Configuration (Allow multiple reconfigurations)
     #pragma config IOL1WAY      = OFF       //Peripheral Pin Select Configuration (Allow multiple reconfigurations)
-    #pragma config FUSBIDIO     = ON        //USB USID Selection (Controlled by the USB Module)
-    #pragma config FVBUSONIO    = ON        //USB VBUS ON Selection (Controlled by USB Module)
+    #pragma config FUSBIDIO     = OFF        //USB USID Selection (Controlled by the USB Module)
+    #pragma config FVBUSONIO    = OFF        //USB VBUS ON Selection (Controlled by USB Module)
     #pragma config FPLLIDIV     = DIV_6     //PLL Input Divider (6x Divider) 24MHz / 6 = 4MHz
 //->    #pragma config FPLLIDIV     = DIV_2     //PLL Input Divider (6x Divider) 24MHz / 6 = 4MHz
     #pragma config FPLLMUL      = MUL_20    //PLL Multiplier (20x Multiplier) 4MHz * 20 = 80MHz
     #pragma config UPLLIDIV     = DIV_6     //USB PLL Input Divider (6x Divider) 24MHz / 6 = 4MHz
 //->    #pragma config UPLLIDIV     = DIV_2     //USB PLL Input Divider (6x Divider) 24MHz / 6 = 4MHz
-    #pragma config UPLLEN       = ON        //USB PLL Enable (Enabled)
+    #pragma config UPLLEN       = OFF        //USB PLL Enable (Enabled)
     #pragma config FPLLODIV     = DIV_2     //System PLL Output Clock Divider (PLL Divide by 2) 80MHz / 2 = 40MHz
     #pragma config FNOSC        = PRIPLL    //Oscillator Selection Bits (Primary Osc w/PLL (XT+,HS+,EC+PLL))
 //->    #pragma config FNOSC        = FRCPLL    //Oscillator Selection Bits (Primary Osc w/PLL (XT+,HS+,EC+PLL))
@@ -58,6 +58,7 @@
     #pragma config PWP          = OFF       //Program Flash Write Protect (Disable)
     #pragma config BWP          = OFF       //Boot Flash Write Protect bit (Protection Disabled)
     #pragma config CP           = OFF       //Code Protect (Protection Disabled)
+
 
 #else
 

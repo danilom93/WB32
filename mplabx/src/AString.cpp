@@ -349,6 +349,67 @@ AFramework::sint32 AFramework::AString::indexOf(const char & chr, const uint32 &
     return -1;
 }
 
+AFramework::AString AFramework::AString::right(const uint32 index) const{
+    AString str;
+    char * newStr = NULL;
+    uint32 newSize = m_dim - index + 1;
+    uint32 tmpIndex = 0;
+    /*  resetto la variabile d'errore                                           */
+    errset();
+    /*  se l'indice è fuori range                                               */
+    if(index >= m_dim){
+        /*  setto l'errore ad out of range                                      */
+        errset(OutOfRange);
+        /*  ritorno un oggetto al volo                                          */
+        return str;
+    }
+    /*  provo ad allocare il nuovo vettore                                      */
+    if(!System::safeAlloc(&newStr, newSize)){
+      
+        errset(NoMemory); 
+    }
+    
+    for(uint32 i = index; i < m_dim; i++){
+        
+        newStr[tmpIndex++] = m_str[i];
+    }
+    
+    newStr[newSize - 1] = 0x00;
+    str.ptrswp(newStr, --newSize);
+    return str;
+}
+
+AFramework::AString AFramework::AString::left(const uint32 index) const{
+ 
+    AString str;
+    char * newStr = NULL;
+    uint32 newSize = index + 1;
+    uint32 tmpIndex = 0;
+    /*  resetto la variabile d'errore                                           */
+    errset();
+    /*  se l'indice è fuori range                                               */
+    if(index >= m_dim){
+        /*  setto l'errore ad out of range                                      */
+        errset(OutOfRange);
+        /*  ritorno un oggetto al volo                                          */
+        return str;
+    }
+    /*  provo ad allocare il nuovo vettore                                      */
+    if(!System::safeAlloc(&newStr, newSize)){
+      
+        errset(NoMemory); 
+    }
+    
+    for(uint32 i = 0; i <= index; i++){
+        
+        newStr[tmpIndex++] = m_str[i];
+    }
+    
+    newStr[newSize - 1] = 0x00;
+    str.ptrswp(newStr, --newSize);
+    return str;
+}
+
 bool AFramework::AString::insert(const AString & str, const uint32 & index){
     uint32  indOne = 0;
     uint32  indTwo = 0;

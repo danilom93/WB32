@@ -24,7 +24,14 @@ namespace AFramework{
             bool joinAP(const AString & ssid, const AString & pwd, const uint32 ms = 20000) const;
             bool leaveAP(const uint32 ms = 2000) const;
             bool availableAP(AString & res, const uint32 ms = 5000) const;
-
+            bool setDhcp(const bool en, const ESPMode mode = ESPMode::StationMode, const uint32 ms = 1000) const;
+            bool setIp(const AString &addr, const ESPMode mode = ESPMode::StationMode, const uint32 ms = 1000) const;
+            bool ip(AString &addr, const ESPMode mode = ESPMode::StationMode, const uint32 ms = 1000) const;
+            bool setMultipleConnections(const bool en, const uint32 ms = 1000) const;
+            bool openServer(const uint16 port, const uint32 timeout = 60, const uint32 ms = 1000)const;
+            bool waitForData(AString &str, const uint32 ms = 1000) const;
+            bool send(const AString &str, const uint8 numConn = 0) const;
+            
         private:
             bool wdttmr(const char * str, const uint32 ms) const;
             AUARTDriver * m_driver;

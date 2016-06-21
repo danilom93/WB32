@@ -59,6 +59,8 @@ namespace AFramework{
             bool replace(const char    & before, const char    & after, const bool & cs = false);
             sint32 indexOf(const AString & str, const uint32 & index = 0, const bool & cs = false) const;
             sint32 indexOf(const char    & chr, const uint32 & index = 0, const bool & cs = false) const;
+            AString right(const uint32 index) const;
+            AString left(const uint32 index) const;
             bool insert(const AString & str, const uint32  & index);
             bool insert(const AString & str, const AString & after, const bool & cs = false);
             bool insert(const char & chr, const uint32 & index);

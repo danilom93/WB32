@@ -295,6 +295,8 @@ bool AFramework::System::init(size_t heapSize, volatile AHardwarePort * ledPort,
     m_coreTimer.ctopen(m_ct_rate);
     /*  abilito gli interrupt                                                   */
     enableInterrupt();
+    /*  disabilito jtag                                                         */
+    m_dev->CFGCON.REG = 0;
     /*  e restituisco true                                                      */
     return true;
 }
