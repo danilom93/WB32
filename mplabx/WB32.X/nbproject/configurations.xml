@@ -25,6 +25,8 @@
       <itemPath>../include/AUARTDriver.h</itemPath>
       <itemPath>../include/Ap32mx270f256d.h</itemPath>
       <itemPath>../include/AESP8266.h</itemPath>
+      <itemPath>../include/MTemp.h</itemPath>
+      <itemPath>../include/AXbee.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -50,6 +52,8 @@
       <itemPath>../src/AUARTDriver.cpp</itemPath>
       <itemPath>../src/Ap32mx270f256d.S</itemPath>
       <itemPath>../src/AESP8266.cpp</itemPath>
+      <itemPath>../src/MTemp.cpp</itemPath>
+      <itemPath>../src/AXbee.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -71,8 +75,8 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>1.42</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>1.40</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>

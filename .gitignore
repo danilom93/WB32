@@ -4,3 +4,4 @@
 mplabx\WB32.X\build\*
 mplabx\WB32.X\debug\*
 mplabx\WB32.X\dist\*
+/mplabx/WB32.X/dist/default/

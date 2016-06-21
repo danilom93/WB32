@@ -16,7 +16,7 @@ namespace AFramework{
                 Wednesday,
                 Thursday,
                 Friday,
-                Saturday,
+                Saturday
             };
             
             enum Months{
@@ -32,7 +32,7 @@ namespace AFramework{
                 September,
                 October,
                 November,
-                December,
+                December
             };
             
             ADateTime();

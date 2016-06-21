@@ -426,6 +426,16 @@ bool AFramework::AESP8266::openServer(const uint16 port, const uint32 timeout, c
     return wdttmr(__ESP_AT_OK, ms);
 }
 
+bool AFramework::AESP8266::prepareForReceive() const{
+    
+    if(!m_flg){
+        /*  se non è così ritorno false                                         */
+        return false;
+    }
+    m_driver->bufferClear();
+    return true;
+}
+
 bool AFramework::AESP8266::waitForData(AString &str, const uint32 ms) const{
     
     AString tmp;

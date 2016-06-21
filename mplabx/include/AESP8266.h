@@ -29,6 +29,7 @@ namespace AFramework{
             bool ip(AString &addr, const ESPMode mode = ESPMode::StationMode, const uint32 ms = 1000) const;
             bool setMultipleConnections(const bool en, const uint32 ms = 1000) const;
             bool openServer(const uint16 port, const uint32 timeout = 60, const uint32 ms = 1000)const;
+            bool prepareForReceive() const;
             bool waitForData(AString &str, const uint32 ms = 1000) const;
             bool send(const AString &str, const uint8 numConn = 0) const;
             
