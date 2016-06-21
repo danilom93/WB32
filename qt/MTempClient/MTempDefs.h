@@ -108,7 +108,7 @@
 #define _MTEMP_DEFAULT_USER_KEY     "toor"
 
 #define _MTEMP_CONF_START           "CONF"
-#define _MTEMP_CONF_SEND            "CONFEND"
+#define _MTEMP_CONF_END             "CONFEND"
 
 
 #define _MTEMP_WEEKPROGRAM_VEC_SIZE 0x00000007
