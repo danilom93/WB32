@@ -6,15 +6,15 @@
 #include <QTcpSocket>
 #include <QHostInfo>
 
-class MT_Client : public QObject{
+class MClient : public QObject{
 
         Q_OBJECT
         Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
         Q_PROPERTY(quint16 port READ port WRITE setPort NOTIFY portChanged)
 
     public:
-        explicit MT_Client(QObject *parent = 0);
-        ~MT_Client();
+        explicit MClient(QObject *parent = 0);
+        ~MClient();
         QString address() const;
         quint16 port() const;
 

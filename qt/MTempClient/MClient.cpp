@@ -1,10 +1,10 @@
-#include "MT_Client.h"
+#include "MClient.h"
 
-MT_Client::MT_Client(QObject *parent) : QObject(parent), m_sock(NULL), m_addr(), m_port(0){
+MClient::MClient(QObject *parent) : QObject(parent), m_sock(NULL), m_addr(), m_port(0){
     /*  nulla da commentare                                                                         */
 }
 
-MT_Client::~MT_Client(){
+MClient::~MClient(){
     /*  se la socket è allocata                                                                     */
     if(m_sock){
         /*  la chiudo                                                                               */
@@ -14,17 +14,17 @@ MT_Client::~MT_Client(){
     }
 }
 
-QString MT_Client::address() const{
+QString MClient::address() const{
     /*  nulla da commentare                                                                         */
     return m_addr;
 }
 
-quint16 MT_Client::port() const{
+quint16 MClient::port() const{
     /*  nulla da commentare                                                                         */
     return m_port;
 }
 
-bool MT_Client::connectToHost(){
+bool MClient::connectToHost(){
     QHostInfo hostAddr;
     /*  se la socket non è allocata                                                                 */
     if(!m_sock){
@@ -49,13 +49,13 @@ bool MT_Client::connectToHost(){
     return true;
 }
 
-bool MT_Client::disconnectFromHost(){
+bool MClient::disconnectFromHost(){
 
 
     return true;
 }
 
-bool MT_Client::setAddress(const QString &addr){
+bool MClient::setAddress(const QString &addr){
     /*  se l'indirizzo è diverso da quello precedente                                               */
     if(m_addr != addr){
         /*  cambio l'indirizzo                                                                      */
@@ -69,7 +69,7 @@ bool MT_Client::setAddress(const QString &addr){
     return false;
 }
 
-bool MT_Client::setPort(const quint16 &port){
+bool MClient::setPort(const quint16 &port){
     /*  se la porta è diverso da quella precedente                                                  */
     if(m_port != port){
         /*  cambio la porta                                                                         */
@@ -83,14 +83,14 @@ bool MT_Client::setPort(const quint16 &port){
     return false;
 }
 
-void MT_Client::connectedBouncer(){
+void MClient::connectedBouncer(){
     /*  disconnetto i segnali della socket                                                          */
     QObject::disconnect(m_sock, SIGNAL(connected())   , this, SLOT(connectedBouncer())  );
     /*  emetto il segnale                                                                           */
     emit connected();
 }
 
-void MT_Client::diconnectedBouncer(){
+void MClient::diconnectedBouncer(){
     /*  disconnetto i segnali della socket                                                          */
     QObject::disconnect(m_sock, SIGNAL(disconnected()), this, SLOT(diconnectedBouncer()));
     /*  emetto il segnale                                                                           */

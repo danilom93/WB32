@@ -6,7 +6,7 @@
 #define _MTEMP_DISABLED             'N'
 
 #include "MTempDefs.h"
-#include "ASystemConfig.h"
+//#include "ASystemConfig.h"
 
 #ifdef ANTIPODE32MR
 
