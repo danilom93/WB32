@@ -17,16 +17,19 @@ SOURCES += main.cpp\
         MTempClient.cpp \
     MTempCommons.cpp \
     NetworkConfig.cpp \
-    MClient.cpp
+    MClient.cpp \
+    Loader.cpp
 
 HEADERS  += MTempClient.h \
     MTempDefs.h \
     MTempCommons.h \
     NetworkConfig.h \
-    MClient.h
+    MClient.h \
+    Loader.h
 
 FORMS    += MTempClient.ui \
-    NetworkConfig.ui
+    NetworkConfig.ui \
+    Loader.ui
 
 RESOURCES += \
     resource.qrc

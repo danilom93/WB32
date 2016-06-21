@@ -25,10 +25,16 @@ class MClient : public QObject{
         void connected();
         void disconnected();
         void error();
+        void tokenReceived();
+        void dataSended();
 
     public slots:
         Q_INVOKABLE bool connectToHost();
         Q_INVOKABLE bool disconnectFromHost();
+        Q_INVOKABLE bool write(const QString & str);
+        Q_INVOKABLE bool waitFor(const QString & str);
+        Q_INVOKABLE QString dataReceived() const;
+        Q_INVOKABLE void bufferClear();
                     bool setAddress(const QString & addr);
                     bool setPort(const quint16 & port);
     private slots:
@@ -39,6 +45,10 @@ class MClient : public QObject{
         QTcpSocket * m_sock;
         QString      m_addr;
         quint16      m_port;
+        QString      m_buffer;
+        QString      m_keyword;
+        bool         m_state;
+        quint32      m_dataLen;
 };
 
 #endif // MT_CLIENT_H

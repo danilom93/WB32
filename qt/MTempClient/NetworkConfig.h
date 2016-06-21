@@ -4,10 +4,12 @@
 #include <QIcon>
 #include <QDialog>
 #include <QString>
+#include <QMessageBox>
 #include <QHostAddress>
 #include <QRegExpValidator>
 #include <QRegularExpression>
 
+#include "Loader.h"
 #include "MClient.h"
 #include "MTempDefs.h"
 #include "MTempCommons.h"
@@ -45,8 +47,18 @@ private slots:
 
     void on_abortButton_clicked();
 
-private:
+    void on_configureButton_clicked();
 
+    void notifyConnected();
+
+    void notifyError();
+
+    void notifyDisconnected();
+
+    void notifyAnswer();
+
+private:
+    void clear();
     void checkAll();
 
         Ui::NetworkConfig * ui;
@@ -58,6 +70,7 @@ private:
         QString             m_username;
         QString             m_password1;
         QString             m_password2;
+        Loader *            m_loader;
 };
 
 #endif // NETWORKCONFIG_H

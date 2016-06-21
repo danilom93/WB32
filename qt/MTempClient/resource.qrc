@@ -2,5 +2,6 @@
     <qresource prefix="/ico">
         <file>img/Settings-52.png</file>
         <file>img/Dew Point-64.png</file>
+        <file>img/ajax-loader.gif</file>
     </qresource>
 </RCC>

@@ -53,30 +53,31 @@ using namespace AFramework;
 
 int main(int argc, char** argv) {
     
-    System::init(16392, &PortB, bit15);
+    System::init(16392, &PortB, bit4);
     
-    AString str;
+    bool test = true;
     
-    ALcd lcd(&PortC, bit0, &PortC, bit1, &PortC, bit2, &PortC, bit3, &PortC, bit4, &PortC, bit5, &PortC, bit6);
+//    ALcd lcd(&PortC, bit0, &PortC, bit1, &PortC, bit2, &PortC, bit3, &PortC, bit4, &PortC, bit5, &PortC, bit6);
     
+    PortB.setOutput(bit10 | bit11);
         
-    APCF8563    clock(&I2C2);
+
     
     System::delay(1000);
-    
-    lcd.lightOn();
-        
-    
-    ADateTime tmp;
-    lcd << "PROVA\n";
-    clock.setClockOut(APCF8563::Clock1KHz);
-    System::delay(1000);
+
     while(1){
         
-        lcd.clear();
-        tmp = clock.currentTime();
-        lcd << "SONO LE ORE\n";
-        lcd << tmp.timeToString();
+        
+        if(test){
+            PortB.write(bit10, Hi);
+            PortB.write(bit11, Lo);
+            test = false;
+        }else{
+            PortB.write(bit10, Lo);
+            PortB.write(bit11, Hi);
+            test = true;
+        }
+       
         System::delay(1000);
     }
 }
