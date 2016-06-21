@@ -6,6 +6,7 @@
 #define _MTEMP_DISABLED             'N'
 
 #include "MTempDefs.h"
+#include "ASystemConfig.h"
 
 #ifdef ANTIPODE32MR
 
@@ -18,6 +19,7 @@
         typedef AString     QString;
         typedef uint8       quint8;
         typedef uint16      quint16;
+        typedef uint32      quint32;
 
     }
 
@@ -27,7 +29,7 @@
 
     namespace AFramework{
 
-        class ADataTime{
+        class ADateTime{
 
             public:
 
@@ -55,7 +57,7 @@ namespace AFramework{
         public:
             Program();
 
-            Program(const ADataTime::Weekdays wDay,
+            Program(const ADateTime::Weekdays wDay,
                     const quint8 sHours,
                     const quint8 sMinutes,
                     const quint8 eHours,
@@ -76,7 +78,7 @@ namespace AFramework{
 
             bool fromString(const QString & program, bool & ok);
 
-            ADataTime::Weekdays weekday() const;
+            ADateTime::Weekdays weekday() const;
             quint8 startHours() const;
             quint8 startMinutes() const;
             quint8 endHours() const;
@@ -84,7 +86,7 @@ namespace AFramework{
             quint8 targetTemperature() const;
             bool   isEnabled() const;
 
-            bool setWeekday(const ADataTime::Weekdays wDay);
+            bool setWeekday(const ADateTime::Weekdays wDay);
             bool setWeekday(const QString & str);
 
             bool setStartHours(const quint8 sHours);
@@ -108,7 +110,7 @@ namespace AFramework{
             QString toString() const;
 
         private:
-            ADataTime::Weekdays m_weekday;
+            ADateTime::Weekdays m_weekday;
             quint8              m_startHours;
             quint8              m_startMinutes;
             quint8              m_endHours;
@@ -139,8 +141,8 @@ namespace AFramework{
             Room(A24LC512 * eeprom, const RoomNumber roomNum, bool & ok);
             void    loadRoom();
             void    saveRoom();
-            bool    loadProgram(const ADataTime::Weekdays day);
-            bool    saveProgram(const ADataTime::Weekdays day);
+            bool    loadProgram(const ADateTime::Weekdays day);
+            bool    saveProgram(const ADateTime::Weekdays day);
             quint8  currentTemp() const;
 
             #endif
@@ -150,12 +152,12 @@ namespace AFramework{
             QString roomName() const;
             QString sensorAddress() const;
             quint32 relayOut() const;
-            Program program(const ADataTime::Weekdays day) const;
+            Program program(const ADateTime::Weekdays day) const;
 
             bool    setRoomName(const QString & name);
             bool    setSensorAddress(const quint8 addr);
             bool    setRelayOut(const quint32 gpio);
-            bool    setProgram(const ADataTime::Weekdays day, const QString & str);
+            bool    setProgram(const ADateTime::Weekdays day, const QString & str);
 
             QString toString() const;
 

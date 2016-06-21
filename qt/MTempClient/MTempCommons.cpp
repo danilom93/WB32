@@ -4,7 +4,7 @@
  * @brief AFramework::Program::Program
  */
 
-AFramework::Program::Program() : m_weekday(ADataTime::Sunday),
+AFramework::Program::Program() : m_weekday(ADateTime::Sunday),
                                  m_startHours(0),
                                  m_startMinutes(0),
                                  m_endHours(23),
@@ -14,7 +14,7 @@ AFramework::Program::Program() : m_weekday(ADataTime::Sunday),
 
 }
 
-AFramework::Program::Program(const AFramework::ADataTime::Weekdays wDay,
+AFramework::Program::Program(const AFramework::ADateTime::Weekdays wDay,
                              const quint8 sHours,
                              const quint8 sMinutes,
                              const quint8 eHours,
@@ -115,32 +115,52 @@ bool AFramework::Program::fromString(const QString &program, bool &ok){
     }
 }
 
-AFramework::ADataTime::Weekdays AFramework::Program::weekday() const{
+AFramework::ADateTime::Weekdays AFramework::Program::weekday() const{
 
     return m_weekday;
 }
 
+#ifdef ANTIPODE32MR
+AFramework::quint8 AFramework::Program::startHours() const{
+#else
 quint8 AFramework::Program::startHours() const{
+#endif
 
     return m_startHours;
 }
 
+#ifdef ANTIPODE32MR
+AFramework::quint8 AFramework::Program::startMinutes() const{
+#else
 quint8 AFramework::Program::startMinutes() const{
+#endif
 
     return m_startMinutes;
 }
 
+#ifdef ANTIPODE32MR
+AFramework::quint8 AFramework::Program::endHours() const{
+#else
 quint8 AFramework::Program::endHours() const{
+#endif
 
     return m_endHours;
 }
 
+#ifdef ANTIPODE32MR
+AFramework::quint8 AFramework::Program::endMinutes() const{
+#else
 quint8 AFramework::Program::endMinutes() const{
+#endif
 
     return m_endMinutes;
 }
 
+#ifdef ANTIPODE32MR
+AFramework::quint8 AFramework::Program::targetTemperature() const{
+#else
 quint8 AFramework::Program::targetTemperature() const{
+#endif
 
     return m_targetTemp;
 }
@@ -150,9 +170,9 @@ bool AFramework::Program::isEnabled() const{
     return m_enabled;
 }
 
-bool AFramework::Program::setWeekday(const AFramework::ADataTime::Weekdays wDay){
+bool AFramework::Program::setWeekday(const AFramework::ADateTime::Weekdays wDay){
 
-    if(wDay == ADataTime::NoWeekday){
+    if(wDay == ADateTime::NoWeekday){
 
         return false;
     }
@@ -176,7 +196,7 @@ bool AFramework::Program::setWeekday(const QString &str){
         return false;
     }
 
-    m_weekday = static_cast<ADataTime::Weekdays>(str[0] - 0x30);
+    m_weekday = static_cast<ADateTime::Weekdays>(str[0] - 0x30);
 
     return true;
 
@@ -410,8 +430,11 @@ void AFramework::Program::setDisabled(){
     m_enabled = true;
 }
 
-QString AFramework::Program::toString() const{
-
+#ifdef ANTIPODE32MR
+AFramework::QString AFramework::Program::toString() const{
+#else
+QString AFramework::Program::toString() const{    
+#endif
     QString str;
 
     str += static_cast<char>(m_weekday                  + 0x30);
