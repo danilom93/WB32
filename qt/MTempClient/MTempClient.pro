@@ -15,12 +15,21 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         MTempClient.cpp \
-    MT_Client.cpp \
-    MTempCommons.cpp
+    MTempCommons.cpp \
+    NetworkConfig.cpp \
+    MClient.cpp \
+    Loader.cpp
 
 HEADERS  += MTempClient.h \
-    MT_Client.h \
     MTempDefs.h \
-    MTempCommons.h
+    MTempCommons.h \
+    NetworkConfig.h \
+    MClient.h \
+    Loader.h
 
-FORMS    += MTempClient.ui
+FORMS    += MTempClient.ui \
+    NetworkConfig.ui \
+    Loader.ui
+
+RESOURCES += \
+    resource.qrc

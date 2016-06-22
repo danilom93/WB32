@@ -113,6 +113,8 @@ bool AFramework::Program::fromString(const QString &program, bool &ok){
             setDisabled();
         }
     }
+
+    return ok;
 }
 
 AFramework::ADateTime::Weekdays AFramework::Program::weekday() const{
@@ -213,7 +215,7 @@ bool AFramework::Program::setWeekday(const QString &str){
         return false;
     }
 
-    m_weekday = static_cast<ADataTime::Weekdays>(str[0].toLatin1() - 0x30);
+    m_weekday = static_cast<ADateTime::Weekdays>(str[0].toLatin1() - 0x30);
 
     return true;
 
