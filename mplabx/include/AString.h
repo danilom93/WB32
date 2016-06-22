@@ -140,6 +140,11 @@ namespace AFramework{
             /*  ed incremento il numero di cifre                                */
             dig++;
         }
+        /*  se il numero è zero                                                 */
+        if(raw == 0){
+            /*  incremento il numero di cifre                                   */
+            dig++;
+        }
         /*  provo ad allocare la stringa della dimensione necessaria            */
         if(System::safeAlloc(&res, dig)){
             /*  se l'allocazione è andata a buon fine aggiungo subito il carat- */

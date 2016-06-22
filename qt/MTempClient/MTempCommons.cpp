@@ -67,11 +67,12 @@ AFramework::Program::Program(const QString &wDay,
 
 AFramework::Program::Program(const QString & program, bool &ok) : Program(){
 
-    fromString(program, ok);
+    ok = fromString(program);
 }
 
-bool AFramework::Program::fromString(const QString &program, bool &ok){
+bool AFramework::Program::fromString(const QString &program){
 
+    bool    ok = false;
     QString wDay;
     QString sHours;
     QString sMinutes;
@@ -122,7 +123,7 @@ AFramework::ADateTime::Weekdays AFramework::Program::weekday() const{
     return m_weekday;
 }
 
-#ifdef ANTIPODE32MR
+#ifdef __32MX270F256D__
 AFramework::quint8 AFramework::Program::startHours() const{
 #else
 quint8 AFramework::Program::startHours() const{
@@ -131,7 +132,7 @@ quint8 AFramework::Program::startHours() const{
     return m_startHours;
 }
 
-#ifdef ANTIPODE32MR
+#ifdef __32MX270F256D__
 AFramework::quint8 AFramework::Program::startMinutes() const{
 #else
 quint8 AFramework::Program::startMinutes() const{
@@ -140,7 +141,7 @@ quint8 AFramework::Program::startMinutes() const{
     return m_startMinutes;
 }
 
-#ifdef ANTIPODE32MR
+#ifdef __32MX270F256D__
 AFramework::quint8 AFramework::Program::endHours() const{
 #else
 quint8 AFramework::Program::endHours() const{
@@ -149,7 +150,7 @@ quint8 AFramework::Program::endHours() const{
     return m_endHours;
 }
 
-#ifdef ANTIPODE32MR
+#ifdef __32MX270F256D__
 AFramework::quint8 AFramework::Program::endMinutes() const{
 #else
 quint8 AFramework::Program::endMinutes() const{
@@ -158,7 +159,7 @@ quint8 AFramework::Program::endMinutes() const{
     return m_endMinutes;
 }
 
-#ifdef ANTIPODE32MR
+#ifdef __32MX270F256D__
 AFramework::quint8 AFramework::Program::targetTemperature() const{
 #else
 quint8 AFramework::Program::targetTemperature() const{
@@ -185,7 +186,7 @@ bool AFramework::Program::setWeekday(const AFramework::ADateTime::Weekdays wDay)
 }
 
 bool AFramework::Program::setWeekday(const QString &str){
-#   ifdef ANTIPODE32MR
+#   ifdef __32MX270F256D__
 
     if(str.size() != 1){
 
@@ -240,7 +241,7 @@ bool AFramework::Program::setStartHours(const quint8 sHours){
 }
 
 bool AFramework::Program::setStartHours(const QString &str){
-#   ifdef ANTIPODE32MR
+#   ifdef __32MX270F256D__
 
     if(str.size() != 2){
 
@@ -281,7 +282,7 @@ bool AFramework::Program::setStartMinutes(const quint8 sMinutes){
 }
 
 bool AFramework::Program::setStartMinutes(const QString &str){
-#   ifdef ANTIPODE32MR
+#   ifdef __32MX270F256D__
 
     if(str.size() != 2){
 
@@ -322,7 +323,7 @@ bool AFramework::Program::setEndHours(const quint8 eHours){
 }
 
 bool AFramework::Program::setEndHours(const QString &str){
-#   ifdef ANTIPODE32MR
+#   ifdef __32MX270F256D__
 
     if(str.size() != 2){
 
@@ -363,7 +364,7 @@ bool AFramework::Program::setEndMinutes(const quint8 eMinutes){
 }
 
 bool AFramework::Program::setEndMinutes(const QString &str){
-#   ifdef ANTIPODE32MR
+#   ifdef __32MX270F256D__
 
     if(str.size() != 2){
 
@@ -399,7 +400,7 @@ bool AFramework::Program::setTargetTemperature(const quint8 targetTemp){
 }
 
 bool AFramework::Program::setTargetTemperature(const QString &str){
-#   ifdef ANTIPODE32MR
+#   ifdef __32MX270F256D__
 
     if(str.size() != 2){
 
@@ -432,7 +433,7 @@ void AFramework::Program::setDisabled(){
     m_enabled = true;
 }
 
-#ifdef ANTIPODE32MR
+#ifdef __32MX270F256D__
 AFramework::QString AFramework::Program::toString() const{
 #else
 QString AFramework::Program::toString() const{    
@@ -457,21 +458,301 @@ QString AFramework::Program::toString() const{
     str += static_cast<char>((m_targetTemp      % 0x0A) + 0x30);
     str += _MTEMP_SEP;
     str += (m_enabled ? _MTEMP_ENABLED : _MTEMP_DISABLED      );
-
+    
     return str;
-
 }
 
 /**
  * @brief AFramework::Room::Room
  */
 
-#ifdef ANTIPODE32MR
-    AFramework::quint16 AFramework::Room::m_ROOM_BASE_ADDR(_MTEMP_ROOM_0_ADDRESS);
-#else
+
+#ifdef __32MX270F256D__
+             AFramework::quint16         AFramework::Room::m_ROOM_BASE_ADDR(_MTEMP_ROOM_0_ADDRESS);
+             AFramework::A24LC512 *      AFramework::Room::m_mem(NULL);
+    volatile AFramework::AHardwarePort * AFramework::Room::m_relayPort(NULL);
+#endif
+
+AFramework::Room::Room() : m_sensorAddrees(0),
+                           m_relayOut(0),
+                           m_forcedOn(false),
+                           m_forcedOff(false),
+                           m_number(Room0){
+    memset(m_roomName   , 0x00,_MTEMP_ROOM_NAME_VEC_SIZE  );
+    memset(m_weekProgram, 0x00, (sizeof(Program) * _MTEMP_WEEKPROGRAM_VEC_SIZE));
+
+}
+
+#ifdef __32MX270F256D__
+
+AFramework::Room::Room(const AFramework::Room::RoomNumber roomNum, bool &ok){
+    if(!m_mem){
+        ok = false;
+    }
+    m_number = roomNum;
+}
+
+bool AFramework::Room::loadRoom(){
+    QString str;
+    bool    flg = false;
+
+    if(!m_mem){
+        return false;
+    }
+
+    flg = m_mem->read(getRadd(), str);
+
+    if(flg && str.good()){
+        fromString(str);
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool AFramework::Room::saveRoom(){
+
+    if(!m_mem){
+        return false;
+    }
+
+    return m_mem->write(getRadd(), toString());
+}
+
+bool AFramework::Room::loadProgram(const AFramework::ADateTime::Weekdays day){
+    QString str;
+    bool    flg = false;
+    if(!m_mem || day == ADateTime::NoWeekday){
+        return false;
+    }
+
+    flg = m_mem->read(getPadd(day), str);
+
+    if(flg && str.good()){
+        return m_weekProgram[static_cast<quint8>(day)].fromString(str);
+    }else{
+        return false;
+    }
+}
+
+bool AFramework::Room::saveProgram(const AFramework::ADateTime::Weekdays day){
+
+    if(!m_mem || day == ADateTime::NoWeekday){
+        return false;
+    }
+    return m_mem->write(getPadd(day), m_weekProgram[static_cast<quint8>(day)].toString());
+}
+
+void AFramework::Room::setEEPROM(A24LC512 *mem){
+
+    m_mem = mem;
+}
+
+void AFramework::Room::setPORT(volatile AHardwarePort *port) volatile{
+
+    m_relayPort = port;
+}
+
+AFramework::quint16 AFramework::Room::getRadd() const{
+
+    return (m_ROOM_BASE_ADDR +
+            static_cast<quint16>(m_number) * (_MTEMP_ROOM_LENGTH +
+                                             (_MTEMP_WEEKPROGRAM_VEC_SIZE * _MTEMP_PROG_LENGTH)));
+}
+
+AFramework::quint16 AFramework::Room::getPadd(const ADateTime::Weekdays day) const{
+
+    return (getRadd() + (static_cast<quint16>(day) - 1) * _MTEMP_PROG_LENGTH);
+}
 
 #endif
 
-AFramework::Room::Room(){
+bool AFramework::Room::fromString(const QString &str){
+#ifdef __32MX270F256D__
+    //DANILO
+    AStringList * list = NULL;
+    QString       temp;
+    bool          flg0 = false;
+    bool          flg1 = false;
+    bool          flg2 = false;
+    list = str.split('*');
+
+    if(list && str.good()){
+        temp = list->at(0);
+        flg0 = setRoomName(temp);
+        temp = list->at(1);
+        m_sensorAddrees = static_cast<quint8>(str.toInt32(flg1));
+        temp = list->at(2);
+        m_relayOut = static_cast<quint32>(str.toInt32(flg2));
+        delete list;
+        return (flg0 && flg1 && flg2);
+    }
+    return false;
+#else
+    QStringList list;
+    QString     temp;
+    bool          flg0 = false;
+    bool          flg1 = false;
+    bool          flg2 = false;
+    list = str.split("*");
+    flg0 = setRoomName(list[0]);
+    m_sensorAddrees = static_cast<quint8>(list[1].toInt(&flg1));
+    m_relayOut = static_cast<quint32>(list[2].toInt(&flg2));
+    return (flg0 && flg1 && flg2);
+#endif
+}
+
+#ifdef __32MX270F256D__
+AFramework::QString AFramework::Room::roomName() const{
+#else
+QString AFramework::Room::roomName() const{
+#endif
+
+    return m_roomName;
+}
+
+#ifdef __32MX270F256D__
+AFramework::QString AFramework::Room::sensorAddress() const{
+#else
+QString AFramework::Room::sensorAddress() const{
+#endif
+
+    return QString(m_sensorAddrees);
+}
+
+
+#ifdef __32MX270F256D__
+AFramework::quint32 AFramework::Room::relayOut() const{
+#else
+quint32 AFramework::Room::relayOut() const{
+#endif
+
+    return relayOut();
+}
+
+AFramework::Program AFramework::Room::program(const AFramework::ADateTime::Weekdays day) const{
+
+    if(day == ADateTime::NoWeekday){
+        return Program();
+    }
+
+    return m_weekProgram[static_cast<quint8>(day - 1)];
+}
+
+#ifdef __32MX270F256D__
+AFramework::quint8 AFramework::Room::currentTemperature() const{
+#else
+quint8 AFramework::Room::currentTemperature() const{
+#endif
+#ifdef __32MX270F256D__
+    //DANILO
+#else
+    //GIUSEPPE
+#endif
+}
+
+bool AFramework::Room::setRoomName(const QString &name){
+    if(name.size() > _MTEMP_ROOM_NAME_VEC_SIZE - 1){
+        return false;
+    }
+    for(quint16 i = 0; i < name.size(); i++){
+#       ifdef __32MX270F256D__
+        //DANILO
+        m_roomName[i] = name[i];
+#       else
+        //GIUSEPPE
+        m_roomName[i] = name[i].toLatin1();
+#       endif
+    }
+    return true;
+}
+
+bool AFramework::Room::setSensorAddress(const quint8 addr){
+
+    if(addr > 7){
+        return false;
+    }
+    m_relayOut = addr;
+    return true;
+}
+
+bool AFramework::Room::setRelayOut(const quint32 gpio){
+
+    if(!(gpio & (gpio - 1)) && gpio > 0x8000){
+        return false;
+    }
+    m_relayOut = gpio;
+    return true;
+}
+
+bool AFramework::Room::setProgram(const AFramework::ADateTime::Weekdays day, const QString &str){
+
+    if(day == ADateTime::NoWeekday){
+        return false;
+    }
+    return m_weekProgram[static_cast<quint8>(day)].fromString(str);
 
 }
+
+bool AFramework::Room::isForcedOn() const{
+
+    return m_forcedOn;
+}
+
+bool AFramework::Room::isForcedOff() const{
+
+    return m_forcedOff;
+}
+
+bool AFramework::Room::isOn() const{
+#ifdef __32MX270F256D__
+    //DANILO
+    return (m_relayPort->latchRead(m_relayOut) == Hi);
+#else
+    //GIUSEPPE
+#endif
+}
+
+bool AFramework::Room::isOff() const{
+#ifdef __32MX270F256D__
+    //DANILO
+    return (m_relayPort->latchRead(m_relayOut) == Lo);
+#else
+    //GIUSEPPE
+#endif
+}
+
+bool AFramework::Room::forceOn(const bool force){
+
+    return (m_forcedOn = force);
+}
+
+bool AFramework::Room::forceOff(const bool force){
+
+    return (m_forcedOff = force);
+}
+
+
+
+#ifdef __32MX270F256D__
+AFramework::QString AFramework::Room::toString() const{
+#else
+QString AFramework::Room::toString() const{
+#endif
+    QString str;
+
+    str += m_roomName;
+    str += _MTEMP_SEP;
+    str += static_cast<char>(m_sensorAddrees + 0x30);
+    str += _MTEMP_SEP;
+#   ifdef __32MX270F256D__
+    str += QString(static_cast<sint32>(m_relayOut));
+#   else
+    str += QString(m_relayOut);
+#   endif    
+
+
+    return str;
+}
+
+

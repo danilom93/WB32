@@ -22,14 +22,41 @@
 #define _MTEMP_ROOM_NUMBER_ADDRESS  (_MTEMP_USER_KEY_ADDRESS     + _MTEMP_USER_KEY_LENGTH       )
 #define _MTEMP_ROOM_NUMBER_LENGTH   0x00000008
 
+#define _MTEMP_PROGRAMDAY_LENGTH    0x00000001
+#define _MTEMP_START_HOURS_LENGTH   0x00000002
+#define _MTEMP_START_MINUTES_LENGTH 0x00000002
+#define _MTEMP_END_HOURS_LENGTH     0x00000002
+#define _MTEMP_END_MINUTES_LENGTH   0x00000002
+#define _MTEMP_TARGET_TEMP_LENGTH   0x00000002
+#define _MTEMP_ENABLED_LENGTH       0x00000001
+
 #define _MTEMP_WEEKPROGRAM_VEC_SIZE 0x00000007
 #define _MTEMP_ROOM_NAME_VEC_SIZE   0x00000020
-#define _MTEMP_PROG_LENGTH          0x00000020
-#define _MTEMP_SENSOR_ADDR_LENGTH   0x00000004
-#define _MTEMP_RELAY_OUT_LENGTH     0x00000004
+#define _MTEMP_SENSOR_ADDR_LENGTH   0x00000007
+#define _MTEMP_RELAY_OUT_LENGTH     0x00000007
+
+#define _MTEMP_SEP_LENGTH           0x00000001
+
+
+#define _MTEMP_PROG_LENGTH          (_MTEMP_PROGRAMDAY_LENGTH    +   \
+                                     _MTEMP_SEP_LENGTH           +   \
+                                     _MTEMP_START_HOURS_LENGTH   +   \
+                                     _MTEMP_SEP_LENGTH           +   \
+                                     _MTEMP_START_MINUTES_LENGTH +   \
+                                     _MTEMP_SEP_LENGTH           +   \
+                                    _MTEMP_END_HOURS_LENGTH      +   \
+                                    _MTEMP_SEP_LENGTH            +   \
+                                    _MTEMP_END_MINUTES_LENGTH    +   \
+                                    _MTEMP_SEP_LENGTH            +   \
+                                    _MTEMP_TARGET_TEMP_LENGTH    +   \
+                                    _MTEMP_SEP_LENGTH            +   \
+                                    _MTEMP_ENABLED_LENGTH        )
+
 
 #define _MTEMP_ROOM_LENGTH          (_MTEMP_ROOM_NAME_VEC_SIZE   +  \
+                                     _MTEMP_SEP_LENGTH           +  \
                                      _MTEMP_SENSOR_ADDR_LENGTH   +  \
+                                     _MTEMP_SEP_LENGTH           +  \
                                      _MTEMP_RELAY_OUT_LENGTH     )
 
 #define _MTEMP_ROOM_0_ADDRESS       (_MTEMP_ROOM_NUMBER_ADDRESS  + _MTEMP_ROOM_NUMBER_LENGTH    )
@@ -107,18 +134,130 @@
 #define _MTEMP_DEFAULT_USERNAME     "root"
 #define _MTEMP_DEFAULT_USER_KEY     "toor"
 
+
+/*
+ *  FORMATO STRINGA CONF
+ *  (CLIENT)    CONF*SSID*KEY*IP*PORT*USER*PASSWORD*CONFEND
+ *  (SERVER)    CONFOK || CONFFAIL
+ */
 #define _MTEMP_CONF_START           "CONF"
 #define _MTEMP_CONF_END             "CONFEND"
 #define _MTEMP_CONF_OK              "CONFOK"
+#define _MTEMP_CONF_FAIL            "CONFFAIL"
+
+/*
+ *  FORMATO STRINGA LOGIN
+ *  (CLIENT)    LOG*username*password*LOGEND
+ *  (SERVER)    LOGOK || LOGFAIL
+ */
+#define _MTEMP_LOGIN_START          "LOG"
+#define _MTEMP_LOGIN_END            "LOGEND"
+#define _MTEMP_LOGIN_OK             "LOGOK"
+#define _MTEMP_LOGIN_FAIL           "LOGFAIL"
+
+/*
+ *  FORMATO STRINGA TIMESET
+ *  (CLIENT)    TIMESET*AA*MM*GG*WD*HH*MM*SS*TIMESETEND 
+ *  (SERVER)    TIMESETOK || TIMESETFAIL
+ */
+#define _MTEMP_TIMESET_START        "TIMESET"
+#define _MTEMP_TIMESET_END          "TIMESETEND"
+#define _MTEMP_TIMESET_OK           "TIMESETOK"
+#define _MTEMP_TIMESET_FAIL         "TIMESETFAIL"
+
+/*
+ *  FORMATO STRINGA TIMEGET
+ *  (CLIENT)    TIMEGET
+ *  (SERVER)    TIMEGET*AA*MM*GG*WD*HH*MM*SS*(TIMEGETOK || TIMEGETFAIL)
+ */
+#define _MTEMP_TIMEGET_START        "TIMEGET"
+#define _MTEMP_TIMEGET_OK           "TIMEGETOK"
+#define _MTEMP_TIMEGET_FAIL         "TIMEGETFAIL"
+
+/*
+ *  FORMATO STRINGA TEMPGET
+ *  (CLIENT)    TEMPGET*R*TEMPGETEND
+ *  (SERVER)    TEMPGET*R*TT*(TEMPGETOK || TEMPGETFAIL)
+ *  (SERVER-NODO)   SENSOR*TEMPGET
+ *  (NODO)          TEMPGET*SENSOR*TT*(TEMPGETOK || TEMPGETFAIL)
+ */
+#define _MTEMP_TEMPGET_START        "TEMPGET"
+#define _MTEMP_TEMPGET_END          "TEMPGETEND"
+#define _MTEMP_TEMPGET_OK           "TEMPGETOK"
+#define _MTEMP_TEMPGET_FAIL         "TEMPGETFAIL"
+
+/*
+ *  FORMATO STRINGA ROOMSTAT
+ *  (CLIENT)    ROOMSTAT*R*ROOMSTATEND
+ *  (SERVER)    ROOMSTAT*R*NAME*ADDRESS*RELAYOUT*ROOMSTATEND
+ */
+#define _MTEMP_ROOMSTAT_START       "ROOMSTAT"
+#define _MTEMP_ROOMSTAT_END         "ROOMSTATEND"
+#define _MTEMP_ROOMSTAT_OK          "ROOMSTATOK"
+#define _MTEMP_ROOMSTAT_FAIL        "ROOMSTATFAIL"
+
+/*
+ *  FORMATO STRINGA PROGGET
+ *  (CLIENT)    PROGGET*R*D*PROGGETEND
+ *  (SERVER)    PROGGET*R*D*HS*MS*HE*ME*TT*E*(PROGGETOK || PROGGETFAIL)
+ */
+#define _MTEMP_PROGGET_START       "PROGGET"
+#define _MTEMP_PROGGET_END         "PROGGETEND"
+#define _MTEMP_PROGGET_OK          "PROGGETOK"
+#define _MTEMP_PROGGET_FAIL        "PROGGETFAIL"
+
+/*
+ *  FORMATO STRINGA PROGSET
+ *  (CLIENT)    PROGSET*R*D*HS*MS*HE*ME*TT*E*PROGSETEND
+ *  (SERVER)    PROGSETOK || PROGSETFAIL
+ */
+#define _MTEMP_PROGSET_START       "PROGSET"
+#define _MTEMP_PROGSET_END         "PROGSETEND"
+#define _MTEMP_PROGSET_OK          "PROGSETOK"
+#define _MTEMP_PROGSET_FAIL        "PROGSETFAIL"
+
+/*
+ *  FORMATO STRINGA FORCEON
+ *  (CLIENT)    FORCEON*R*FORCEONEND
+ *  (SERVER)    FORCEONOK || FORCEONFAIL
+ */
+#define _MTEMP_FORCEON_START       "FORCEON"
+#define _MTEMP_FORCEON_END         "FORCEONEND"
+#define _MTEMP_FORCEON_OK          "FORCEONOK"
+#define _MTEMP_FORCEON_FAIL        "FORCEONFAIL"
+
+/*
+ *  FORMATO STRINGA FORCEOFF
+ *  (CLIENT)    FORCEOFF*R*FORCEOFFEND
+ *  (SERVER)    FORCEOFFOK || FORCEOFFFAIL
+ */
+#define _MTEMP_FORCEOFF_START       "FORCEOFF"
+#define _MTEMP_FORCEOFF_END         "FORCEOFFEND"
+#define _MTEMP_FORCEOFF_OK          "FORCEOFFOK"
+#define _MTEMP_FORCEOFF_FAIL        "FORCEOFFFAIL"
+
+#define _MTEMP_SEP                  '*'
+#define _MTEMP_ENABLED              'Y'
+#define _MTEMP_DISABLED             'N'
 
 #define _MTEMP_WEEKPROGRAM_VEC_SIZE 0x00000007
 #define _MTEMP_ROOM_NAME_VEC_SIZE   0x00000020
 
+    
 
-//  00000000000000001111111111111111
-//  0123456789ABCDEF0123456789ABCDEF
-//  D*HS*MS*HE*ME*TT*E/
+/*  
+ *  FORMATO STRINGA PROGRAMMA
+ *  0000000000000000111
+ *  0123456789ABCDEF012
+ *  D*HS*MS*HE*ME*TT*E/
+ */
 
+/*
+ *  FORMATO STRINGA STANZA
+ *  000000000000000011111111111111112222222222222222
+ *  0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF
+ *  NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN*SSSSSSS*RRRRRRR
+ */
 
 
 #endif // MTEMPDEFS_H

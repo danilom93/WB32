@@ -1,18 +1,15 @@
 #ifndef MTEMPCOMMONS_H
 #define MTEMPCOMMONS_H
 
-#define _MTEMP_SEP                  '*'
-#define _MTEMP_ENABLED              'Y'
-#define _MTEMP_DISABLED             'N'
-
 #include "MTempDefs.h"
 #include "ASystemConfig.h"
 
-#ifdef ANTIPODE32MR
+#ifdef __32MX270F256D__
 
 #   include "AString.h"
 #   include "ADateTime.h"
 #   include "A24LC512.h"
+#   include <cstring>
 
     namespace AFramework{
 
@@ -26,6 +23,7 @@
 #else
 
 #   include <QString>
+#   include <QStringList>
 
     namespace AFramework{
 
@@ -76,7 +74,7 @@ namespace AFramework{
                     bool  & ok);
             Program(const QString & program, bool & ok);
 
-            bool fromString(const QString & program, bool & ok);
+            bool fromString(const QString & program);
 
             ADateTime::Weekdays weekday() const;
             quint8 startHours() const;
@@ -136,17 +134,20 @@ namespace AFramework{
 
             Room();
 
-            #ifdef ANTIPODE32MR
+#           ifdef __32MX270F256D__
 
-            Room(A24LC512 * eeprom, const RoomNumber roomNum, bool & ok);
-            void    loadRoom();
-            void    saveRoom();
+            Room(const RoomNumber roomNum, bool & ok);
+            bool loadRoom();
+            bool saveRoom();
             bool    loadProgram(const ADateTime::Weekdays day);
             bool    saveProgram(const ADateTime::Weekdays day);
-            #endif
+            void    setEEPROM(A24LC512 * mem);
+            void    setPORT(volatile AHardwarePort * port) volatile;
+#           endif
 
             Room(const QString & name, const QString & sensorAddress, const QString relayOut, bool & ok);
 
+            bool    fromString(const QString & str);
             QString roomName() const;
             QString sensorAddress() const;
             quint32 relayOut() const;
@@ -157,18 +158,32 @@ namespace AFramework{
             bool    setSensorAddress(const quint8 addr);
             bool    setRelayOut(const quint32 gpio);
             bool    setProgram(const ADateTime::Weekdays day, const QString & str);
-            bool    isForced();
-            bool    forceOn();
-            bool    forceOff();
+            bool    isForcedOn() const;
+            bool    isForcedOff() const;
+            bool    isOn() const;
+            bool    isOff() const;
+            bool    forceOn(const bool force);
+            bool    forceOff(const bool force);
 
             QString toString() const;
 
         private:
-            static  quint16 m_ROOM_BASE_ADDR;
-                    char    m_roomName      [_MTEMP_ROOM_NAME_VEC_SIZE  ];
-                    Program m_weekProgram   [_MTEMP_WEEKPROGRAM_VEC_SIZE];
-                    quint8  m_sensorAddrees;
-                    quint32 m_relayOut;
+
+#           ifdef __32MX270F256D__
+                             quint16 getRadd() const;
+                             quint16 getPadd(const ADateTime::Weekdays day) const;
+            static           quint16         m_ROOM_BASE_ADDR;
+            static           A24LC512 *      m_mem;
+            static  volatile AHardwarePort * m_relayPort;
+#           endif
+            
+            char       m_roomName      [_MTEMP_ROOM_NAME_VEC_SIZE  ];
+            Program    m_weekProgram   [_MTEMP_WEEKPROGRAM_VEC_SIZE];
+            quint8     m_sensorAddrees;
+            quint32    m_relayOut;
+            bool       m_forcedOn;
+            bool       m_forcedOff;
+            RoomNumber m_number;
     };
 
 }
