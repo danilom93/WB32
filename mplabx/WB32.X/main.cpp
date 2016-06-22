@@ -44,20 +44,17 @@ int main(int argc, char** argv) {
     lcd.lightOn();
     
     MTempMaster app(&mario, &clock, &memory, &wifi, &lcd, &PortC);
-    lcd.clear();
-    lcd << AString(static_cast<sint32>(System::memstat())) << "\n1";
-    
-    app.defaultProgram();
+   
     System::delay(1000);
-    lcd.clear();
-    lcd << AString(static_cast<sint32>(System::memstat()))  << "\n2";
+    
+    if(PortB.read(bit4) == Lo){
+        
+        app.networkConfig();
+    }
+    
+    
+    app.JoinNetwork();
     while(1){
-        System::delay(1000);
-        lcd.clear();
-        lcd << AString(static_cast<sint32>(System::memstat()))  << "\n3";
-        app.checkPrograms();
-        System::delay(1000);
-        lcd.clear();
-        lcd << AString(static_cast<sint32>(System::memstat()))  << "\n4";
+       
     }
 }
