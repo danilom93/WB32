@@ -19,8 +19,7 @@ namespace AFramework{
             
             bool    networkConfig();
             bool    defaultProgram();
-            void    checkPrograms();
-            
+            bool    JoinNetwork();
             
         private:
 
@@ -35,6 +34,8 @@ namespace AFramework{
             
             bool    saveNetworkConfig(const AString &data);
             bool    prepareAp(const AString &ssid, const AString &pwd, const uint16 port);
+            void    checkPrograms();
+            
             
     };
 }

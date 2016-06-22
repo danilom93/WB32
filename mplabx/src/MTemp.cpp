@@ -214,3 +214,72 @@ void AFramework::MTempMaster::checkPrograms(){
     }     
     return;
 }
+
+bool AFramework::MTempMaster::JoinNetwork(){
+    
+    AString ssid;
+    AString pwd;
+    AString ip;
+    AString port;
+    bool    flag = false;
+    if(!m_wifi || !m_memory){
+        
+        return false;
+    }
+    
+    if( !m_memory->read(_MTEMP_SSID_ADDRESS,         ssid) ||
+        !m_memory->read(_MTEMP_SSID_KEY_ADDRESS,     pwd)  ||
+        !m_memory->read(_MTEMP_MASTER_PORT_ADDRESS,  port) ||
+        !m_memory->read(_MTEMP_MASTER_IP_ADDRESS,    pwd)){
+        
+        return false;
+    }
+    
+    #ifdef __DEBUG_MODE
+            
+        UART2.writeln(ssid.c_str());
+        
+        UART2.writeln(pwd.c_str());
+        
+        UART2.writeln(ip.c_str());
+        
+        UART2.writeln(port.c_str());
+    #endif
+    
+    if(m_wifi->isOk()){
+        
+        m_lcd->clear();
+        m_lcd->write("Connessione\nIn corso...");
+        
+        if(m_wifi->setMode(AESP8266::StationMode)){
+            
+            if(m_wifi->setEcho(false)){
+                
+                if(m_wifi->joinAP(ssid, pwd)){
+                    
+                    if(m_wifi->setDhcp(false)){
+                        
+                        if(m_wifi->setIp(ip)){
+                            
+                            if(m_wifi->setMultipleConnections(true)){
+                                
+                                if(m_wifi->openServer(static_cast<uint16>(port.toInt32(flag)))){
+                                    
+                                    if(flag){
+                                        
+                                        m_lcd->clear();
+                                        m_lcd->write("Server\nIn Ascolto...");
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    m_lcd->clear();
+    m_lcd->write("Errore WIFI");
+    return false;
+}
