@@ -12,6 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = MTempClient
 TEMPLATE = app
 
+INCLUDEPATH += ..\..\mplabx\include
 
 SOURCES += main.cpp\
         MTempClient.cpp \
