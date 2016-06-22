@@ -548,7 +548,7 @@ void AFramework::Room::setEEPROM(A24LC512 *mem){
     m_mem = mem;
 }
 
-void AFramework::Room::setPORT(volatile AHardwarePort *port) volatile{
+void AFramework::Room::setPORT(volatile AHardwarePort *port){
 
     m_relayPort = port;
 }
@@ -602,6 +602,11 @@ bool AFramework::Room::fromString(const QString &str){
 #endif
 }
 
+AFramework::Room::RoomNumber AFramework::Room::roomNumber() const{
+    
+    return m_number;
+}
+
 #ifdef __32MX270F256D__
 AFramework::QString AFramework::Room::roomName() const{
 #else
@@ -649,6 +654,12 @@ quint8 AFramework::Room::currentTemperature() const{
 #else
     //GIUSEPPE
 #endif
+}
+
+bool AFramework::Room::setRoomNumber(const RoomNumber room){
+    
+    m_number = room;
+    return true;
 }
 
 bool AFramework::Room::setRoomName(const QString &name){

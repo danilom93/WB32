@@ -1,10 +1,10 @@
 #include "MTemp.h"
-#include "MTempDefs.h"
-#include "MTempCommons.h"
 
-#define _MTEMP_SSID_AP  "MTemp"
-#define _MTEMP_PWD_AP   "802.15.4"
-#define _MTEMP_PORT_AP  8000
+#define _MTEMP_SSID_AP              "MTemp"
+#define _MTEMP_PWD_AP               "802.15.4"
+#define _MTEMP_PORT_AP              8000
+#define _MTEMP_ROOM_DEFAULT_NAME    "Room"
+#define _MTEMP_ROOM_DEFAULT_PROGRAM "*00*00*23*59*25*N"
 
 #define __DEBUG_MODE
 
@@ -14,17 +14,126 @@
 
 #endif
 
-AFramework::MTempMaster::MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem, AESP8266 *wifi){
+AFramework::MTempMaster::MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem, AESP8266 *wifi, ALcd *lcd, volatile AHardwarePort *port){
     
     m_flag = false;
-    if(xbee && clk && mem && wifi){
+    if(xbee && clk && mem && wifi && lcd && port){
         
         m_xbee = xbee;
         m_clk = clk;
         m_memory = mem;
         m_wifi = wifi;
+        m_lcd = lcd;
         m_flag = true;
+        m_port = port;
+        Room::setEEPROM(m_memory);
+        Room::setPORT(m_port);
     }
+}
+
+bool AFramework::MTempMaster::networkConfig(){
+    
+    bool flag = true;
+    AString dataRcv;
+    
+    m_lcd->write("Configurazione\nRete...");
+    
+    if(prepareAp(_MTEMP_SSID_AP, _MTEMP_PWD_AP, _MTEMP_PORT_AP)){
+        
+        #ifdef __DEBUG_MODE
+            
+            UART2.writeln("ESP IN ATTESA DI CONNESSIONI");
+        #endif
+        m_lcd->clear();
+        m_lcd->write("In attesa di\nConnessioni...");
+        while(flag){
+            
+            if(m_wifi->waitForData(dataRcv)){
+                
+                if(dataRcv.contains(_MTEMP_CONF_END)){
+                    #ifdef __DEBUG_MODE
+            
+                        UART2.writeln("DATI RICEVUTI : ");
+                        UART2.writeln(dataRcv.c_str());
+                    #endif
+                    if(saveNetworkConfig(dataRcv)){
+                        
+                        if(m_wifi->send(_MTEMP_CONF_OK)){
+                            
+                            #ifdef __DEBUG_MODE
+            
+                                UART2.writeln("CONF OK INVIATA");
+                            #endif
+                            m_lcd->clear();
+                            m_lcd->write("Rete\nConfigurata");
+                            System::delay(1000);
+                        }
+                    return true;
+                    }
+                }
+            }
+        }          
+    }
+}
+
+bool AFramework::MTempMaster::defaultProgram(){
+    
+    if(!m_memory){
+        return false;
+    }
+    
+    for(uint8 i = 0; i <_MTEMP_ROOM_VEC_SIZE; i++){
+        AString str;
+        str += _MTEMP_ROOM_DEFAULT_NAME;
+        str += static_cast<char>(i + 0x30);
+        m_rooms[i].setRoomNumber(static_cast<Room::RoomNumber>(i));
+        m_rooms[i].setRoomName(str);
+        m_rooms[i].setSensorAddress(i);
+        m_rooms[i].setRelayOut(1 << i);
+        m_rooms[i].saveRoom();
+        for(uint8 j = 0; j < _MTEMP_WEEKPROGRAM_VEC_SIZE; j++){
+            
+            AString prg = _MTEMP_ROOM_DEFAULT_PROGRAM;
+            prg.prepend(static_cast<char>(j + 0x31));
+            m_rooms[i].setProgram(static_cast<ADateTime::Weekdays>(j+1), prg);
+            m_rooms[i].saveProgram(static_cast<ADateTime::Weekdays>(j+1));
+        }
+    }     
+    return true;
+}
+
+bool AFramework::MTempMaster::saveNetworkConfig(const AString &data){
+    
+    AStringList *list = NULL;
+    
+    list = data.split(_MTEMP_SEP);
+    
+    if(list && list->good()){
+        
+        #ifdef __DEBUG_MODE
+            
+            for(int i = 0; i < list->size(); i++){
+                UART2.writeln(list->at(i).c_str());
+            }
+        #endif
+        if( m_memory->write(_MTEMP_SSID_ADDRESS         , list->at(1)) &&
+            m_memory->write(_MTEMP_SSID_KEY_ADDRESS     , list->at(2)) &&
+            m_memory->write(_MTEMP_MASTER_IP_ADDRESS    , list->at(3)) &&
+            m_memory->write(_MTEMP_MASTER_PORT_ADDRESS  , list->at(4)) &&
+            m_memory->write(_MTEMP_USERNAME_ADDRESS     , list->at(5)) &&
+            m_memory->write(_MTEMP_USER_KEY_ADDRESS     , list->at(6))){
+            
+            #ifdef __DEBUG_MODE
+            
+                UART2.writeln("DATI SALVATI");
+            #endif
+        }
+        
+        delete list;
+        return true;
+    }
+    
+    return false;
 }
 
 bool AFramework::MTempMaster::prepareAp(const AString &ssid, const AString &pwd, const uint16 port){
@@ -91,76 +200,31 @@ bool AFramework::MTempMaster::prepareAp(const AString &ssid, const AString &pwd,
     return false;
 }
 
-bool AFramework::MTempMaster::networkConfig(){
+void AFramework::MTempMaster::checkPrograms(){
     
-    bool flag = true;
-    AString dataRcv;
-    
-    if(prepareAp(_MTEMP_SSID_AP, _MTEMP_PWD_AP, _MTEMP_PORT_AP)){
-        
-        #ifdef __DEBUG_MODE
-            
-            UART2.writeln("ESP IN ATTESA DI CONNESSIONI");
-        #endif
-        
-        while(flag){
-            
-            if(m_wifi->waitForData(dataRcv)){
-                
-                if(dataRcv.contains(_MTEMP_CONF_END)){
-                    #ifdef __DEBUG_MODE
-            
-                        UART2.writeln("DATI RICEVUTI : ");
-                        UART2.writeln(dataRcv.c_str());
-                    #endif
-                    if(saveNetworkConfig(dataRcv)){
-                        
-                        if(m_wifi->send(_MTEMP_CONF_OK)){
-                            
-                            #ifdef __DEBUG_MODE
-            
-                                UART2.writeln("CONF OK INVIATA");
-                            #endif
-                        }
-                    return true;
-                    }
-                }
-            }
-        }       
-        
+    if(!m_memory){
+        return;
     }
-}
-
-bool AFramework::MTempMaster::saveNetworkConfig(const AString &data){
+    //memset(m_rooms, 0x00, _MTEMP_ROOM_VEC_SIZE * sizeof(Room));
+    UART2.writeln("DISTRUTTO TUTTO INIZIO VERIFICAAA");
+    for(uint8 i = 0; i <_MTEMP_ROOM_VEC_SIZE; i++){
     
-    AStringList *list = NULL;
-    
-    list = data.split(_MTEMP_SEP);
-    
-    if(list && list->good()){
-        
-        #ifdef __DEBUG_MODE
+        m_rooms[i].setRoomNumber(static_cast<Room::RoomNumber>(i));
+        if(m_rooms[i].loadRoom()){
             
-            for(int i = 0; i < list->size(); i++){
-                UART2.writeln(list->at(i).c_str());
-            }
-        #endif
-        if( m_memory->write(_MTEMP_SSID_ADDRESS         , list->at(1)) &&
-            m_memory->write(_MTEMP_SSID_KEY_ADDRESS     , list->at(2)) &&
-            m_memory->write(_MTEMP_MASTER_IP_ADDRESS    , list->at(3)) &&
-            m_memory->write(_MTEMP_MASTER_PORT_ADDRESS  , list->at(4)) &&
-            m_memory->write(_MTEMP_USERNAME_ADDRESS     , list->at(5)) &&
-            m_memory->write(_MTEMP_USER_KEY_ADDRESS     , list->at(6))){
+            UART2.writeln("Load room OK");
+        }else{
             
-            #ifdef __DEBUG_MODE
-            
-                UART2.writeln("DATI SALVATI");
-            #endif
+           UART2.writeln("Load room FALLITA");
         }
         
-        delete list;
-        return true;
-    }
-    
-    return false;
+        UART2.writeln(m_rooms[i].toString().c_str());
+        
+        for(uint8 j = 0; j < _MTEMP_WEEKPROGRAM_VEC_SIZE; j++){
+          
+            m_rooms[i].loadProgram(static_cast<ADateTime::Weekdays>(j+1));
+            UART2.writeln(m_rooms[i].program(static_cast<ADateTime::Weekdays>(j+1)).toString().c_str());
+        }
+    }     
+    return;
 }

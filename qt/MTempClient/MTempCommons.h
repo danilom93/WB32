@@ -136,24 +136,26 @@ namespace AFramework{
 
 #           ifdef __32MX270F256D__
 
-            Room(const RoomNumber roomNum, bool & ok);
-            bool loadRoom();
-            bool saveRoom();
-            bool    loadProgram(const ADateTime::Weekdays day);
-            bool    saveProgram(const ADateTime::Weekdays day);
-            void    setEEPROM(A24LC512 * mem);
-            void    setPORT(volatile AHardwarePort * port) volatile;
+                            Room(const RoomNumber roomNum, bool & ok);
+                    bool    loadRoom();
+                    bool    saveRoom();
+                    bool    loadProgram(const ADateTime::Weekdays day);
+                    bool    saveProgram(const ADateTime::Weekdays day);
+            static  void    setEEPROM(A24LC512 * mem);
+            static  void    setPORT(volatile AHardwarePort * port);
 #           endif
 
             Room(const QString & name, const QString & sensorAddress, const QString relayOut, bool & ok);
 
             bool    fromString(const QString & str);
+            RoomNumber roomNumber() const;
             QString roomName() const;
             QString sensorAddress() const;
             quint32 relayOut() const;
             Program program(const ADateTime::Weekdays day) const;
             quint8  currentTemperature() const;
 
+            bool    setRoomNumber(const RoomNumber room);
             bool    setRoomName(const QString & name);
             bool    setSensorAddress(const quint8 addr);
             bool    setRelayOut(const quint32 gpio);
