@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     }
     
     
-    app.JoinNetwork();
+    app.joinNetwork();
     while(1){
        
     }
