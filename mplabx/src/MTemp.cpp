@@ -1,10 +1,12 @@
 #include "MTemp.h"
+#include "MTempDefs.h"
+#include "MTempCommons.h"
 
-#define _MTemp_SSID_AP  "MTemp"
-#define _MTemp_PWD_AP   "802.15.4"
-#define _MTemp_PORT_AP  8000
+#define _MTEMP_SSID_AP  "MTemp"
+#define _MTEMP_PWD_AP   "802.15.4"
+#define _MTEMP_PORT_AP  8000
 
-//#define __DEBUG_MODE
+#define __DEBUG_MODE
 
 #ifdef __DEBUG_MODE
 
@@ -24,8 +26,6 @@ AFramework::MTempMaster::MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem,
         m_flag = true;
     }
 }
-
-
 
 bool AFramework::MTempMaster::prepareAp(const AString &ssid, const AString &pwd, const uint16 port){
     
@@ -82,15 +82,69 @@ bool AFramework::MTempMaster::prepareAp(const AString &ssid, const AString &pwd,
     return false;
 }
 
-bool AFramework::MTempMaster::firstConfig(){
+bool AFramework::MTempMaster::networkConfig(){
     
-    if(prepareAp(_MTemp_SSID_AP, _MTemp_PWD_AP, _MTemp_PORT_AP)){
+    bool flag = true;
+    AString dataRcv;
+    
+    if(prepareAp(_MTEMP_SSID_AP, _MTEMP_PWD_AP, _MTEMP_PORT_AP)){
         
         #ifdef __DEBUG_MODE
             
             UART2.writeln("ESP IN ATTESA DI CONNESSIONI");
         #endif
-
+        
+        while(flag){
+            
+            if(m_wifi->waitForData(dataRcv)){
+                
+                if(dataRcv.contains(_MTEMP_CONF_END)){
+                    #ifdef __DEBUG_MODE
+            
+                        UART2.writeln("DATI RICEVUTI : ");
+                        UART2.writeln(dataRcv.c_str());
+                    #endif
+                    if(saveNetworkConfig(dataRcv)){
+            
+                    return true;
+                    }
+                }
+            }
+        }       
         
     }
+}
+
+bool AFramework::MTempMaster::saveNetworkConfig(const AString &data){
+    
+    AStringList *list = NULL;
+    
+    list = data.split(_MTEMP_SEP);
+    
+    if(list && list->good()){
+        
+        #ifdef __DEBUG_MODE
+            
+            for(int i = 0; i < list->size(); i++){
+                UART2.writeln(list->at(i).c_str());
+            }
+        #endif
+        if( m_memory->write(_MTEMP_SSID_ADDRESS         , list->at(1)) &&
+            m_memory->write(_MTEMP_SSID_KEY_ADDRESS     , list->at(2)) &&
+            m_memory->write(_MTEMP_MASTER_IP_ADDRESS    , list->at(3)) &&
+            m_memory->write(_MTEMP_MASTER_PORT_ADDRESS  , list->at(4)) &&
+            m_memory->write(_MTEMP_USERNAME_ADDRESS     , list->at(5)) &&
+            m_memory->write(_MTEMP_USER_KEY_ADDRESS     , list->at(6))){
+            
+            #ifdef __DEBUG_MODE
+            
+                UART2.writeln("DATI SALVATI");
+            #endif
+        }
+        
+        delete list;
+        return true;
+    }
+    
+    return false;
 }
