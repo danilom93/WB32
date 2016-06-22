@@ -10,7 +10,7 @@ Loader::Loader(const QString & title, QWidget *parent) : QDialog(parent), ui(new
     m_movie = new QMovie(":/ico/img/ajax-loader.gif");
     ui->text->clear();
     ui->loader->setMovie(m_movie);
-    movie->start();
+    m_movie->start();
 }
 
 Loader::~Loader(){

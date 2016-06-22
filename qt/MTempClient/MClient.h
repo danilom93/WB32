@@ -24,7 +24,7 @@ class MClient : public QObject{
         void portChanged(quint16 newPort);
         void connected();
         void disconnected();
-        void error();
+        void error(QAbstractSocket::SocketError lastError);
         void tokenReceived();
         void dataSended();
 
@@ -35,11 +35,15 @@ class MClient : public QObject{
         Q_INVOKABLE bool waitFor(const QString & str);
         Q_INVOKABLE QString dataReceived() const;
         Q_INVOKABLE void bufferClear();
+        Q_INVOKABLE QString lastError() const;
                     bool setAddress(const QString & addr);
                     bool setPort(const quint16 & port);
     private slots:
         void connectedBouncer();
         void diconnectedBouncer();
+        void errorBouncer(const QAbstractSocket::SocketError err);
+        void rxHandler();
+        void txHandler(qint64 bytes);
 
     private:
         QTcpSocket * m_sock;

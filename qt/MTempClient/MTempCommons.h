@@ -6,7 +6,7 @@
 #define _MTEMP_DISABLED             'N'
 
 #include "MTempDefs.h"
-#include "ASystemConfig.h"
+//#include "ASystemConfig.h"
 
 #ifdef ANTIPODE32MR
 
@@ -143,8 +143,6 @@ namespace AFramework{
             void    saveRoom();
             bool    loadProgram(const ADateTime::Weekdays day);
             bool    saveProgram(const ADateTime::Weekdays day);
-            quint8  currentTemp() const;
-
             #endif
 
             Room(const QString & name, const QString & sensorAddress, const QString relayOut, bool & ok);
@@ -153,11 +151,15 @@ namespace AFramework{
             QString sensorAddress() const;
             quint32 relayOut() const;
             Program program(const ADateTime::Weekdays day) const;
+            quint8  currentTemperature() const;
 
             bool    setRoomName(const QString & name);
             bool    setSensorAddress(const quint8 addr);
             bool    setRelayOut(const quint32 gpio);
             bool    setProgram(const ADateTime::Weekdays day, const QString & str);
+            bool    isForced();
+            bool    forceOn();
+            bool    forceOff();
 
             QString toString() const;
 

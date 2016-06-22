@@ -3,6 +3,7 @@
 
 #include <QIcon>
 #include <QDialog>
+#include <QThread>
 #include <QString>
 #include <QMessageBox>
 #include <QHostAddress>
@@ -23,43 +24,53 @@ class NetworkConfig : public QDialog{
     Q_OBJECT
 
     public:
+        enum State{
+            NotConnected,
+            Connected,
+            SendConfiguration,
+            WaitAnswer
+        };
+
         explicit NetworkConfig(QWidget *parent = 0);
         ~NetworkConfig();
 
-private slots:
-    void on_netKeyShowChecbox_clicked(bool checked);
+    private slots:
+        void on_netKeyShowChecbox_clicked(bool checked);
 
-    void on_netNameLineEdit_textChanged(const QString &arg1);
+        void on_netNameLineEdit_textChanged(const QString &arg1);
 
-    void on_netKeyLineEdit_textChanged(const QString &arg1);
+        void on_netKeyLineEdit_textChanged(const QString &arg1);
 
-    void on_boardIPLineEdit_textChanged(const QString &arg1);
+        void on_boardIPLineEdit_textChanged(const QString &arg1);
 
-    void on_usernameLineEdit_textChanged(const QString &arg1);
+        void on_usernameLineEdit_textChanged(const QString &arg1);
 
-    void on_password1LineEdit_textChanged(const QString &arg1);
+        void on_password1LineEdit_textChanged(const QString &arg1);
 
-    void on_password2LineEdit_textChanged(const QString &arg1);
+        void on_password2LineEdit_textChanged(const QString &arg1);
 
-    void on_boardPortLineEdit_textChanged(const QString &arg1);
+        void on_boardPortLineEdit_textChanged(const QString &arg1);
 
-    void on_clearButton_clicked();
+        void on_clearButton_clicked();
 
-    void on_abortButton_clicked();
+        void on_abortButton_clicked();
 
-    void on_configureButton_clicked();
+        void on_configureButton_clicked();
 
-    void notifyConnected();
+        void notifyConnected();
 
-    void notifyError();
+        void notifyError(QAbstractSocket::SocketError);
 
-    void notifyDisconnected();
+        void notifyDisconnected();
 
-    void notifyAnswer();
+        void rxHandler();
 
-private:
-    void clear();
-    void checkAll();
+        void txHandler();
+
+    private:
+        void clear();
+        void checkAll();
+
 
         Ui::NetworkConfig * ui;
         MClient *           m_client;
@@ -71,6 +82,8 @@ private:
         QString             m_password1;
         QString             m_password2;
         Loader *            m_loader;
+        State               m_state;
+
 };
 
 #endif // NETWORKCONFIG_H

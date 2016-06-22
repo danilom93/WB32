@@ -2,42 +2,67 @@
 #include "ui_NetworkConfig.h"
 
 NetworkConfig::NetworkConfig(QWidget *parent) : QDialog(parent), ui(new Ui::NetworkConfig){
-
-    ui->setupUi(this);
-
-    this->setWindowTitle("Configura Rete");
-    this->setWindowIcon(QIcon(":/ico/img/Settings-52.png"));
-
+    /*  espressione regolare per la password                                                        */
     QRegExp passRx("[0-9a-zA-Z]+");
+    /*  espressione regolare per la porta                                                           */
     QRegExp portRx("[0-9]+");
+    /*  espressione regolare per l'indirizzo ip                                                     */
     QRegExp addrRx("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-
+    /*  validator per password                                                                      */
     QRegExpValidator * passValidator = new QRegExpValidator(passRx, this);
-
+    /*  validator per porta                                                                         */
     QRegExpValidator * portValidator = new QRegExpValidator(portRx, this);
-
+    /*  validator per ip                                                                            */
     QRegExpValidator * addrValidator = new QRegExpValidator(addrRx, this);
-
+    /*  completamento interfaccia                                                                   */
+    ui->setupUi(this);
+    /*  imposto il titolo                                                                           */
+    this->setWindowTitle("Configura Rete");
+    /*  imposto le icone                                                                            */
+    this->setWindowIcon(QIcon(":/ico/img/Settings-52.png"));
+    /*  imposto il validator per la password1                                                       */
     ui->password1LineEdit->setValidator(passValidator);
+    /*  imposto il validator per la password2                                                       */
     ui->password2LineEdit->setValidator(passValidator);
-
+    /*  imposto il validator per la porta                                                           */
     ui->boardPortLineEdit->setValidator(portValidator);
-
+    /*  imposto il validatore per l'ip                                                              */
     ui->boardIPLineEdit->setValidator(addrValidator);
-
+    /*  fisso la lunghezza massima per il nome della rete                                           */
     ui->netNameLineEdit->setMaxLength(_MTEMP_SSID_LENGTH - 1);
-
+    /*  fisso la lunghezza massima per la chiave di rete                                            */
     ui->netKeyLineEdit->setMaxLength(_MTEMP_SSID_KEY_LENGTH - 1);
-
+    /*  fisso la lunghezza massima per l'username                                                   */
     ui->usernameLineEdit->setMaxLength(_MTEMP_USERNAME_LENGTH - 1);
-
+    /*  fisso la lunghezza massima per la porta                                                     */
     ui->boardPortLineEdit->setMaxLength(5);
-
+    /*  fisso la lunghezza massima per la password1                                                 */
     ui->password1LineEdit->setMaxLength(_MTEMP_USER_KEY_LENGTH - 1);
+    /*  fisso la lunghezza massima per la password2                                                 */
     ui->password2LineEdit->setMaxLength(_MTEMP_USER_KEY_LENGTH - 1);
-
+    /*  creo il loader per l'attesa                                                                 */
     m_loader = new Loader(this->windowTitle(), this);
+    /*  nascondo il loader                                                                          */
     m_loader->hide();
+    /*  creo il client                                                                              */
+    m_client = new MClient(this);
+    /*  connetto i segnali                                                                          */
+    connect(m_client, SIGNAL(connected())   ,
+            this, SLOT(notifyConnected())   );
+    /*  connetto i segnali                                                                          */
+    connect(m_client, SIGNAL(disconnected()),
+            this, SLOT(notifyDisconnected()));
+    /*  connetto i segnali                                                                          */
+    connect(m_client, SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(notifyError(QAbstractSocket::SocketError)));
+    /*  connetto i segnali                                                                          */
+    connect(m_client, SIGNAL(tokenReceived()),
+            this, SLOT(rxHandler()));
+    /*  connetto i segnali                                                                          */
+    connect(m_client, SIGNAL(dataSended()),
+            this, SLOT(txHandler()));
+    /*  imposto lo stato                                                                            */
+    m_state = NotConnected;
 }
 
 NetworkConfig::~NetworkConfig(){
@@ -149,6 +174,124 @@ void NetworkConfig::on_boardPortLineEdit_textChanged(const QString &arg1){
 
     m_boardPort = arg1.toUInt();
     checkAll();
+
+}
+
+void NetworkConfig::on_clearButton_clicked(){
+
+    clear();
+}
+
+void NetworkConfig::on_abortButton_clicked(){
+
+    this->close();
+}
+
+void NetworkConfig::on_configureButton_clicked(){
+
+    QHostAddress tester;
+    /*  verifico che l'indirizzo sia ok                                                             */
+    if(!tester.setAddress(m_boardIP)){
+        /*  se non è così informo l'utente                                                          */
+        QMessageBox::critical(this,
+                              "Errore",
+                              QString("Indirizzo IP non valido"));
+        /*  cancello il form                                                                        */
+        clear();
+        /*  ritorno                                                                                 */
+        return;
+    }
+    /*  se sono in qualsiasi altro stato all'infuori di notConnected                                */
+    if(m_state != NotConnected){
+        /*  informo l'utente                                                                        */
+        QMessageBox::critical(this,
+                              "Errore",
+                              QString("La vecchia connessione è ancora aperta"));
+        /*  e ritorno                                                                               */
+        return;
+    }
+    /*  imposto l'indirizzo di connessione                                                          */
+    m_client->setAddress("192.168.4.1");
+    /*  imposto la porta                                                                            */
+    m_client->setPort(8000);
+    /*  provo a connettermi                                                                         */
+    m_client->connectToHost();
+    /*  mostro il loader                                                                            */
+    m_loader->show();
+    /*  imposto il messaggio                                                                        */
+    m_loader->setMessage("Provo a connettermi alla centralina");
+}
+
+void NetworkConfig::notifyConnected(){
+    QString str;
+    /*  imposto il messaggio nel loader                                                             */
+    m_loader->setMessage("Connesso alla centralina");
+    /*  imposto lo stato                                                                            */
+    m_state = Connected;
+    /*  costruisco la stringa di configurazione                                                     */
+    str += _MTEMP_CONF_START;
+    str += _MTEMP_SEP;
+    str += m_networkName;
+    str += _MTEMP_SEP;
+    str += m_networkKey;
+    str += _MTEMP_SEP;
+    str += m_boardIP;
+    str += _MTEMP_SEP;
+    str += QString::number(m_boardPort);
+    str += _MTEMP_SEP;
+    str += m_username;
+    str += _MTEMP_SEP;
+    str += m_password1;
+    str += _MTEMP_SEP;
+    str += _MTEMP_CONF_END;
+    /*  imposto lo stato                                                                            */
+    m_state = SendConfiguration;
+    /*  setto la stringa per l'ok                                                                   */
+    m_client->waitFor(_MTEMP_CONF_OK);
+    /*  mando la configurazione                                                                     */
+    m_client->write(str);
+
+}
+
+void NetworkConfig::notifyError(QAbstractSocket::SocketError){
+
+    QMessageBox::critical(this, "Errore", m_client->lastError());
+    clear();
+}
+
+void NetworkConfig::notifyDisconnected(){
+
+    m_loader->setMessage("Disconnesso dalla centralina");
+    m_loader->hide();
+    this->close();
+}
+
+void NetworkConfig::rxHandler(){
+
+    if(m_state == WaitAnswer){
+        QMessageBox::information(this, this->windowTitle(), "Centralina configurarata correttamente");
+        m_client->disconnectFromHost();
+    }
+}
+
+void NetworkConfig::txHandler(){
+
+    if(m_state == SendConfiguration){
+        m_state = WaitAnswer;
+    }
+
+}
+
+
+void NetworkConfig::clear(){
+
+    ui->netNameLineEdit->clear();
+    ui->netKeyLineEdit->clear();
+    ui->boardIPLineEdit->clear();
+    ui->boardPortLineEdit->clear();
+    ui->usernameLineEdit->clear();
+    ui->password1LineEdit->clear();
+    ui->password2LineEdit->clear();
 }
 
 void NetworkConfig::checkAll(){
@@ -168,53 +311,5 @@ void NetworkConfig::checkAll(){
     }
 }
 
-void NetworkConfig::on_clearButton_clicked(){
 
-    clear();
-}
 
-void NetworkConfig::on_abortButton_clicked(){
-
-    this->close();
-}
-
-void NetworkConfig::on_configureButton_clicked(){
-
-    QHostAddress tester;
-
-    if(!tester.setAddress(m_boardIP)){
-        QMessageBox::critical(this,
-                              "Errore",
-                              QString("Indirizzo IP non valido"));
-        clear();
-        return;
-    }
-
-    m_client = new MClient(this);
-
-    m_client->setAddress("192.168.4.1");
-    m_client->setPort(8000);
-
-    m_client->connectToHost();
-    connect(m_client, SIGNAL(connected()), this, SLOT(notifyConnected()), Qt::UniqueConnection);
-    connect(m_client, SIGNAL(disconnected()), this, SLOT(notifydisconnected()), Qt::UniqueConnection);
-    connect(m_client, SIGNAL(error()), this, SLOT(notifyError()), Qt::UniqueConnection);
-    this->setEnabled(false);
-    m_loader->show();
-}
-
-void NetworkConfig::clear(){
-
-    ui->netNameLineEdit->clear();
-    ui->netKeyLineEdit->clear();
-    ui->boardIPLineEdit->clear();
-    ui->boardPortLineEdit->clear();
-    ui->usernameLineEdit->clear();
-    ui->password1LineEdit->clear();
-    ui->password2LineEdit->clear();
-}
-
-void NetworkConfig::notifyConnected(){
-
-    m_loader->setMessage("Connesso alla centralina");
-}

@@ -3,11 +3,17 @@
 MClient::MClient(QObject *parent) : QObject(parent), m_sock(NULL), m_addr(), m_port(0), m_state(false), m_dataLen(0){
     /*  nulla da commentare                                                                         */
     m_sock = new QTcpSocket(this);
-
-    connect(m_sock, SIGNAL(connected())   , this, SLOT(connectedBouncer())  );
-    connect(m_sock, SIGNAL(disconnected()), this, SLOT(diconnectedBouncer()));
-    connect(m_sock, SIGNAL(byte))
-
+    /*  connetto i segnali della socket                                                             */
+    connect(m_sock, SIGNAL(connected())         ,
+            this  , SLOT(connectedBouncer())    );
+    connect(m_sock, SIGNAL(disconnected())      ,
+            this, SLOT(diconnectedBouncer())    );
+    connect(m_sock, SIGNAL(readyRead())         ,
+            this, SLOT(rxHandler())             );
+    connect(m_sock, SIGNAL(bytesWritten(qint64) ),
+            this, SLOT(txHandler(qint64))       );
+    connect(m_sock, SIGNAL(error(QAbstractSocket::SocketError))   ,
+            this, SLOT(errorBouncer(QAbstractSocket::SocketError)));
 }
 
 MClient::~MClient(){
@@ -83,6 +89,7 @@ bool MClient::waitFor(const QString &str){
     /*  imposto la keyword                                                                          */
     m_keyword = str;
     /*  ritorno true                                                                                */
+    return true;
 }
 
 QString MClient::dataReceived() const{
@@ -93,6 +100,11 @@ QString MClient::dataReceived() const{
 void MClient::bufferClear(){
     /*  pulisco il buffer                                                                           */
     m_buffer.clear();
+}
+
+QString MClient::lastError() const{
+    /*  ritorno l'ultimo errore                                                                     */
+    return m_sock->errorString();
 }
 
 bool MClient::setAddress(const QString &addr){
@@ -135,6 +147,31 @@ void MClient::diconnectedBouncer(){
     m_state = false;
     /*  emetto il segnale                                                                           */
     emit disconnected();
+}
+
+void MClient::errorBouncer(const QAbstractSocket::SocketError err){
+    /*  rimbalzo il segnale                                                                         */
+    emit error(err);
+}
+
+void MClient::rxHandler(){
+    /*  accodo quanto ricevuto al buffer                                                            */
+    m_buffer += m_sock->readAll();
+    /*  se il buffer contiene la keyword                                                            */
+    if(m_buffer.contains(m_keyword)){
+        /*  emetto il segnale                                                                       */
+        emit tokenReceived();
+    }
+}
+
+void MClient::txHandler(qint64 bytes){
+    /*  decremento il contatore dei bytes                                                           */
+    m_dataLen -= bytes;
+    /*  se ho finito di inviare                                                                     */
+    if(!m_dataLen){
+        /*  emetto il segnale                                                                       */
+        emit dataSended();
+    }
 }
 
 

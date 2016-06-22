@@ -109,7 +109,7 @@
 
 #define _MTEMP_CONF_START           "CONF"
 #define _MTEMP_CONF_END             "CONFEND"
-
+#define _MTEMP_CONF_OK              "CONFOK"
 
 #define _MTEMP_WEEKPROGRAM_VEC_SIZE 0x00000007
 #define _MTEMP_ROOM_NAME_VEC_SIZE   0x00000020
