@@ -36,7 +36,7 @@
 #define _MTEMP_RELAY_OUT_LENGTH     0x00000007
 
 #define _MTEMP_SEP_LENGTH           0x00000001
-
+#define _NULL_CHAR_LENGTH           0x00000001 
 
 #define _MTEMP_PROG_LENGTH          (_MTEMP_PROGRAMDAY_LENGTH    +   \
                                      _MTEMP_SEP_LENGTH           +   \
@@ -50,14 +50,16 @@
                                     _MTEMP_SEP_LENGTH            +   \
                                     _MTEMP_TARGET_TEMP_LENGTH    +   \
                                     _MTEMP_SEP_LENGTH            +   \
-                                    _MTEMP_ENABLED_LENGTH        )
+                                    _MTEMP_ENABLED_LENGTH        +   \
+                                    _NULL_CHAR_LENGTH            )
 
 
 #define _MTEMP_ROOM_LENGTH          (_MTEMP_ROOM_NAME_VEC_SIZE   +  \
                                      _MTEMP_SEP_LENGTH           +  \
                                      _MTEMP_SENSOR_ADDR_LENGTH   +  \
                                      _MTEMP_SEP_LENGTH           +  \
-                                     _MTEMP_RELAY_OUT_LENGTH     )
+                                     _MTEMP_RELAY_OUT_LENGTH     +  \
+                                    _NULL_CHAR_LENGTH            )
 
 #define _MTEMP_ROOM_0_ADDRESS       (_MTEMP_ROOM_NUMBER_ADDRESS  + _MTEMP_ROOM_NUMBER_LENGTH    )
 #define _MTEMP_ROOM_0_PROG1_ADDRESS (_MTEMP_ROOM_0_ADDRESS       + _MTEMP_ROOM_LENGTH           )

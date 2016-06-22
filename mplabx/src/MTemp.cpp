@@ -79,34 +79,34 @@ bool AFramework::MTempMaster::networkConfig(){
 bool AFramework::MTempMaster::defaultProgram(){
     
     if(!m_memory){
+        
         return false;
     }
     
     for(uint8 i = 0; i <_MTEMP_ROOM_VEC_SIZE; i++){
+        
         AString str;
+        
         str += _MTEMP_ROOM_DEFAULT_NAME;
         str += static_cast<char>(i + 0x30);
+        
         m_rooms[i].setRoomNumber(static_cast<Room::RoomNumber>(i));
         m_rooms[i].setRoomName(str);
         m_rooms[i].setSensorAddress(i);
         m_rooms[i].setRelayOut(1 << i);
         m_rooms[i].saveRoom();
-        UART2.writeln("*****************************************************");
-        UART2.write("Stringa Stanza   : ");
-        UART2.writeln(m_rooms[i].toString().c_str());
+        
         for(uint8 j = 0; j < _MTEMP_WEEKPROGRAM_VEC_SIZE; j++){
             
             AString prg = _MTEMP_ROOM_DEFAULT_PROGRAM;
+            
             prg.prepend(static_cast<char>(j + 0x31));
-            m_rooms[i].setProgram(static_cast<ADateTime::Weekdays>(j+1), prg);
-            m_rooms[i].saveProgram(static_cast<ADateTime::Weekdays>(j+1));
-            UART2.write("Stringa programma: ");
-            UART2.writeln(m_rooms[i].program(static_cast<ADateTime::Weekdays>(j+1)).toString().c_str());
+            
+            m_rooms[i].setProgram(static_cast<ADateTime::Weekdays>(j + 1), prg);
+            
+            m_rooms[i].saveProgram(static_cast<ADateTime::Weekdays>(j + 1));
         }
     }   
-    UART2.writeln("*****************************************************");
-    UART2.writeln("*****************************************************");
-    UART2.writeln("*****************************************************");
     return true;
 }
 
@@ -147,50 +147,31 @@ bool AFramework::MTempMaster::saveNetworkConfig(const AString &data){
 bool AFramework::MTempMaster::prepareAp(const AString &ssid, const AString &pwd, const uint16 port){
     
     if(m_flag){
-        
         if(m_wifi->isOk()){
-            
             #ifdef __DEBUG_MODE
-                
                 UART2.writeln("ESP OK");
             #endif
-
             if(m_wifi->setMode(AESP8266::APMode)){
-                
                 #ifdef __DEBUG_MODE
-                
                     UART2.writeln("ESP IN AP MODE");
                 #endif
-
-                if(m_wifi->configureAP(ssid, pwd)){
-                        
+                if(m_wifi->configureAP(ssid, pwd)){  
                         #ifdef __DEBUG_MODE
-                
                             UART2.writeln("ESP AP CONFIGURATO");
                         #endif
-
                         if(m_wifi->setEcho(false)){
-                            
                             #ifdef __DEBUG_MODE
-                
                                 UART2.writeln("ESP ECHO OFF");
                             #endif
-
                             if(m_wifi->setMultipleConnections(true)){
-                        
                                 #ifdef __DEBUG_MODE
-                
                                     UART2.writeln("ESP MUX OK");
                                 #endif
-                        
                             if(m_wifi->openServer(port)){
-                                
                                 #ifdef __DEBUG_MODE
-            
                                     UART2.writeln("ESP SERVER IN ASCOLTO");
                                 #endif
                                 if(m_wifi->prepareForReceive()){
-                                
                                     return true;    
                                 }    
                             }
@@ -213,30 +194,23 @@ void AFramework::MTempMaster::checkPrograms(){
     if(!m_memory){
         return;
     }
-    //memset(m_rooms, 0x00, _MTEMP_ROOM_VEC_SIZE * sizeof(Room));
-    UART2.writeln("DISTRUTTO TUTTO INIZIO VERIFICAAA");
+    memset(m_rooms, 0x00, _MTEMP_ROOM_VEC_SIZE * sizeof(Room));
+    
+    UART2.writeln("Inizio verifica");
+    
     for(uint8 i = 0; i <_MTEMP_ROOM_VEC_SIZE; i++){
     
         m_rooms[i].setRoomNumber(static_cast<Room::RoomNumber>(i));
-        if(m_rooms[i].loadRoom()){
-            
-            UART2.writeln("Load room OK");
-        }else{
-            
-           UART2.writeln("Load room FALLITA");
-        }
+        m_rooms[i].loadRoom();
         
         UART2.writeln(m_rooms[i].toString().c_str());
         
         for(uint8 j = 0; j < _MTEMP_WEEKPROGRAM_VEC_SIZE; j++){
           
             m_rooms[i].loadProgram(static_cast<ADateTime::Weekdays>(j+1));
+    
             UART2.writeln(m_rooms[i].program(static_cast<ADateTime::Weekdays>(j+1)).toString().c_str());
         }
-        UART2.write("[----] RAM FOR: ");
-        UART2.writeln(QString(static_cast<sint32>(System::memstat())).c_str());
     }     
-    UART2.write("[----] RAM FOR: ");
-    UART2.writeln(QString(static_cast<sint32>(System::memstat())).c_str());
     return;
 }

@@ -1,6 +1,7 @@
             
 #include "ACore.h"
 #include "A24LC512.h"
+#include "AUARTDriver.h"
 
 
 #define _24LC512_LOW_ADDRESS_MASK   0x07
@@ -86,7 +87,7 @@ bool AFramework::A24LC512::read(const uint16 address, AString & str){
     m_driver->nack();
     /*  mando la sequenza di stop                                               */
     m_driver->stop();
-    /*  ritorno lo stato della stringa                                          */
+    /*  ritorno lo stato della stringa                                          */    
     return str.good();
 }
 

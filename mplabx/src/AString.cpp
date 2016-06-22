@@ -872,6 +872,8 @@ AFramework::AStringList * AFramework::AString::split(const char & sep, const boo
                 delete list;
                 return NULL;
             }
+            /*  libero la memoria allocata alla stringa                         */
+            item.clear();
             /*  azzero l'indice per la copia                                    */
             tind = 0;
             /*  se trovo sia next uguale a -1 che il flag a true metto flag a   */

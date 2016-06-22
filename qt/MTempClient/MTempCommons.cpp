@@ -1,7 +1,5 @@
 #include "MTempCommons.h"
 
-#include "AUARTDriver.h"
-
 /**
  * @brief AFramework::Program::Program
  */
@@ -427,12 +425,12 @@ bool AFramework::Program::setTargetTemperature(const QString &str){
 
 void AFramework::Program::setEnabled(){
 
-    m_enabled = false;
+    m_enabled = true;
 }
 
 void AFramework::Program::setDisabled(){
 
-    m_enabled = true;
+    m_enabled = false;
 }
 
 #ifdef __32MX270F256D__
@@ -517,7 +515,7 @@ bool AFramework::Room::saveRoom(){
     if(!m_mem){
         return false;
     }
-
+    
     return m_mem->write(getRadd(), toString());
 }
 
@@ -529,7 +527,7 @@ bool AFramework::Room::loadProgram(const AFramework::ADateTime::Weekdays day){
     }
 
     flg = m_mem->read(getPadd(day), str);
-
+    
     if(flg && str.good()){
         return m_weekProgram[static_cast<quint8>(day) - 1].fromString(str);
     }else{
@@ -542,6 +540,7 @@ bool AFramework::Room::saveProgram(const AFramework::ADateTime::Weekdays day){
     if(!m_mem || day == ADateTime::NoWeekday){
         return false;
     }
+    
     return m_mem->write(getPadd(day), m_weekProgram[static_cast<quint8>(day) - 1].toString());
 }
 
@@ -564,7 +563,7 @@ AFramework::quint16 AFramework::Room::getRadd() const{
 
 AFramework::quint16 AFramework::Room::getPadd(const ADateTime::Weekdays day) const{
 
-    return (getRadd() + (static_cast<quint16>(day) - 1) * _MTEMP_PROG_LENGTH);
+    return (getRadd() + _MTEMP_ROOM_LENGTH + (static_cast<quint16>(day) - 1) * _MTEMP_PROG_LENGTH);
 }
 
 #endif
@@ -577,15 +576,16 @@ bool AFramework::Room::fromString(const QString &str){
     bool          flg0 = false;
     bool          flg1 = false;
     bool          flg2 = false;
+    
     list = str.split('*');
 
     if(list && str.good()){
         temp = list->at(0);
         flg0 = setRoomName(temp);
         temp = list->at(1);
-        m_sensorAddrees = static_cast<quint8>(str.toInt32(flg1));
+        m_sensorAddrees = static_cast<quint8>(temp.toInt32(flg1));
         temp = list->at(2);
-        m_relayOut = static_cast<quint32>(str.toInt32(flg2));
+        m_relayOut = static_cast<quint32>(temp.toInt32(flg2));
         delete list;
         return (flg0 && flg1 && flg2);
     }
@@ -677,6 +677,7 @@ bool AFramework::Room::setRoomName(const QString &name){
         m_roomName[i] = name[i].toLatin1();
 #       endif
     }
+    m_roomName[name.size()] = 0x00;
     return true;
 }
 
@@ -703,7 +704,7 @@ bool AFramework::Room::setProgram(const AFramework::ADateTime::Weekdays day, con
     if(day == ADateTime::NoWeekday){
         return false;
     }
-    return m_weekProgram[static_cast<quint8>(day)].fromString(str);
+    return m_weekProgram[static_cast<quint8>(day) - 1].fromString(str);
 
 }
 
@@ -763,7 +764,6 @@ QString AFramework::Room::toString() const{
 #   else
     str += QString(m_relayOut);
 #   endif    
-
 
     return str;
 }
