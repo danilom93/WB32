@@ -52,25 +52,34 @@ bool AFramework::MTempMaster::prepareAp(const AString &ssid, const AString &pwd,
                             UART2.writeln("ESP AP CONFIGURATO");
                         #endif
 
-                    if(m_wifi->setMultipleConnections(true)){
-                        
-                        #ifdef __DEBUG_MODE
-                
-                            UART2.writeln("ESP MUX OK");
-                        #endif
-                        
-                        if(m_wifi->openServer(port)){
-                                
+                        if(m_wifi->setEcho(false)){
+                            
                             #ifdef __DEBUG_MODE
-            
-                                UART2.writeln("ESP SERVER IN ASCOLTO");
+                
+                                UART2.writeln("ESP ECHO OFF");
                             #endif
-                            if(m_wifi->prepareForReceive()){
+
+                            if(m_wifi->setMultipleConnections(true)){
+                        
+                                #ifdef __DEBUG_MODE
+                
+                                    UART2.writeln("ESP MUX OK");
+                                #endif
+                        
+                            if(m_wifi->openServer(port)){
                                 
-                            return true;    
-                            }    
+                                #ifdef __DEBUG_MODE
+            
+                                    UART2.writeln("ESP SERVER IN ASCOLTO");
+                                #endif
+                                if(m_wifi->prepareForReceive()){
+                                
+                                    return true;    
+                                }    
+                            }
                         }
                     }
+                    
                 }
             }
         }
@@ -105,7 +114,14 @@ bool AFramework::MTempMaster::networkConfig(){
                         UART2.writeln(dataRcv.c_str());
                     #endif
                     if(saveNetworkConfig(dataRcv)){
+                        
+                        if(m_wifi->send(_MTEMP_CONF_OK)){
+                            
+                            #ifdef __DEBUG_MODE
             
+                                UART2.writeln("CONF OK INVIATA");
+                            #endif
+                        }
                     return true;
                     }
                 }

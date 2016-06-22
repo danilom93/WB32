@@ -55,6 +55,10 @@ int main(int argc, char** argv) {
         
     if(PortB.read(bit4) == Lo){
         
+        lcd << "Inizio\nconfigurazione";
+        System::delay(1000);
+        lcd.clear();
+        
         if(app.networkConfig()){
             
             lcd << "Ho settato tutto";
@@ -90,8 +94,6 @@ int main(int argc, char** argv) {
                 memory.read(_MTEMP_USER_KEY_ADDRESS, str);
                 UART2.write("PASSWORD = ");
                 UART2.writeln(str.c_str());
-            
-                
             #endif
 
         }
