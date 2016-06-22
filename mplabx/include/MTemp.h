@@ -19,7 +19,7 @@ namespace AFramework{
             
             bool    networkConfig();
             bool    defaultProgram();
-            bool    JoinNetwork();
+            bool    joinNetwork();
             
         private:
 

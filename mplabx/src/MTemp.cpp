@@ -116,7 +116,7 @@ bool AFramework::MTempMaster::saveNetworkConfig(const AString &data){
     
     list = data.split(_MTEMP_SEP);
     
-    if(list && list->good()){
+    if(list && data.good()){
         
         #ifdef __DEBUG_MODE
             
@@ -215,13 +215,14 @@ void AFramework::MTempMaster::checkPrograms(){
     return;
 }
 
-bool AFramework::MTempMaster::JoinNetwork(){
+bool AFramework::MTempMaster::joinNetwork(){
     
     AString ssid;
     AString pwd;
     AString ip;
     AString port;
     bool    flag = false;
+    
     if(!m_wifi || !m_memory){
         
         return false;
@@ -230,19 +231,19 @@ bool AFramework::MTempMaster::JoinNetwork(){
     if( !m_memory->read(_MTEMP_SSID_ADDRESS,         ssid) ||
         !m_memory->read(_MTEMP_SSID_KEY_ADDRESS,     pwd)  ||
         !m_memory->read(_MTEMP_MASTER_PORT_ADDRESS,  port) ||
-        !m_memory->read(_MTEMP_MASTER_IP_ADDRESS,    pwd)){
+        !m_memory->read(_MTEMP_MASTER_IP_ADDRESS,    ip)   ){
         
         return false;
     }
     
     #ifdef __DEBUG_MODE
-            
+        //UART2.writeln(AString(static_cast<sint32>(ssid.size())).c_str());
         UART2.writeln(ssid.c_str());
-        
+        //UART2.writeln(AString(static_cast<sint32>(pwd.size())).c_str());
         UART2.writeln(pwd.c_str());
-        
+        //UART2.writeln(AString(static_cast<sint32>(ip.size())).c_str());
         UART2.writeln(ip.c_str());
-        
+        //UART2.writeln(AString(static_cast<sint32>(port.size())).c_str());
         UART2.writeln(port.c_str());
     #endif
     
