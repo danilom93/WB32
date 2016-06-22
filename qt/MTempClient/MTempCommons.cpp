@@ -1,5 +1,7 @@
 #include "MTempCommons.h"
 
+#include "AUARTDriver.h"
+
 /**
  * @brief AFramework::Program::Program
  */
@@ -24,10 +26,10 @@ AFramework::Program::Program(const AFramework::ADateTime::Weekdays wDay,
                              bool  &ok) : Program(){
 
     ok = (setWeekday(wDay)               &&
-          setStartHours(sHours)          &&
-          setStartMinutes(sMinutes)      &&
           setEndHours(eHours)            &&
           setEndMinutes(eMinutes)        &&
+          setStartHours(sHours)          &&
+          setStartMinutes(sMinutes)      &&
           setTargetTemperature(targetTemp));
 
     if(ok){
@@ -47,12 +49,12 @@ AFramework::Program::Program(const QString &wDay,
                              const QString &targetTemp,
                              const QString &en,
                              bool  &ok) : Program(){
-
+    
     ok = (setWeekday(wDay)                 &&
-          setStartHours(sHours)            &&
-          setStartMinutes(sMinutes)        &&
           setEndHours(eHours)              &&
           setEndMinutes(eMinutes)          &&
+          setStartHours(sHours)            &&
+          setStartMinutes(sMinutes)        &&
           setTargetTemperature(targetTemp) &&
           (en.size() == 1 && (en[0] == _MTEMP_ENABLED || en[0] == _MTEMP_DISABLED)));
 
@@ -100,10 +102,10 @@ bool AFramework::Program::fromString(const QString &program){
     }
 
     ok = (setWeekday(wDay)                 &&
-          setStartHours(sHours)            &&
-          setStartMinutes(sMinutes)        &&
           setEndHours(eHours)              &&
           setEndMinutes(eMinutes)          &&
+          setStartHours(sHours)            &&
+          setStartMinutes(sMinutes)        &&
           setTargetTemperature(targetTemp) &&
           (en.size() == 1 && (en[0] == _MTEMP_ENABLED || en[0] == _MTEMP_DISABLED)));
 
@@ -189,10 +191,10 @@ bool AFramework::Program::setWeekday(const QString &str){
 #   ifdef __32MX270F256D__
 
     if(str.size() != 1){
-
+        
         return false;
     }
-
+    
     if((static_cast<quint8>(str[0] - 0x30) >  7) ||
         static_cast<quint8>(str[0] - 0x30) == 0) {
 
@@ -288,10 +290,10 @@ bool AFramework::Program::setStartMinutes(const QString &str){
 
         return false;
     }
-
+    
     return setStartMinutes((static_cast<quint8>(str[0] - 0x30) * 10) +
                             static_cast<quint8>(str[1] - 0x30));
-
+    
 #   else
 
     if(str.size() != 2){
@@ -529,7 +531,7 @@ bool AFramework::Room::loadProgram(const AFramework::ADateTime::Weekdays day){
     flg = m_mem->read(getPadd(day), str);
 
     if(flg && str.good()){
-        return m_weekProgram[static_cast<quint8>(day)].fromString(str);
+        return m_weekProgram[static_cast<quint8>(day) - 1].fromString(str);
     }else{
         return false;
     }
@@ -540,7 +542,7 @@ bool AFramework::Room::saveProgram(const AFramework::ADateTime::Weekdays day){
     if(!m_mem || day == ADateTime::NoWeekday){
         return false;
     }
-    return m_mem->write(getPadd(day), m_weekProgram[static_cast<quint8>(day)].toString());
+    return m_mem->write(getPadd(day), m_weekProgram[static_cast<quint8>(day) - 1].toString());
 }
 
 void AFramework::Room::setEEPROM(A24LC512 *mem){
@@ -636,12 +638,12 @@ quint32 AFramework::Room::relayOut() const{
 }
 
 AFramework::Program AFramework::Room::program(const AFramework::ADateTime::Weekdays day) const{
-
+    
     if(day == ADateTime::NoWeekday){
         return Program();
     }
 
-    return m_weekProgram[static_cast<quint8>(day - 1)];
+    return m_weekProgram[static_cast<quint8>(day) - 1];
 }
 
 #ifdef __32MX270F256D__
@@ -683,7 +685,7 @@ bool AFramework::Room::setSensorAddress(const quint8 addr){
     if(addr > 7){
         return false;
     }
-    m_relayOut = addr;
+    m_sensorAddrees = addr;
     return true;
 }
 

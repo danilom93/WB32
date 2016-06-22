@@ -91,14 +91,22 @@ bool AFramework::MTempMaster::defaultProgram(){
         m_rooms[i].setSensorAddress(i);
         m_rooms[i].setRelayOut(1 << i);
         m_rooms[i].saveRoom();
+        UART2.writeln("*****************************************************");
+        UART2.write("Stringa Stanza   : ");
+        UART2.writeln(m_rooms[i].toString().c_str());
         for(uint8 j = 0; j < _MTEMP_WEEKPROGRAM_VEC_SIZE; j++){
             
             AString prg = _MTEMP_ROOM_DEFAULT_PROGRAM;
             prg.prepend(static_cast<char>(j + 0x31));
             m_rooms[i].setProgram(static_cast<ADateTime::Weekdays>(j+1), prg);
             m_rooms[i].saveProgram(static_cast<ADateTime::Weekdays>(j+1));
+            UART2.write("Stringa programma: ");
+            UART2.writeln(m_rooms[i].program(static_cast<ADateTime::Weekdays>(j+1)).toString().c_str());
         }
-    }     
+    }   
+    UART2.writeln("*****************************************************");
+    UART2.writeln("*****************************************************");
+    UART2.writeln("*****************************************************");
     return true;
 }
 
@@ -225,6 +233,10 @@ void AFramework::MTempMaster::checkPrograms(){
             m_rooms[i].loadProgram(static_cast<ADateTime::Weekdays>(j+1));
             UART2.writeln(m_rooms[i].program(static_cast<ADateTime::Weekdays>(j+1)).toString().c_str());
         }
+        UART2.write("[----] RAM FOR: ");
+        UART2.writeln(QString(static_cast<sint32>(System::memstat())).c_str());
     }     
+    UART2.write("[----] RAM FOR: ");
+    UART2.writeln(QString(static_cast<sint32>(System::memstat())).c_str());
     return;
 }
