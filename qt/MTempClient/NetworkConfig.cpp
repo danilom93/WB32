@@ -16,6 +16,10 @@ NetworkConfig::NetworkConfig(QWidget *parent) : QDialog(parent), ui(new Ui::Netw
     QRegExpValidator * addrValidator = new QRegExpValidator(addrRx, this);
     /*  completamento interfaccia                                                                   */
     ui->setupUi(this);
+
+    this->setWindowState(this->windowState() ^ Qt::WindowFullScreen);
+
+
     /*  imposto il titolo                                                                           */
     this->setWindowTitle("Configura Rete");
     /*  imposto le icone                                                                            */
@@ -86,8 +90,9 @@ void NetworkConfig::on_netNameLineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("Il nome della rete non può contenere ") +
-                              QString(_MTEMP_CONF_START) + QString(" o ")      +
-                              QString(_MTEMP_CONF_END));
+                              QString(_MTEMP_CONF_START) + QString(", ")       +
+                              QString(_MTEMP_CONF_END)   + QString(", ")       +
+                              QString("OK, FAIL o ERROR"));
         ui->netNameLineEdit->clear();
         return;
     }
@@ -102,8 +107,9 @@ void NetworkConfig::on_netKeyLineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La chiave di rete non può contenere ")  +
-                              QString(_MTEMP_CONF_START) + QString(" o ")      +
-                              QString(_MTEMP_CONF_END));
+                              QString(_MTEMP_CONF_START) + QString(", ")       +
+                              QString(_MTEMP_CONF_END)   + QString(", ")       +
+                              QString("OK, FAIL o ERROR"));
         ui->netKeyLineEdit->clear();
         return;
     }
@@ -123,8 +129,9 @@ void NetworkConfig::on_usernameLineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("Il nome utente non può contenere ") +
-                              QString(_MTEMP_CONF_START) + QString(" o ")  +
-                              QString(_MTEMP_CONF_END));
+                              QString(_MTEMP_CONF_START) + QString(", ")   +
+                              QString(_MTEMP_CONF_END)   + QString(", ")   +
+                              QString("OK, FAIL o ERROR"));
         ui->usernameLineEdit->clear();
         return;
     }
@@ -138,8 +145,9 @@ void NetworkConfig::on_password1LineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La password non può contenere ")    +
-                              QString(_MTEMP_CONF_START) + QString(" o ")  +
-                              QString(_MTEMP_CONF_END));
+                              QString(_MTEMP_CONF_START) + QString(", ")   +
+                              QString(_MTEMP_CONF_END)   + QString(", ")   +
+                              QString("OK, FAIL o ERROR"));
         ui->password1LineEdit->clear();
         return;
     }
@@ -153,8 +161,9 @@ void NetworkConfig::on_password2LineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La password non può contenere ")    +
-                              QString(_MTEMP_CONF_START) + QString(" o ")  +
-                              QString(_MTEMP_CONF_END));
+                              QString(_MTEMP_CONF_START) + QString(", ")   +
+                              QString(_MTEMP_CONF_END)   + QString(", ")   +
+                              QString("OK, FAIL o ERROR"));
         ui->password2LineEdit->clear();
         return;
     }
@@ -189,18 +198,6 @@ void NetworkConfig::on_abortButton_clicked(){
 
 void NetworkConfig::on_configureButton_clicked(){
 
-    QHostAddress tester;
-    /*  verifico che l'indirizzo sia ok                                                             */
-    if(!tester.setAddress(m_boardIP)){
-        /*  se non è così informo l'utente                                                          */
-        QMessageBox::critical(this,
-                              "Errore",
-                              QString("Indirizzo IP non valido"));
-        /*  cancello il form                                                                        */
-        clear();
-        /*  ritorno                                                                                 */
-        return;
-    }
     /*  se sono in qualsiasi altro stato all'infuori di notConnected                                */
     if(m_state != NotConnected){
         /*  informo l'utente                                                                        */
@@ -256,6 +253,7 @@ void NetworkConfig::notifyConnected(){
 void NetworkConfig::notifyError(QAbstractSocket::SocketError){
 
     QMessageBox::critical(this, "Errore", m_client->lastError());
+    m_loader->hide();
     clear();
 }
 

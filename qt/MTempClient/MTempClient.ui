@@ -6,35 +6,47 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>447</height>
+    <width>967</width>
+    <height>654</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MTempClient</string>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
+     <width>967</width>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuOpzioni">
     <property name="title">
      <string>Opzioni</string>
     </property>
     <addaction name="actionConfigura"/>
+    <addaction name="actionLogin"/>
    </widget>
-   <addaction name="menuFile"/>
    <addaction name="menuOpzioni"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -51,7 +63,15 @@
     <string>Configura Rete</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+H</string>
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionLogin">
+   <property name="text">
+    <string>Login</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>

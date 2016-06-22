@@ -9,6 +9,8 @@
 #include <QHostAddress>
 #include <QRegExpValidator>
 #include <QRegularExpression>
+#include <QLabel>
+#include <QPixmap>
 
 #include "Loader.h"
 #include "MClient.h"
@@ -81,6 +83,8 @@ class NetworkConfig : public QDialog{
         QString             m_username;
         QString             m_password1;
         QString             m_password2;
+        QLabel *            m_pass1Label;
+        QLabel *            m_pass2Label;
         Loader *            m_loader;
         State               m_state;
 
