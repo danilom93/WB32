@@ -79,10 +79,8 @@ bool AFramework::A24LC512::read(const uint16 address, AString & str){
     while((res = m_driver->read()) != '\0'){
         /*  accodo il carattere                                                 */
         str += res;
-//        System::delay(10);
         /*  mando la sequenza di ack                                            */
         m_driver->ack();
-        System::delay(10);
     }
     /*  mando la sequenza di nack                                               */
     m_driver->nack();
