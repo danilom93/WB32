@@ -424,6 +424,26 @@ void AFramework::MTempMaster::commandExec(const AString &cmd) const{
 
             }else if(str == _MTEMP_TIMEGET){
                 
+                //*  (CLIENT)        username*password*[TIMEGET]
+                //*  (SERVER)        (AA*MM*GG*WD*HH*MM*SS*[OK] || [FAIL] || [ERROR])
+                
+                if(m_clk->isGood()){
+                    
+                    time = m_clk->currentTime();
+                    str += AString(time.year() - 2000);
+                    str += AString(static_cast<uint8>(time.month()));
+                    str += AString(time.dayOfMonth());
+                    str += AString(static_cast<uint8>(time.Weekday()));
+                    str += AString(time.hours());
+                    str += AString(time.minutes());
+                    str += AString(time.seconds());
+                    str += _MTEMP_BOARD_OK;
+                    m_wifi->send(str);
+                }else{
+                    
+                    m_wifi->send(_MTEMP_BOARD_FAIL);
+                    msg("Errore...\nOrologio");
+                }
                 
             }else{
                 
