@@ -100,7 +100,6 @@ bool AFramework::MTempMaster::run(){
         #ifdef __DEBUG_MODE
             UART2.writeln("Connesso alla rete");
         #endif
-        //if(loadAll()){
             
             m_wifi->prepareForReceive();
             while(1){
@@ -112,7 +111,6 @@ bool AFramework::MTempMaster::run(){
                     programsManager();
                 }
             }
-        //}
     }else{
         
         m_lcd->clear();
