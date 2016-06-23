@@ -4,7 +4,11 @@
 #include <QIcon>
 #include <QSettings>
 #include <QMainWindow>
+#include <QDate>
+#include <QTime>
+#include <QDateTime>
 
+#include "MClient.h"
 #include "clientdefs.h"
 #include "NetworkConfig.h"
 #include "Login.h"
@@ -26,8 +30,48 @@ private slots:
 
     void on_actionLogin_triggered();
 
+    void on_actionLogout_triggered();
+
+    void notifyConnected();
+
+    void notifyError(QAbstractSocket::SocketError);
+
+    void notifyDisconnected();
+
+    void rxHandler(MClient::BoardAnswer answer);
+
+    void notifyFailure();
+
+    void notifyError();
+
+    void disableActions();
+
+    void enableActions();
+
+    void disableWindow();
+
+    void enableWindow();
+
+
+    void on_actionInfo_Ora_triggered();
+
 private:
-    Ui::MTempClient *ui;
+
+    enum Commands{
+        NOCOMM,
+        TIMEGET,
+        TIMESET
+    };
+
+    Ui::MTempClient * ui;
+
+    bool              m_auth;
+    QString           m_addr;
+    quint16           m_port;
+    QString           m_user;
+    QString           m_pass;
+    MClient *         m_client;
+    Commands          m_currentComm;
 };
 
 #endif // MTEMPCLIENT_H

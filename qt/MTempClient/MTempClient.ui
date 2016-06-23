@@ -688,6 +688,8 @@
     </property>
     <addaction name="actionConfigura"/>
     <addaction name="actionLogin"/>
+    <addaction name="actionLogout"/>
+    <addaction name="actionInfo_Ora"/>
    </widget>
    <addaction name="menuOpzioni"/>
   </widget>
@@ -714,6 +716,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionLogout">
+   <property name="text">
+    <string>Logout</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="actionInfo_Ora">
+   <property name="text">
+    <string>Info Ora</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>
