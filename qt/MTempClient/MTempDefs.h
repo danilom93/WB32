@@ -140,8 +140,8 @@
 
 
 #define _MTEMP_BOARD_OK             "[OK]"
-#define _MTEMP_BOARD_FAIL           "[FAIL]"
-#define _MTEMP_BOARD_ERROR          "[ERROR]"
+#define _MTEMP_BOARD_FAIL           "[FAIL]"        //errore qualcosa 
+#define _MTEMP_BOARD_ERROR          "[ERROR]"       //errore login
 
 /*
  *  FORMATO STRINGA CONF

@@ -444,7 +444,7 @@ bool AFramework::AESP8266::waitForData(AString &str, const uint32 ms) const{
         return false;
     }
        
-    if(wdttmr(__ESP_AT_DATA, ms)){
+    if(wdttmr(__ESP_AT_DATA, ms / 2) && wdttmr("\r\n", ms / 2)){
         
         tmp = m_driver->read();
         m_driver->bufferClear();
