@@ -13,6 +13,13 @@ class MClient : public QObject{
         Q_PROPERTY(quint16 port READ port WRITE setPort NOTIFY portChanged)
 
     public:
+
+        enum BoardAnswer{
+            Fail,
+            Error,
+            TokenReceived
+        };
+
         explicit MClient(QObject *parent = 0);
         ~MClient();
         QString address() const;
@@ -25,7 +32,7 @@ class MClient : public QObject{
         void connected();
         void disconnected();
         void error(QAbstractSocket::SocketError lastError);
-        void tokenReceived();
+        void answerReceived(BoardAnswer res);
         void dataSended();
 
     public slots:

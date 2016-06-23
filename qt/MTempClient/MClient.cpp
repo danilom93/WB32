@@ -1,4 +1,5 @@
 #include "MClient.h"
+#include "MTempDefs.h"
 
 MClient::MClient(QObject *parent) : QObject(parent), m_sock(NULL), m_addr(), m_port(0), m_state(false), m_dataLen(0){
     /*  nulla da commentare                                                                         */
@@ -151,7 +152,13 @@ void MClient::rxHandler(){
     /*  se il buffer contiene la keyword                                                            */
     if(m_buffer.contains(m_keyword)){
         /*  emetto il segnale                                                                       */
-        emit tokenReceived();
+        emit answerReceived(TokenReceived);
+    /*  se invece contiene la stringa che indica il fallimento dell'operazione                      */
+    }else if(m_buffer.contains(_MTEMP_BOARD_FAIL)){
+        emit answerReceived(Fail);
+    /*  se invece contiene la stringa di errore del login                                           */
+    }else if(m_buffer.contains(_MTEMP_BOARD_ERROR)){
+        emit answerReceived(Error);
     }
 }
 

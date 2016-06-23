@@ -139,106 +139,74 @@
 #define _MTEMP_STANDARD_AP_PORT     0x1F40
 
 
-/*
- *  FORMATO STRINGA CONF
- *  (CLIENT)    CONF*SSID*KEY*IP*PORT*USER*PASSWORD*CONFEND
- *  (SERVER)    CONFOK || CONFFAIL
- */
-#define _MTEMP_CONF_START           "CONF"
-#define _MTEMP_CONF_END             "CONFEND"
-#define _MTEMP_CONF_OK              "CONFOK"
-#define _MTEMP_CONF_FAIL            "CONFFAIL"
+#define _MTEMP_BOARD_OK             "[OK]"
+#define _MTEMP_BOARD_FAIL           "[FAIL]"
+#define _MTEMP_BOARD_ERROR          "[ERROR]"
 
 /*
- *  FORMATO STRINGA LOGIN
- *  (CLIENT)    LOG*username*password*LOGEND
- *  (SERVER)    LOGOK || LOGFAIL
+ *  FORMATO STRINGA CONF
+ *  (CLIENT)        SSID*KEY*IP*PORT*USER*PASSWORD*[CONF]
  */
-#define _MTEMP_LOGIN_START          "LOG"
-#define _MTEMP_LOGIN_END            "LOGEND"
-#define _MTEMP_LOGIN_OK             "LOGOK"
-#define _MTEMP_LOGIN_FAIL           "LOGFAIL"
+
+#define _MTEMP_CONF                 "[CONF]"
 
 /*
  *  FORMATO STRINGA TIMESET
- *  (CLIENT)    TIMESET*AA*MM*GG*WD*HH*MM*SS*TIMESETEND 
- *  (SERVER)    TIMESETOK || TIMESETFAIL
+ *  (CLIENT)        username*password*AA*MM*GG*WD*HH*MM*SS*[TIMESET]
  */
-#define _MTEMP_TIMESET_START        "TIMESET"
-#define _MTEMP_TIMESET_END          "TIMESETEND"
-#define _MTEMP_TIMESET_OK           "TIMESETOK"
-#define _MTEMP_TIMESET_FAIL         "TIMESETFAIL"
+#define _MTEMP_TIMESET              "[TIMESET]"
 
 /*
  *  FORMATO STRINGA TIMEGET
- *  (CLIENT)    TIMEGET
- *  (SERVER)    TIMEGET*AA*MM*GG*WD*HH*MM*SS*(TIMEGETOK || TIMEGETFAIL)
+ *  (CLIENT)        username*password*[TIMEGET]
+ *  (SERVER)        (AA*MM*GG*WD*HH*MM*SS*[OK] || [FAIL] || [ERROR])
  */
-#define _MTEMP_TIMEGET_START        "TIMEGET"
-#define _MTEMP_TIMEGET_OK           "TIMEGETOK"
-#define _MTEMP_TIMEGET_FAIL         "TIMEGETFAIL"
+#define _MTEMP_TIMEGET              "[TIMEGET]"
 
 /*
  *  FORMATO STRINGA TEMPGET
- *  (CLIENT)    TEMPGET*R*TEMPGETEND
- *  (SERVER)    TEMPGET*R*TT*(TEMPGETOK || TEMPGETFAIL)
- *  (SERVER-NODO)   SENSOR*TEMPGET
- *  (NODO)          TEMPGET*SENSOR*TT*(TEMPGETOK || TEMPGETFAIL)
+ *  (CLIENT)        username*password*R*[TEMPGET]
+ *  (SERVER)        R*TT*([OK] || [FAIL] || [ERROR])
+ *  (SERVER-NODO)   SENSOR*[TEMPGET]
+ *  (NODO)          (SENSOR*TT*[OK] || [FAIL] || [ERROR])
  */
-#define _MTEMP_TEMPGET_START        "TEMPGET"
-#define _MTEMP_TEMPGET_END          "TEMPGETEND"
-#define _MTEMP_TEMPGET_OK           "TEMPGETOK"
-#define _MTEMP_TEMPGET_FAIL         "TEMPGETFAIL"
+#define _MTEMP_TEMPGET              "[TEMPGET]"
 
 /*
  *  FORMATO STRINGA ROOMSTAT
- *  (CLIENT)    ROOMSTAT*R*ROOMSTATEND
- *  (SERVER)    ROOMSTAT*R*NAME*ADDRESS*RELAYOUT*ROOMSTATEND
+ *  (CLIENT)    username*password*R*[ROOMSTAT]
+ *  (SERVER)    (R*NAME*ADDRESS*RELAYOUT*[OK] || [FAIL] || [ERROR])
  */
-#define _MTEMP_ROOMSTAT_START       "ROOMSTAT"
-#define _MTEMP_ROOMSTAT_END         "ROOMSTATEND"
-#define _MTEMP_ROOMSTAT_OK          "ROOMSTATOK"
-#define _MTEMP_ROOMSTAT_FAIL        "ROOMSTATFAIL"
+#define _MTEMP_ROOMSTAT             "[ROOMSTAT]"
+
 
 /*
  *  FORMATO STRINGA PROGGET
- *  (CLIENT)    PROGGET*R*D*PROGGETEND
- *  (SERVER)    PROGGET*R*D*HS*MS*HE*ME*TT*E*(PROGGETOK || PROGGETFAIL)
+ *  (CLIENT)    username*password*R*D*[PROGGET]
+ *  (SERVER)    (R*D*HS*MS*HE*ME*TT*E*[OK] || [FAIL] || [ERROR])
  */
-#define _MTEMP_PROGGET_START       "PROGGET"
-#define _MTEMP_PROGGET_END         "PROGGETEND"
-#define _MTEMP_PROGGET_OK          "PROGGETOK"
-#define _MTEMP_PROGGET_FAIL        "PROGGETFAIL"
+#define _MTEMP_PROGGET              "[PROGGET]"
 
 /*
  *  FORMATO STRINGA PROGSET
- *  (CLIENT)    PROGSET*R*D*HS*MS*HE*ME*TT*E*PROGSETEND
- *  (SERVER)    PROGSETOK || PROGSETFAIL
+ *  (CLIENT)    username*password*R*D*HS*MS*HE*ME*TT*E*[PROGSET]
+ *  (SERVER)    ([OK] || [FAIL] || [ERROR])
  */
-#define _MTEMP_PROGSET_START       "PROGSET"
-#define _MTEMP_PROGSET_END         "PROGSETEND"
-#define _MTEMP_PROGSET_OK          "PROGSETOK"
-#define _MTEMP_PROGSET_FAIL        "PROGSETFAIL"
+#define _MTEMP_PROGSET              "[PROGSET]"
 
 /*
  *  FORMATO STRINGA FORCEON
- *  (CLIENT)    FORCEON*R*FORCEONEND
- *  (SERVER)    FORCEONOK || FORCEONFAIL
+ *  (CLIENT)    username*password*R*[FORCEON]
+ *  (SERVER)    ([OK] || [FAIL] || [ERROR])
  */
-#define _MTEMP_FORCEON_START       "FORCEON"
-#define _MTEMP_FORCEON_END         "FORCEONEND"
-#define _MTEMP_FORCEON_OK          "FORCEONOK"
-#define _MTEMP_FORCEON_FAIL        "FORCEONFAIL"
+#define _MTEMP_FORCEON              "[FORCEON]"
 
 /*
  *  FORMATO STRINGA FORCEOFF
- *  (CLIENT)    FORCEOFF*R*FORCEOFFEND
- *  (SERVER)    FORCEOFFOK || FORCEOFFFAIL
+ *  (CLIENT)    username*password*R*[FORCEOFF]
+ *  (SERVER)    ([OK] || [FAIL] || [ERROR])
  */
-#define _MTEMP_FORCEOFF_START       "FORCEOFF"
-#define _MTEMP_FORCEOFF_END         "FORCEOFFEND"
-#define _MTEMP_FORCEOFF_OK          "FORCEOFFOK"
-#define _MTEMP_FORCEOFF_FAIL        "FORCEOFFFAIL"
+#define _MTEMP_FORCEOFF             "[FORCEOFF]"
 
 #define _MTEMP_SEP                  '*'
 #define _MTEMP_ENABLED              'Y'

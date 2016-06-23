@@ -23,7 +23,7 @@ NetworkConfig::NetworkConfig(QWidget *parent) : QDialog(parent), ui(new Ui::Netw
     /*  aggiungo CONFEND                                                                            */
     rxPattern += _MTEMP_CONF_END;
     /*  aggiungo le altre parole vietate                                                            */
-    rxPattern += "| |OK|FAIL|ERROR";
+    rxPattern += "| |\[|\]";
     /*  setto il pattern                                                                            */
     m_rx.setPattern(rxPattern);
     /*  setto come non case sensitive                                                               */
@@ -247,8 +247,6 @@ void NetworkConfig::notifyConnected(){
     /*  imposto lo stato                                                                            */
     m_state = Connected;
     /*  costruisco la stringa di configurazione                                                     */
-    str += _MTEMP_CONF_START;
-    str += _MTEMP_SEP;
     str += m_networkName;
     str += _MTEMP_SEP;
     str += m_networkKey;
@@ -261,11 +259,11 @@ void NetworkConfig::notifyConnected(){
     str += _MTEMP_SEP;
     str += m_password1;
     str += _MTEMP_SEP;
-    str += _MTEMP_CONF_END;
+    str += _MTEMP_CONF;
     /*  imposto lo stato                                                                            */
     m_state = SendConfiguration;
     /*  setto la stringa per l'ok                                                                   */
-    m_client->waitFor(_MTEMP_CONF_OK);
+    m_client->waitFor(_MTEMP_BOARD_OK);
     /*  mando la configurazione                                                                     */
     m_client->write(str);
 
