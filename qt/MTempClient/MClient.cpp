@@ -38,17 +38,8 @@ quint16 MClient::port() const{
 
 bool MClient::connectToHost(){
 
-    QHostInfo hostAddr;
     /*  chiudo la socket                                                                            */
     m_sock->close();
-    /*  verifico che l'indirizzo sia valido                                                         */
-    hostAddr = QHostInfo::fromName(m_addr);
-    /*  se ci sono stati errori                                                                     */
-    if(hostAddr.error() == QHostInfo::HostNotFound ||
-       hostAddr.error() == QHostInfo::UnknownError ){
-        /*  ritorno false                                                                           */
-        return false;
-    }
     /*  provo a connettermi                                                                         */
     m_sock->connectToHost(m_addr, m_port);
     return true;

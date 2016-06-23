@@ -87,6 +87,7 @@ class NetworkConfig : public QDialog{
         QLabel *            m_pass2Label;
         Loader *            m_loader;
         State               m_state;
+        QRegExp             m_rx;
 
 };
 

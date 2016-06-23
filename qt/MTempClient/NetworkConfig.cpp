@@ -5,21 +5,31 @@ NetworkConfig::NetworkConfig(QWidget *parent) : QDialog(parent), ui(new Ui::Netw
     /*  espressione regolare per la password                                                        */
     QRegExp passRx("[0-9a-zA-Z]+");
     /*  espressione regolare per la porta                                                           */
-    QRegExp portRx("[0-9]+");
+    QRegExp portRx("^(?:6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{1,3}|[1-9])$");
     /*  espressione regolare per l'indirizzo ip                                                     */
-    QRegExp addrRx("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+    QRegExp addrRx("(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])");
     /*  validator per password                                                                      */
     QRegExpValidator * passValidator = new QRegExpValidator(passRx, this);
     /*  validator per porta                                                                         */
     QRegExpValidator * portValidator = new QRegExpValidator(portRx, this);
     /*  validator per ip                                                                            */
     QRegExpValidator * addrValidator = new QRegExpValidator(addrRx, this);
+    /*  stringa per pattern regexp per controllo campi                                              */
+    QString rxPattern;
+    /*  aggiungo CONF                                                                               */
+    rxPattern += _MTEMP_CONF_START;
+    /*  aggiungo l'or                                                                               */
+    rxPattern += "|";
+    /*  aggiungo CONFEND                                                                            */
+    rxPattern += _MTEMP_CONF_END;
+    /*  aggiungo le altre parole vietate                                                            */
+    rxPattern += "| |OK|FAIL|ERROR";
+    /*  setto il pattern                                                                            */
+    m_rx.setPattern(rxPattern);
+    /*  setto come non case sensitive                                                               */
+    m_rx.setCaseSensitivity(Qt::CaseInsensitive);
     /*  completamento interfaccia                                                                   */
     ui->setupUi(this);
-
-    this->setWindowState(this->windowState() ^ Qt::WindowFullScreen);
-
-
     /*  imposto il titolo                                                                           */
     this->setWindowTitle("Configura Rete");
     /*  imposto le icone                                                                            */
@@ -67,6 +77,8 @@ NetworkConfig::NetworkConfig(QWidget *parent) : QDialog(parent), ui(new Ui::Netw
             this, SLOT(txHandler()));
     /*  imposto lo stato                                                                            */
     m_state = NotConnected;
+    /*  imposto la stringa per il controllo password                                                */
+    ui->passwordNotifierLabel->setText("La password è obbligatoria.");
 }
 
 NetworkConfig::~NetworkConfig(){
@@ -86,13 +98,14 @@ void NetworkConfig::on_netKeyShowChecbox_clicked(bool checked){
 void NetworkConfig::on_netNameLineEdit_textChanged(const QString &arg1){
 
 
-    if(arg1.contains(_MTEMP_CONF_START) || arg1.contains(_MTEMP_CONF_END)){
+
+    if(arg1.contains(m_rx)){
         QMessageBox::critical(this,
                               "Errore",
                               QString("Il nome della rete non può contenere ") +
                               QString(_MTEMP_CONF_START) + QString(", ")       +
                               QString(_MTEMP_CONF_END)   + QString(", ")       +
-                              QString("OK, FAIL o ERROR"));
+                              QString("OK, FAIL, ERROR o spazi vuoti."));
         ui->netNameLineEdit->clear();
         return;
     }
@@ -103,13 +116,13 @@ void NetworkConfig::on_netNameLineEdit_textChanged(const QString &arg1){
 
 void NetworkConfig::on_netKeyLineEdit_textChanged(const QString &arg1){
 
-    if(arg1.contains(_MTEMP_CONF_START) || arg1.contains(_MTEMP_CONF_END)){
+    if(arg1.contains(m_rx)){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La chiave di rete non può contenere ")  +
                               QString(_MTEMP_CONF_START) + QString(", ")       +
                               QString(_MTEMP_CONF_END)   + QString(", ")       +
-                              QString("OK, FAIL o ERROR"));
+                              QString("OK, FAIL, ERROR o spazi vuoti."));
         ui->netKeyLineEdit->clear();
         return;
     }
@@ -125,13 +138,13 @@ void NetworkConfig::on_boardIPLineEdit_textChanged(const QString &arg1){
 
 void NetworkConfig::on_usernameLineEdit_textChanged(const QString &arg1){
 
-    if(arg1.contains(_MTEMP_CONF_START) || arg1.contains(_MTEMP_CONF_END)){
+    if(arg1.contains(m_rx)){
         QMessageBox::critical(this,
                               "Errore",
                               QString("Il nome utente non può contenere ") +
                               QString(_MTEMP_CONF_START) + QString(", ")   +
                               QString(_MTEMP_CONF_END)   + QString(", ")   +
-                              QString("OK, FAIL o ERROR"));
+                              QString("OK, FAIL, ERROR o spazi vuoti."));
         ui->usernameLineEdit->clear();
         return;
     }
@@ -141,45 +154,53 @@ void NetworkConfig::on_usernameLineEdit_textChanged(const QString &arg1){
 
 void NetworkConfig::on_password1LineEdit_textChanged(const QString &arg1){
 
-    if(arg1.contains(_MTEMP_CONF_START) || arg1.contains(_MTEMP_CONF_END)){
+    if(arg1.contains(m_rx)){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La password non può contenere ")    +
                               QString(_MTEMP_CONF_START) + QString(", ")   +
                               QString(_MTEMP_CONF_END)   + QString(", ")   +
-                              QString("OK, FAIL o ERROR"));
+                              QString("OK, FAIL, ERROR o spazi vuoti."));
         ui->password1LineEdit->clear();
         return;
     }
     m_password1 = arg1;
+    /*  controllo password uguali o no                                                              */
+    if(m_password1 != m_password2){
+        ui->passwordNotifierLabel->setText("Le password non coincidono.");
+    }else if(m_password1.isEmpty() || m_password2.isEmpty()){
+        ui->passwordNotifierLabel->setText("La password è obbligatoria.");
+    }else{
+        ui->passwordNotifierLabel->setText("Le password coincidono.");
+    }
     checkAll();
 }
 
 void NetworkConfig::on_password2LineEdit_textChanged(const QString &arg1){
 
-    if(arg1.contains(_MTEMP_CONF_START) || arg1.contains(_MTEMP_CONF_END)){
+    if(arg1.contains(m_rx)){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La password non può contenere ")    +
                               QString(_MTEMP_CONF_START) + QString(", ")   +
                               QString(_MTEMP_CONF_END)   + QString(", ")   +
-                              QString("OK, FAIL o ERROR"));
+                              QString("OK, FAIL, ERROR o spazi vuoti."));
         ui->password2LineEdit->clear();
         return;
     }
     m_password2 = arg1;
+    /*  controllo password uguali o no                                                              */
+    if(m_password1 != m_password2){
+        ui->passwordNotifierLabel->setText("Le password non coincidono.");
+    }else if(m_password1.isEmpty() || m_password2.isEmpty()){
+        ui->passwordNotifierLabel->setText("La password è obbligatoria.");
+    }else{
+        ui->passwordNotifierLabel->setText("Le password coincidono.");
+    }
     checkAll();
 }
 
 void NetworkConfig::on_boardPortLineEdit_textChanged(const QString &arg1){
-
-    if(arg1.toUInt() > 65535){
-        QMessageBox::critical(this,
-                              "Errore",
-                              QString("La porta non può essere maggiore di 65535"));
-        ui->boardPortLineEdit->clear();
-        return;
-    }
 
     m_boardPort = arg1.toUInt();
     checkAll();
@@ -208,9 +229,9 @@ void NetworkConfig::on_configureButton_clicked(){
         return;
     }
     /*  imposto l'indirizzo di connessione                                                          */
-    m_client->setAddress("192.168.4.1");
+    m_client->setAddress(_MTEMP_STANDARD_AP_IP);
     /*  imposto la porta                                                                            */
-    m_client->setPort(8000);
+    m_client->setPort(_MTEMP_STANDARD_AP_PORT);
     /*  provo a connettermi                                                                         */
     m_client->connectToHost();
     /*  mostro il loader                                                                            */
@@ -254,7 +275,6 @@ void NetworkConfig::notifyError(QAbstractSocket::SocketError){
 
     QMessageBox::critical(this, "Errore", m_client->lastError());
     m_loader->hide();
-    clear();
 }
 
 void NetworkConfig::notifyDisconnected(){
@@ -277,7 +297,6 @@ void NetworkConfig::txHandler(){
     if(m_state == SendConfiguration){
         m_state = WaitAnswer;
     }
-
 }
 
 
@@ -294,11 +313,9 @@ void NetworkConfig::clear(){
 
 void NetworkConfig::checkAll(){
 
-    QHostAddress tester;
-
     if(!m_networkName.isEmpty()     &&
        !m_networkKey.isEmpty()      &&
-       tester.setAddress(m_boardIP) &&
+       !m_boardIP.isEmpty()         &&
        (m_boardPort != 0)           &&
        !m_username.isEmpty()        &&
        !m_password1.isEmpty()       &&

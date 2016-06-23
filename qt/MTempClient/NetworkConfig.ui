@@ -29,6 +29,13 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="boardPortLineEdit">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="1">
           <widget class="QCheckBox" name="netKeyShowChecbox">
            <property name="text">
@@ -39,17 +46,10 @@
          <item row="1" column="1">
           <widget class="QLineEdit" name="netKeyLineEdit">
            <property name="text">
-            <string>180101140193280463210958</string>
+            <string/>
            </property>
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLineEdit" name="usernameLineEdit">
-           <property name="text">
-            <string/>
            </property>
           </widget>
          </item>
@@ -60,17 +60,31 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <widget class="QLineEdit" name="boardPortLineEdit">
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="usernameLineEdit">
            <property name="text">
-            <string>8000</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item row="3" column="1">
           <widget class="QLineEdit" name="boardIPLineEdit">
            <property name="text">
-            <string>192.168.1.41</string>
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="boardIPLabel">
+           <property name="text">
+            <string>IP Centralina</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="password2Label">
+           <property name="text">
+            <string>Conferma Password</string>
            </property>
           </widget>
          </item>
@@ -88,41 +102,10 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="password2Label">
-           <property name="text">
-            <string>Conferma Password</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="boardIPLabel">
-           <property name="text">
-            <string>IP Centralina</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="usernameLabel">
-           <property name="text">
-            <string>Nome Utente</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QLineEdit" name="netNameLineEdit">
            <property name="text">
-            <string>InfostradaWiFi-005218</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLineEdit" name="password1LineEdit">
-           <property name="text">
-            <string>admin</string>
-           </property>
-           <property name="echoMode">
-            <enum>QLineEdit::Password</enum>
+            <string/>
            </property>
           </widget>
          </item>
@@ -136,10 +119,34 @@
          <item row="7" column="1">
           <widget class="QLineEdit" name="password2LineEdit">
            <property name="text">
-            <string>admin</string>
+            <string/>
            </property>
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="usernameLabel">
+           <property name="text">
+            <string>Nome Utente</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLineEdit" name="password1LineEdit">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QLabel" name="passwordNotifierLabel">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>

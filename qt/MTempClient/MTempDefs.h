@@ -135,6 +135,8 @@
 
 #define _MTEMP_DEFAULT_USERNAME     "root"
 #define _MTEMP_DEFAULT_USER_KEY     "toor"
+#define _MTEMP_STANDARD_AP_IP       "192.168.4.1"
+#define _MTEMP_STANDARD_AP_PORT     0x1F40
 
 
 /*
