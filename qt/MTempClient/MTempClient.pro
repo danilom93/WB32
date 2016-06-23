@@ -28,7 +28,8 @@ HEADERS  += MTempClient.h \
     NetworkConfig.h \
     MClient.h \
     Loader.h \
-    Login.h
+    Login.h \
+    clientdefs.h
 
 FORMS    += MTempClient.ui \
     NetworkConfig.ui \

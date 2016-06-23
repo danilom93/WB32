@@ -2,20 +2,22 @@
 #define NETWORKCONFIG_H
 
 #include <QIcon>
+#include <QLabel>
+#include <QPixmap>
 #include <QDialog>
 #include <QThread>
 #include <QString>
+#include <QSettings>
 #include <QMessageBox>
 #include <QHostAddress>
 #include <QRegExpValidator>
 #include <QRegularExpression>
-#include <QLabel>
-#include <QPixmap>
 
 #include "Loader.h"
 #include "MClient.h"
 #include "MTempDefs.h"
 #include "MTempCommons.h"
+#include "clientdefs.h"
 
 namespace Ui {
 

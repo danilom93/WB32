@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>295</width>
-    <height>300</height>
+    <height>220</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,9 +21,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="domaniLineEdit"/>
-   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
@@ -31,15 +28,8 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="portLineEdit"/>
-   </item>
-   <item row="2" column="1">
-    <widget class="QCheckBox" name="remeberNetCheck">
-     <property name="text">
-      <string>Ricorda</string>
-     </property>
-    </widget>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="domaniLineEdit"/>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_3">
@@ -48,27 +38,20 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="usernameLineEdit"/>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="portLineEdit"/>
+   </item>
+   <item row="7" column="1">
+    <widget class="QPushButton" name="abortButton">
+     <property name="text">
+      <string>Annulla</string>
+     </property>
+    </widget>
    </item>
    <item row="4" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
       <string>Password</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QLineEdit" name="lineEdit_4">
-     <property name="echoMode">
-      <enum>QLineEdit::PasswordEchoOnEdit</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QCheckBox" name="rememberUserCheck">
-     <property name="text">
-      <string>Ricorda</string>
      </property>
     </widget>
    </item>
@@ -79,10 +62,27 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
-    <widget class="QPushButton" name="abortButton">
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="passwordLineEdit">
+     <property name="echoMode">
+      <enum>QLineEdit::PasswordEchoOnEdit</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="usernameLineEdit"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="remeberNetCheck">
      <property name="text">
-      <string>Annulla</string>
+      <string>Ricorda</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QCheckBox" name="rememberUserCheck">
+     <property name="text">
+      <string>Ricorda</string>
      </property>
     </widget>
    </item>

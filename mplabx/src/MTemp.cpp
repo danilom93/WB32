@@ -85,7 +85,7 @@ bool AFramework::MTempMaster::run(){
     if(joinNetwork()){
             
             /* joinNetwork da direttamente l'output                             */
-        if(loadAll()){
+        if(!loadAll()){
             
             msg("Errore\nCaricamento", 0);
             while(1);
@@ -437,6 +437,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd) const{
         
         delete list;
         msg("Errore\nCmd Handler");
+        m_wifi->send(_MTEMP_BOARD_ERROR);
     }
     return;
 }

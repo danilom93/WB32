@@ -229,16 +229,17 @@ void NetworkConfig::notifyDisconnected(){
 
 void NetworkConfig::rxHandler(MClient::BoardAnswer answer){
 
+    QSettings setting;
     /*  controllo la risposta                                                                       */
     switch(answer){
         /*  se ho ricevuto l'ok                                                                     */
         case MClient::BoardAnswer::TokenReceived:
             /*  notifico l'ok                                                                       */
             QMessageBox::information(this, this->windowTitle(), "Centralina configurata correttamente.");
-            /*
-             * salvare configurazione
-             *
-             */
+
+            setting.setValue(_MTEMP_PORT, m_boardPort);
+            setting.setValue(_MTEMP_USER, m_username);
+            setting.setValue(_MTEMP_PASS, m_password1);
             break;
         /*  se ho ricevuto fail o error                                                             */
         case MClient::BoardAnswer::Error:

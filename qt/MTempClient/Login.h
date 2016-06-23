@@ -3,12 +3,11 @@
 
 #include <QDialog>
 #include <QString>
+#include <QRegExp>
 #include <QSettings>
+#include <QMessageBox>
 
-#define _MTEMP_ADDR "ADDR"
-#define _MTEMP_PORT "PORT"
-#define _MTEMP_USER "USER"
-#define _MTEMP_PASS "PASS"
+#include "clientdefs.h"
 
 namespace Ui {
     class Login;
@@ -24,6 +23,12 @@ class Login : public QDialog{
 
 private slots:
     void on_domaniLineEdit_textChanged(const QString &arg1);
+
+    void on_portLineEdit_textChanged(const QString &arg1);
+
+    void on_usernameLineEdit_textChanged(const QString &arg1);
+
+    void on_passwordLineEdit_textChanged(const QString &arg1);
 
 private:
         Ui::Login * ui;

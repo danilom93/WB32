@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QMainWindow>
 
+#include "clientdefs.h"
 #include "NetworkConfig.h"
 
 namespace Ui {
