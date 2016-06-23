@@ -85,7 +85,7 @@ bool AFramework::MTempMaster::run(){
     if(joinNetwork()){
             
             /* joinNetwork da direttamente l'output                             */
-        if(loadAll()){
+        if(!loadAll()){
             
             msg("Errore\nCaricamento", 0);
             while(1);
@@ -431,12 +431,19 @@ void AFramework::MTempMaster::commandExec(const AString &cmd) const{
                     
                     time = m_clk->currentTime();
                     str += AString(time.year() - 2000);
+                    str += _MTEMP_SEP;
                     str += AString(static_cast<uint8>(time.month()));
+                    str += _MTEMP_SEP;
                     str += AString(time.dayOfMonth());
+                    str += _MTEMP_SEP;
                     str += AString(static_cast<uint8>(time.Weekday()));
+                    str += _MTEMP_SEP;
                     str += AString(time.hours());
+                    str += _MTEMP_SEP;
                     str += AString(time.minutes());
+                    str += _MTEMP_SEP;
                     str += AString(time.seconds());
+                    str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);
                 }else{
@@ -444,7 +451,8 @@ void AFramework::MTempMaster::commandExec(const AString &cmd) const{
                     m_wifi->send(_MTEMP_BOARD_FAIL);
                     msg("Errore...\nOrologio");
                 }
-                
+                delete list;
+                return;
             }else{
                 
             }

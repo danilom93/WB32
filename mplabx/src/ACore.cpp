@@ -578,7 +578,7 @@ void AFramework::System::delay(const uint32 ms){
 
 AFramework::uint32 AFramework::System::currentCentury(){
     /*  temporanea                                                              */
-    return 0x15;
+    return 0x14;
 }
 
 bool AFramework::System::outputMap(const uint32 gpio, const uint32 output){
