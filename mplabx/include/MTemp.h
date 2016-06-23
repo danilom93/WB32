@@ -18,8 +18,8 @@ namespace AFramework{
                     MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem, AESP8266 *wifi, ALcd *lcd, volatile AHardwarePort *port);
             
             bool    networkConfig();
-            bool    defaultProgram();
-            bool    joinNetwork();
+            bool    run();
+            
             
         private:
 
@@ -35,8 +35,11 @@ namespace AFramework{
             bool    saveNetworkConfig(const AString &data);
             bool    prepareAp(const AString &ssid, const AString &pwd, const uint16 port);
             void    checkPrograms();
-            
-            
+            bool    defaultProgram();
+            bool    joinNetwork();
+            bool    newLoginRequest();
+            bool    connectionHandler();
+            bool    programsManager();
     };
 }
 

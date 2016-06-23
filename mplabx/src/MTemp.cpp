@@ -76,6 +76,31 @@ bool AFramework::MTempMaster::networkConfig(){
     }
 }
 
+bool AFramework::MTempMaster::run(){
+    
+    if(joinNetwork()){
+        
+        #ifdef __DEBUG_MODE
+            
+            UART2.writeln("Connesso alla rete");
+        #endif
+
+        m_wifi->prepareForReceive();
+        
+        while(1){
+            if(newLoginRequest()){
+                
+                connectionHandler();
+                
+                m_wifi->prepareForReceive();        ////togliere
+            }else{
+                
+                programsManager();
+            }
+        }
+    }
+}
+
 bool AFramework::MTempMaster::defaultProgram(){
     
     if(!m_memory){
@@ -227,7 +252,6 @@ bool AFramework::MTempMaster::joinNetwork(){
         
         return false;
     }
-    
     if( !m_memory->read(_MTEMP_SSID_ADDRESS,         ssid) ||
         !m_memory->read(_MTEMP_SSID_KEY_ADDRESS,     pwd)  ||
         !m_memory->read(_MTEMP_MASTER_PORT_ADDRESS,  port) ||
@@ -235,15 +259,10 @@ bool AFramework::MTempMaster::joinNetwork(){
         
         return false;
     }
-    
     #ifdef __DEBUG_MODE
-        //UART2.writeln(AString(static_cast<sint32>(ssid.size())).c_str());
         UART2.writeln(ssid.c_str());
-        //UART2.writeln(AString(static_cast<sint32>(pwd.size())).c_str());
         UART2.writeln(pwd.c_str());
-        //UART2.writeln(AString(static_cast<sint32>(ip.size())).c_str());
         UART2.writeln(ip.c_str());
-        //UART2.writeln(AString(static_cast<sint32>(port.size())).c_str());
         UART2.writeln(port.c_str());
     #endif
     
@@ -282,5 +301,68 @@ bool AFramework::MTempMaster::joinNetwork(){
     }
     m_lcd->clear();
     m_lcd->write("Errore WIFI");
+    return false;
+}
+
+bool AFramework::MTempMaster::newLoginRequest(){
+    
+    AString dataRcv;
+    AString username;
+    AString password;
+    AStringList *list = NULL;
+    bool    flag = false;
+    
+    if(!m_wifi){
+        
+        return false;
+    }
+    /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<______________________>>>>>>>>>>>>>>>>>>>>>>>> controllare il 10*/
+    if(m_wifi->waitForData(dataRcv, 0)){
+       
+        if(dataRcv.contains(_MTEMP_LOGIN_END)){
+            
+            #ifdef __DEBUG_MODE
+                UART2.writeln("LOGIN DATI RICEVUTI: ");
+                UART2.writeln(dataRcv.c_str());
+            #endif    
+            list = dataRcv.split(_MTEMP_SEP);
+            if(m_memory->read(_MTEMP_USERNAME_ADDRESS, username) && m_memory->read(_MTEMP_USER_KEY_ADDRESS, password)){
+                
+                #ifdef __DEBUG_MODE
+                    UART2.writeln("LOGIN DATI UTENTI LETTI DALLA MEMORIA:");
+                    UART2.writeln(username.c_str());
+                    UART2.writeln(password.c_str());
+                #endif
+                if(list && dataRcv.good()){
+            
+                    if(list->at(1) == username && list->at(2) == password){
+                        //dati corretti torno true
+                        #ifdef __DEBUG_MODE
+                            UART2.write("UTENTE LOGGATO");
+                        #endif
+
+                        m_wifi->send(_MTEMP_LOGIN_OK);
+                        m_lcd->clear();
+                        m_lcd->write("Utente\n Connesso");
+                        flag = true;
+                    }else{
+                        
+                        m_wifi->send(_MTEMP_LOGIN_FAIL);
+                    }
+                    delete list;
+                }
+            }
+        }
+    }
+    return flag;
+}
+
+bool AFramework::MTempMaster::connectionHandler(){
+    
+    return false;
+}
+
+bool AFramework::MTempMaster::programsManager(){
+    
     return false;
 }

@@ -52,9 +52,6 @@ int main(int argc, char** argv) {
         app.networkConfig();
     }
     
+    app.run();
     
-    app.joinNetwork();
-    while(1){
-       
-    }
 }
