@@ -40,6 +40,7 @@ namespace AFramework{
             bool    newLoginRequest();
             bool    connectionHandler();
             bool    programsManager();
+            bool    loadPrograms();
     };
 }
 

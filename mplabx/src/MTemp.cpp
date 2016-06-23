@@ -36,6 +36,10 @@ bool AFramework::MTempMaster::networkConfig(){
     bool flag = true;
     AString dataRcv;
     
+    if(!m_flag){
+        
+        return false;
+    }
     m_lcd->write("Configurazione\nRete...");
     
     if(prepareAp(_MTEMP_SSID_AP, _MTEMP_PWD_AP, _MTEMP_PORT_AP)){
@@ -78,6 +82,11 @@ bool AFramework::MTempMaster::networkConfig(){
 
 bool AFramework::MTempMaster::run(){
     
+    if(!m_flag){
+        
+        return false;
+    }
+    
     if(joinNetwork()){
         
         #ifdef __DEBUG_MODE
@@ -103,7 +112,7 @@ bool AFramework::MTempMaster::run(){
 
 bool AFramework::MTempMaster::defaultProgram(){
     
-    if(!m_memory){
+    if(!m_flag){
         
         return false;
     }
@@ -137,6 +146,10 @@ bool AFramework::MTempMaster::defaultProgram(){
 
 bool AFramework::MTempMaster::saveNetworkConfig(const AString &data){
     
+    if(!m_flag){
+        
+        return false;
+    }
     AStringList *list = NULL;
     
     list = data.split(_MTEMP_SEP);
@@ -216,7 +229,8 @@ bool AFramework::MTempMaster::prepareAp(const AString &ssid, const AString &pwd,
 
 void AFramework::MTempMaster::checkPrograms(){
     
-    if(!m_memory){
+    if(!m_flag){
+        
         return;
     }
     memset(m_rooms, 0x00, _MTEMP_ROOM_VEC_SIZE * sizeof(Room));
@@ -248,7 +262,7 @@ bool AFramework::MTempMaster::joinNetwork(){
     AString port;
     bool    flag = false;
     
-    if(!m_wifi || !m_memory){
+    if(!m_flag){
         
         return false;
     }
@@ -312,7 +326,7 @@ bool AFramework::MTempMaster::newLoginRequest(){
     AStringList *list = NULL;
     bool    flag = false;
     
-    if(!m_wifi){
+    if(!m_flag){
         
         return false;
     }
@@ -359,10 +373,57 @@ bool AFramework::MTempMaster::newLoginRequest(){
 
 bool AFramework::MTempMaster::connectionHandler(){
     
+    if(!m_flag){
+        
+        return false;
+    }
+    
+    
     return false;
 }
 
 bool AFramework::MTempMaster::programsManager(){
     
+    ADateTime currentClk;
+    if(!m_flag){
+        
+        return false;
+    }
+    if(m_clk->isGood()){
+        
+        currentClk = m_clk->currentTime();
+        
+        for(uint8 i=0; i < _MTEMP_ROOM_VEC_SIZE; i++){
+            
+            if(m_rooms[i].program(currentClk.Weekday()).startHours() == currentClk.hours()){
+                
+            }
+        }
+    }else{
+        
+        m_lcd->clear();
+        m_lcd->write("Errore ora");
+        System::delay(1000);
+    }
     return false;
+}
+
+bool AFramework::MTempMaster::loadPrograms(){
+    
+    if(!m_flag){
+        
+        return false;
+    }
+    
+    for(uint8 i = 0; i <_MTEMP_ROOM_VEC_SIZE; i++){
+    
+        m_rooms[i].setRoomNumber(static_cast<Room::RoomNumber>(i));
+        m_rooms[i].loadRoom();
+        
+        for(uint8 j = 0; j < _MTEMP_WEEKPROGRAM_VEC_SIZE; j++){
+          
+            m_rooms[i].loadProgram(static_cast<ADateTime::Weekdays>(j+1));
+        }
+    }     
+    return true;
 }
