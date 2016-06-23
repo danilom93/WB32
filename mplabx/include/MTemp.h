@@ -49,6 +49,10 @@ namespace AFramework{
             bool    loadAll();             //loads rooms and programs 
             
             void    commandExec(const AString &cmd) const;
+            
+            void    msg(const QString & s, const uint32 ms = 1000) const;
+            
+            void    msg(const char * s, const uint32 ms = 1000) const;
     };
 }
 

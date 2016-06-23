@@ -33,58 +33,45 @@ AFramework::MTempMaster::MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem,
 
 bool AFramework::MTempMaster::networkConfig() const{
     
-    bool flag = true;
     AString dataRcv;
     
     if(!m_flag){
         
         return false;
     }
-    m_lcd->write("Configurazione\nRete...");
+    
+    msg("Configurazione\nRete...");
     
     if(prepareAp(_MTEMP_SSID_AP, _MTEMP_PWD_AP, _MTEMP_PORT_AP)){
-        
-        #ifdef __DEBUG_MODE
-            
-            UART2.writeln("ESP IN ATTESA DI CONNESSIONI");
-        #endif
-        m_lcd->clear();
-        m_lcd->write("In attesa di\nConnessioni...");
-        while(flag){
+
+        msg("In attesa di\nConnessioni...", 0);
+
+        while(1){
             
             if(m_wifi->waitForData(dataRcv)){
                 
                 if(dataRcv.contains(_MTEMP_CONF)){
-                    #ifdef __DEBUG_MODE
-            
-                        UART2.writeln("DATI RICEVUTI : ");
-                        UART2.writeln(dataRcv.c_str());
-                    #endif
+    
+                    msg("Dati ricevuti,\nSalvataggio...");
+                    
                     if(saveNetworkConfig(dataRcv)){
+                    
+                        msg("Salvataggio ok!", 0);
                         
                         if(m_wifi->send(_MTEMP_BOARD_OK)){
                             
-                            #ifdef __DEBUG_MODE
-            
-                                UART2.writeln("Ok inviato");
-                            #endif
-                            
-                            m_lcd->clear();
-                            m_lcd->write("Configurazione\nSalvata");
-                            System::delay(1000);
+                            msg("Avvio tra\n1 secondo...");
                             return true;
                         }
                     }else{
                         
                         m_wifi->send(_MTEMP_BOARD_FAIL);
-                        m_lcd->clear();
-                        m_lcd->write("Errore\nConfigurazione");
-                        System::delay(1000);
+                        msg("Errore\nConfigurazione!");
                         return false;
                     }
                 }
             }
-        }          
+        }
     }
 }
 
@@ -96,13 +83,13 @@ bool AFramework::MTempMaster::run(){
         return false;
     }
     if(joinNetwork()){
-        
-        #ifdef __DEBUG_MODE
-            UART2.writeln("Connesso alla rete");
-        #endif
             
+            /* joinNetwork da direttamente l'output                             */
+        
             m_wifi->prepareForReceive();
+            
             while(1){
+                
                 if(m_wifi->waitForData(currentCmd, 0)){
 
                     commandExec(currentCmd);
@@ -112,9 +99,7 @@ bool AFramework::MTempMaster::run(){
                 }
             }
     }else{
-        
-        m_lcd->clear();
-        m_lcd->write("ERRORE\nJOIN");
+        /*  joinNetwork da direttamente l'output                                */
         while(1);
     }
 }
@@ -155,6 +140,8 @@ bool AFramework::MTempMaster::defaultProgram(){
 
 bool AFramework::MTempMaster::saveNetworkConfig(const AString &data) const{
     
+    bool flg = false;
+    
     if(!m_flag){
         
         return false;
@@ -164,32 +151,21 @@ bool AFramework::MTempMaster::saveNetworkConfig(const AString &data) const{
     list = data.split(_MTEMP_SEP);
     
     if(list && data.good()){
-        
-        #ifdef __DEBUG_MODE
-            
-            for(int i = 0; i < list->size(); i++){
-                UART2.writeln(list->at(i).c_str());
-            }
-        #endif
         /*
          *  FORMATO STRINGA CONF
          *  (CLIENT)        SSID*KEY*IP*PORT*USER*PASSWORD*[CONF]
          */
-        if( m_memory->write(_MTEMP_SSID_ADDRESS         , list->at(0)) &&
-            m_memory->write(_MTEMP_SSID_KEY_ADDRESS     , list->at(1)) &&
-            m_memory->write(_MTEMP_MASTER_IP_ADDRESS    , list->at(2)) &&
-            m_memory->write(_MTEMP_MASTER_PORT_ADDRESS  , list->at(3)) &&
-            m_memory->write(_MTEMP_USERNAME_ADDRESS     , list->at(4)) &&
-            m_memory->write(_MTEMP_USER_KEY_ADDRESS     , list->at(5))){
-            
-            #ifdef __DEBUG_MODE
-            
-                UART2.writeln("DATI SALVATI");
-            #endif
-        }
+        flg = (m_memory->write(_MTEMP_SSID_ADDRESS         , list->at(0)) &&
+               m_memory->write(_MTEMP_SSID_KEY_ADDRESS     , list->at(1)) &&
+               m_memory->write(_MTEMP_MASTER_IP_ADDRESS    , list->at(2)) &&
+               m_memory->write(_MTEMP_MASTER_PORT_ADDRESS  , list->at(3)) &&
+               m_memory->write(_MTEMP_USERNAME_ADDRESS     , list->at(4)) &&
+               m_memory->write(_MTEMP_USER_KEY_ADDRESS     , list->at(5)));
+         
         
         delete list;
-        return true;
+        
+        return flg;
     }
     
     return false;
@@ -279,6 +255,9 @@ bool AFramework::MTempMaster::joinNetwork() const{
         
         return false;
     }
+    
+    msg("Carico i\nParametri...");
+    
     if( !m_memory->read(_MTEMP_SSID_ADDRESS,         ssid) ||
         !m_memory->read(_MTEMP_SSID_KEY_ADDRESS,     pwd)  ||
         !m_memory->read(_MTEMP_MASTER_PORT_ADDRESS,  port) ||
@@ -286,48 +265,53 @@ bool AFramework::MTempMaster::joinNetwork() const{
         
         return false;
     }
-    #ifdef __DEBUG_MODE
-        UART2.writeln(ssid.c_str());
-        UART2.writeln(pwd.c_str());
-        UART2.writeln(ip.c_str());
-        UART2.writeln(port.c_str());
-    #endif
+
+    msg("Parametri\nCaricati...");
     
-    if(m_wifi->isOk()){
-        
-        m_lcd->clear();
-        m_lcd->write("Connessione\nIn corso...");
-        
+    /*  errore 1                                                                */
+    if(m_wifi->isOk()){    
+        msg("Connessione\nIn corso...");
+        /*  errore 2                                                            */
         if(m_wifi->setMode(AESP8266::StationMode)){
-            
+            /*  errore 3                                                        */
             if(m_wifi->setEcho(false)){
-                
+                /*  errore 4                                                    */
                 if(m_wifi->joinAP(ssid, pwd)){
-                    
+                    /*  errore 5                                                */
                     if(m_wifi->setDhcp(false)){
-                        
+                        /*  errore 6                                            */
                         if(m_wifi->setIp(ip)){
-                            
+                            /*  errore 7                                        */
                             if(m_wifi->setMultipleConnections(true)){
-                                
+                                /*  errore 8                                    */
                                 if(m_wifi->openServer(static_cast<uint16>(port.toInt32(flag)))){
-                                    
-                                    if(flag){
                                         
-                                        m_lcd->clear();
-                                        m_lcd->write("Server\nIn Ascolto...");
+                                        msg("Connesso ed\nIn ascolto...");
                                         return true;
-                                    }
+                                }else{
+                                    msg("Errore Modulo\n[8]");
                                 }
+                            }else{
+                                msg("Errore Modulo\n[7]");
                             }
+                        }else{
+                            msg("Errore Modulo\n[6]");
                         }
+                    }else{
+                        msg("Errore Modulo\n[5]");
                     }
+                }else{
+                    msg("Errore Modulo\n[4]");
                 }
+            }else{
+                msg("Errore Modulo\n[3]");
             }
+        }else{
+            msg("Errore Modulo\n[2]");
         }
+    }else{
+        msg("Errore Modulo\n[1]");
     }
-    m_lcd->clear();
-    m_lcd->write("Errore WIFI");
     return false;
 }
 
@@ -364,6 +348,8 @@ bool AFramework::MTempMaster::loadAll(){
         return false;
     }
     
+    msg("Carico i\nProgrammi...");
+    
     for(uint8 i = 0; i <_MTEMP_ROOM_VEC_SIZE; i++){
     
         m_rooms[i].setRoomNumber(static_cast<Room::RoomNumber>(i));
@@ -374,10 +360,35 @@ bool AFramework::MTempMaster::loadAll(){
             m_rooms[i].loadProgram(static_cast<ADateTime::Weekdays>(j+1));
         }
     }     
+    
+    msg("Programmi\nCaricati...");
+    
     return m_memory->read(_MTEMP_USERNAME_ADDRESS, m_username) && m_memory->read(_MTEMP_USER_KEY_ADDRESS, m_password);
 }
 
 void AFramework::MTempMaster::commandExec(const AString &cmd) const{
     
     return;
+}
+
+void AFramework::MTempMaster::msg(const QString & s, const uint32 ms) const{
+    m_lcd->clear();
+    if(s.isEmpty()){
+        m_lcd->write("NULL POINTER");
+        while(1);
+    }else{
+        m_lcd->write(s.c_str());    
+    }
+    System::delay(ms);
+}
+
+void AFramework::MTempMaster::msg(const char * s, const uint32 ms) const{
+    m_lcd->clear();
+    if(!s){
+        m_lcd->write("NULL POINTER");
+        while(1);
+    }else{
+        m_lcd->write(s);    
+    }
+    System::delay(ms);
 }
