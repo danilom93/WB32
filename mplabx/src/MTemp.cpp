@@ -370,13 +370,14 @@ bool AFramework::MTempMaster::loadAll(){
     return m_memory->read(_MTEMP_USERNAME_ADDRESS, m_username) && m_memory->read(_MTEMP_USER_KEY_ADDRESS, m_password);
 }
 
-void AFramework::MTempMaster::commandExec(const AString &cmd) const{
+void AFramework::MTempMaster::commandExec(const AString &cmd){
     
     AStringList *   list;
     AString         str;
     ADateTime       time;
     bool            flag = false;
-   
+    uint8           index = 0;
+    uint8           index1 = 0;
     
     list = cmd.split(_MTEMP_SEP);
     
@@ -428,7 +429,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd) const{
                 //*  (SERVER)        (AA*MM*GG*WD*HH*MM*SS*[OK] || [FAIL] || [ERROR])
                 
                 if(m_clk->isGood()){
-                    
+                    str.clear();
                     time = m_clk->currentTime();
                     str += AString(time.year());
                     str += _MTEMP_SEP;
@@ -453,8 +454,138 @@ void AFramework::MTempMaster::commandExec(const AString &cmd) const{
                 }
                 delete list;
                 return;
+            }else if(str == _MTEMP_TEMPGET){
+                
+                //(CLIENT)        username*password*R*[TEMPGET]
+                //(SERVER)        R*TT*([OK] || [FAIL] || [ERROR])
+                index = list->at(2).toInt32(flag);
+                if(flag && index < _MTEMP_ROOM_VEC_SIZE){
+                    
+                    str.clear();
+                    str += list->at(2);
+                    str += _MTEMP_SEP;
+                    str += AString(m_rooms[index].currentTemperature());                ///////////da fare per casa
+                    str += _MTEMP_SEP;
+                    str += _MTEMP_BOARD_OK;
+                    m_wifi->send(str);
+                }else{
+                    
+                    m_wifi->send(_MTEMP_BOARD_FAIL);
+                }
+                delete list;
+                return;
+            }else if(str == _MTEMP_ROOMSTAT){
+                
+                //(CLIENT)    username*password*R*[ROOMSTAT]
+                //(SERVER)    (R*NAME*ADDRESS*RELAYOUT*[OK] || [FAIL] || [ERROR])
+                index = list->at(2).toInt32(flag);
+                if(flag && index < _MTEMP_ROOM_VEC_SIZE){
+                
+                    str.clear();
+                    str += list->at(2);
+                    str += _MTEMP_SEP;
+                    str += m_rooms[index].roomName();
+                    str += _MTEMP_SEP;
+                    str += m_rooms[index].sensorAddress();
+                    str += (m_rooms[index].isOn() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
+                    str += _MTEMP_BOARD_OK;
+                    m_wifi->send(str);
+                }else{
+                    
+                    m_wifi->send(_MTEMP_BOARD_FAIL);
+                }
+                delete list;
+                return;
+            }else if(str == _MTEMP_PROGGET){
+                
+                //(CLIENT)    username*password*R*D*[PROGGET]                           
+                //(SERVER)    (R*D*HS*MS*HE*ME*TT*E*[OK] || [FAIL] || [ERROR])
+                index = list->at(2).toInt32(flag);          //numero stanza
+                if(flag && index < _MTEMP_ROOM_VEC_SIZE){
+                    
+                    index1 = list->at(3).toInt32(flag);      //numero programma   
+                    if(flag && index1 < _MTEMP_WEEKPROGRAM_VEC_SIZE){
+                        
+                        str.clear();
+                        str += list->at(2);
+                        str += _MTEMP_SEP;
+                        str += m_rooms[index].program(static_cast<ADateTime::Weekdays>(index1)).toString();
+                        str += _MTEMP_SEP;
+                        str += _MTEMP_BOARD_OK;
+                        m_wifi->send(str);
+                        delete list;
+                        return;
+                    }
+                }
+                m_wifi->send(_MTEMP_BOARD_FAIL);
+                delete list;
+                return;
+            }else if(str == _MTEMP_PROGSET){
+                
+                //(CLIENT)    username*password*R*D*HS*MS*HE*ME*TT*E*[PROGSET]
+                //(SERVER)    ([OK] || [FAIL] || [ERROR])
+                index = list->at(2).toInt32(flag);          //numero stanza
+                if(flag && index < _MTEMP_ROOM_VEC_SIZE){
+                    
+                    index1 = list->at(3).toInt32(flag);      //numero programma   
+                    if(flag && index1 < _MTEMP_WEEKPROGRAM_VEC_SIZE){
+                        
+                        str.clear();
+                        for(uint8 i = 3; i < 9; i++){
+                            
+                            str += list->at(i);
+                            str += _MTEMP_SEP;   
+                        }
+                        str += list->at(9);
+                        if(m_rooms[index].program(static_cast<ADateTime::Weekdays>(index1)).fromString(str)){
+                            
+                            if(m_rooms[index].saveProgram(static_cast<ADateTime::Weekdays>(index1))){
+                                
+                                m_wifi->send(_MTEMP_BOARD_OK);
+                                delete list;
+                                return;
+                            }
+                        }
+                    }
+                }
+                m_wifi->send(_MTEMP_BOARD_FAIL);
+                delete list;
+                return;
+            }else if(str == _MTEMP_FORCEON){
+                
+                //(CLIENT)    username*password*R*[FORCEON]
+                //(SERVER)    ([OK] || [FAIL] || [ERROR])
+                index = list->at(2).toInt32(flag);
+                if(flag && index < _MTEMP_ROOM_VEC_SIZE){
+                    
+                    m_rooms[index].forceOn(true);
+                    m_wifi->send(_MTEMP_BOARD_OK);
+                }else{
+                    
+                    m_wifi->send(_MTEMP_BOARD_FAIL);
+                }
+                delete list;
+                return;
+            }else if(str == _MTEMP_FORCEOFF){
+                
+                //(CLIENT)    username*password*R*[FORCEOFF]
+                //(SERVER)    ([OK] || [FAIL] || [ERROR])
+                index = list->at(2).toInt32(flag);
+                if(flag && index < _MTEMP_ROOM_VEC_SIZE){
+                    
+                    m_rooms[index].forceOff(true);
+                    m_wifi->send(_MTEMP_BOARD_OK);
+                }else{
+                    
+                    m_wifi->send(_MTEMP_BOARD_FAIL);
+                }
+                delete list;
+                return;    
             }else{
                 
+                //altro comando 
+                m_wifi->send(_MTEMP_BOARD_FAIL);
+                delete list;
             }
         }else{
             
