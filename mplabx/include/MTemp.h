@@ -53,6 +53,7 @@ namespace AFramework{
             void    msg(const QString & s, const uint32 ms = 1000) const;
             
             void    msg(const char * s, const uint32 ms = 1000) const;
+            
     };
 }
 

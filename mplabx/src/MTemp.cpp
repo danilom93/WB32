@@ -85,7 +85,11 @@ bool AFramework::MTempMaster::run(){
     if(joinNetwork()){
             
             /* joinNetwork da direttamente l'output                             */
-        
+        if(loadAll()){
+            
+            msg("Errore\nCaricamento", 0);
+            while(1);
+        }
             m_wifi->prepareForReceive();
             
             while(1){
@@ -368,6 +372,72 @@ bool AFramework::MTempMaster::loadAll(){
 
 void AFramework::MTempMaster::commandExec(const AString &cmd) const{
     
+    AStringList *   list;
+    AString         str;
+    ADateTime       time;
+    bool            flag = false;
+   
+    
+    list = cmd.split(_MTEMP_SEP);
+    
+    if(list && cmd.good()){
+        
+        if(list->at(0) == m_username && list->at(1) == m_password){
+            
+            str = list->at(list->size() - 1);
+            
+            if(str == _MTEMP_TIMESET){
+                //*  (CLIENT)        username*password*AA*MM*GG*WD*HH*MM*SS*[TIMESET]
+                if(time.setYear(list->at(2).toInt32(flag)) && flag){
+                    
+                    if(time.setMonth(static_cast<ADateTime::Months>(list->at(3).toInt32(flag))) && flag){
+                        
+                        if(time.setDayOfMonth(list->at(4).toInt32(flag)) && flag){
+                            
+                            if(time.setWeekday(static_cast<ADateTime::Weekdays>(list->at(5).toInt32(flag))) && flag){
+                                
+                                if(time.setHours(list->at(6).toInt32(flag)) && flag){
+                                    
+                                    if(time.setMinutes(list->at(7).toInt32(flag)) && flag){
+                                        
+                                        if(time.setSeconds(list->at(8).toInt32(flag)) && flag){
+                                            
+                                            if(m_clk->setTime(time)){
+                                                
+                                                if(m_wifi->send(_MTEMP_BOARD_OK)){
+                                                    
+                                                    str.clear();
+                                                    str = m_clk->currentTime().timeToString();
+                                                    str.prepend("Ora settata\n");
+                                                    msg(str);
+                                                    delete list;
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }else if(str == _MTEMP_TIMEGET){
+                
+                
+            }else{
+                
+            }
+        }else{
+            
+            m_wifi->send(_MTEMP_BOARD_ERROR);
+        }
+    }
+    if(list){
+        
+        delete list;
+        msg("Errore\nCmd Handler");
+    }
     return;
 }
 
