@@ -7,6 +7,7 @@
 
 #include "clientdefs.h"
 #include "NetworkConfig.h"
+#include "Login.h"
 
 namespace Ui {
 
@@ -22,6 +23,8 @@ public:
 
 private slots:
     void on_actionConfigura_triggered();
+
+    void on_actionLogin_triggered();
 
 private:
     Ui::MTempClient *ui;

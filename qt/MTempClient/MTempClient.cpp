@@ -3,21 +3,30 @@
 
 MTempClient::MTempClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::MTempClient){
 
+    QSettings setting;
     ui->setupUi(this);
 
     this->setWindowIcon(QIcon(":/ico/img/Dew Point-64.png"));
 
     if(!setting.contains(_MTEMP_PORT)){
         setting.setValue(_MTEMP_PORT, _MTEMP_NOPORT);
+    }else{
+        qDebug() << setting.value(_MTEMP_PORT).toUInt();
     }
     if(!setting.contains(_MTEMP_ADDR)){
         setting.setValue(_MTEMP_ADDR, _MTEMP_NOADDR);
+    }else{
+        qDebug() << setting.value(_MTEMP_ADDR).toString();
     }
     if(!setting.contains(_MTEMP_USER)){
         setting.setValue(_MTEMP_USER, _MTEMP_NOUSER);
+    }else{
+        qDebug() << setting.value(_MTEMP_USER).toString();
     }
     if(!setting.contains(_MTEMP_PASS)){
         setting.setValue(_MTEMP_PASS, _MTEMP_NOPASS);
+    }else{
+        qDebug() << setting.value(_MTEMP_PASS).toString();
     }
 }
 
@@ -31,4 +40,11 @@ void MTempClient::on_actionConfigura_triggered(){
     NetworkConfig config;
 
     config.exec();
+}
+
+void MTempClient::on_actionLogin_triggered(){
+
+    Login login;
+
+    login.exec();
 }

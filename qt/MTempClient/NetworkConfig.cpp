@@ -240,6 +240,7 @@ void NetworkConfig::rxHandler(MClient::BoardAnswer answer){
             setting.setValue(_MTEMP_PORT, m_boardPort);
             setting.setValue(_MTEMP_USER, m_username);
             setting.setValue(_MTEMP_PASS, m_password1);
+            qDebug() << m_password1;
             break;
         /*  se ho ricevuto fail o error                                                             */
         case MClient::BoardAnswer::Error:

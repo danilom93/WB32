@@ -1,5 +1,6 @@
 #include "Login.h"
 #include "ui_Login.h"
+#include <QDebug>
 
 Login::Login(QWidget *parent) : QDialog(parent), ui(new Ui::Login){
 
@@ -28,6 +29,7 @@ Login::Login(QWidget *parent) : QDialog(parent), ui(new Ui::Login){
         ui->usernameLineEdit->setText(setting.value(_MTEMP_USER).toString());
         ui->rememberUserCheck->setChecked(true);
     }
+    qDebug() << setting.value(_MTEMP_PASS).toString();
     if(setting.value(_MTEMP_PASS).toString() != _MTEMP_NOPASS){
 
         ui->passwordLineEdit->setText(setting.value(_MTEMP_PASS).toString());
@@ -70,6 +72,7 @@ void Login::on_domaniLineEdit_textChanged(const QString &arg1){
 
 void Login::on_portLineEdit_textChanged(const QString &arg1){
 
+    QSettings setting;
     m_port = arg1;
 
     if(ui->remeberNetCheck->isChecked()){
