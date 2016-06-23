@@ -2,6 +2,7 @@
 #define MTEMPCLIENT_H
 
 #include <QIcon>
+#include <QSettings>
 #include <QMainWindow>
 
 #include "NetworkConfig.h"

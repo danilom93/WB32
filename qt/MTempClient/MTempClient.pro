@@ -19,18 +19,21 @@ SOURCES += main.cpp\
     MTempCommons.cpp \
     NetworkConfig.cpp \
     MClient.cpp \
-    Loader.cpp
+    Loader.cpp \
+    Login.cpp
 
 HEADERS  += MTempClient.h \
     MTempDefs.h \
     MTempCommons.h \
     NetworkConfig.h \
     MClient.h \
-    Loader.h
+    Loader.h \
+    Login.h
 
 FORMS    += MTempClient.ui \
     NetworkConfig.ui \
-    Loader.ui
+    Loader.ui \
+    Login.ui
 
 RESOURCES += \
     resource.qrc
