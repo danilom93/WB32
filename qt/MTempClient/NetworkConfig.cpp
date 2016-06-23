@@ -15,15 +15,7 @@ NetworkConfig::NetworkConfig(QWidget *parent) : QDialog(parent), ui(new Ui::Netw
     /*  validator per ip                                                                            */
     QRegExpValidator * addrValidator = new QRegExpValidator(addrRx, this);
     /*  stringa per pattern regexp per controllo campi                                              */
-    QString rxPattern;
-    /*  aggiungo CONF                                                                               */
-    rxPattern += _MTEMP_CONF_START;
-    /*  aggiungo l'or                                                                               */
-    rxPattern += "|";
-    /*  aggiungo CONFEND                                                                            */
-    rxPattern += _MTEMP_CONF_END;
-    /*  aggiungo le altre parole vietate                                                            */
-    rxPattern += "| |\[|\]";
+    QString rxPattern = "[\[]| |[\]]";
     /*  setto il pattern                                                                            */
     m_rx.setPattern(rxPattern);
     /*  setto come non case sensitive                                                               */
@@ -60,6 +52,11 @@ NetworkConfig::NetworkConfig(QWidget *parent) : QDialog(parent), ui(new Ui::Netw
     m_loader->hide();
     /*  creo il client                                                                              */
     m_client = new MClient(this);
+    /*  imposto l'indirizzo di connessione                                                          */
+    m_client->setAddress(_MTEMP_STANDARD_AP_IP);
+    /*  imposto la porta                                                                            */
+    m_client->setPort(_MTEMP_STANDARD_AP_PORT);
+
     /*  connetto i segnali                                                                          */
     connect(m_client, SIGNAL(connected())   ,
             this, SLOT(notifyConnected())   );
@@ -70,13 +67,8 @@ NetworkConfig::NetworkConfig(QWidget *parent) : QDialog(parent), ui(new Ui::Netw
     connect(m_client, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(notifyError(QAbstractSocket::SocketError)));
     /*  connetto i segnali                                                                          */
-    connect(m_client, SIGNAL(tokenReceived()),
-            this, SLOT(rxHandler()));
-    /*  connetto i segnali                                                                          */
-    connect(m_client, SIGNAL(dataSended()),
-            this, SLOT(txHandler()));
-    /*  imposto lo stato                                                                            */
-    m_state = NotConnected;
+    connect(m_client, SIGNAL(answerReceived(MClient::BoardAnswer)),
+            this, SLOT(rxHandler(MClient::BoardAnswer)));
     /*  imposto la stringa per il controllo password                                                */
     ui->passwordNotifierLabel->setText("La password è obbligatoria.");
 }
@@ -103,9 +95,7 @@ void NetworkConfig::on_netNameLineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("Il nome della rete non può contenere ") +
-                              QString(_MTEMP_CONF_START) + QString(", ")       +
-                              QString(_MTEMP_CONF_END)   + QString(", ")       +
-                              QString("OK, FAIL, ERROR o spazi vuoti."));
+                              QString("[, ], o spazi vuoti."));
         ui->netNameLineEdit->clear();
         return;
     }
@@ -113,16 +103,13 @@ void NetworkConfig::on_netNameLineEdit_textChanged(const QString &arg1){
     checkAll();
 }
 
-
 void NetworkConfig::on_netKeyLineEdit_textChanged(const QString &arg1){
 
     if(arg1.contains(m_rx)){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La chiave di rete non può contenere ")  +
-                              QString(_MTEMP_CONF_START) + QString(", ")       +
-                              QString(_MTEMP_CONF_END)   + QString(", ")       +
-                              QString("OK, FAIL, ERROR o spazi vuoti."));
+                              QString("[, ], o spazi vuoti."));
         ui->netKeyLineEdit->clear();
         return;
     }
@@ -142,9 +129,7 @@ void NetworkConfig::on_usernameLineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("Il nome utente non può contenere ") +
-                              QString(_MTEMP_CONF_START) + QString(", ")   +
-                              QString(_MTEMP_CONF_END)   + QString(", ")   +
-                              QString("OK, FAIL, ERROR o spazi vuoti."));
+                              QString("[, ], o spazi vuoti."));
         ui->usernameLineEdit->clear();
         return;
     }
@@ -158,9 +143,7 @@ void NetworkConfig::on_password1LineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La password non può contenere ")    +
-                              QString(_MTEMP_CONF_START) + QString(", ")   +
-                              QString(_MTEMP_CONF_END)   + QString(", ")   +
-                              QString("OK, FAIL, ERROR o spazi vuoti."));
+                              QString("[, ], o spazi vuoti."));
         ui->password1LineEdit->clear();
         return;
     }
@@ -182,9 +165,7 @@ void NetworkConfig::on_password2LineEdit_textChanged(const QString &arg1){
         QMessageBox::critical(this,
                               "Errore",
                               QString("La password non può contenere ")    +
-                              QString(_MTEMP_CONF_START) + QString(", ")   +
-                              QString(_MTEMP_CONF_END)   + QString(", ")   +
-                              QString("OK, FAIL, ERROR o spazi vuoti."));
+                              QString("[, ], o spazi vuoti."));
         ui->password2LineEdit->clear();
         return;
     }
@@ -218,20 +199,6 @@ void NetworkConfig::on_abortButton_clicked(){
 }
 
 void NetworkConfig::on_configureButton_clicked(){
-
-    /*  se sono in qualsiasi altro stato all'infuori di notConnected                                */
-    if(m_state != NotConnected){
-        /*  informo l'utente                                                                        */
-        QMessageBox::critical(this,
-                              "Errore",
-                              QString("La vecchia connessione è ancora aperta"));
-        /*  e ritorno                                                                               */
-        return;
-    }
-    /*  imposto l'indirizzo di connessione                                                          */
-    m_client->setAddress(_MTEMP_STANDARD_AP_IP);
-    /*  imposto la porta                                                                            */
-    m_client->setPort(_MTEMP_STANDARD_AP_PORT);
     /*  provo a connettermi                                                                         */
     m_client->connectToHost();
     /*  mostro il loader                                                                            */
@@ -241,32 +208,10 @@ void NetworkConfig::on_configureButton_clicked(){
 }
 
 void NetworkConfig::notifyConnected(){
-    QString str;
     /*  imposto il messaggio nel loader                                                             */
     m_loader->setMessage("Connesso alla centralina");
-    /*  imposto lo stato                                                                            */
-    m_state = Connected;
-    /*  costruisco la stringa di configurazione                                                     */
-    str += m_networkName;
-    str += _MTEMP_SEP;
-    str += m_networkKey;
-    str += _MTEMP_SEP;
-    str += m_boardIP;
-    str += _MTEMP_SEP;
-    str += QString::number(m_boardPort);
-    str += _MTEMP_SEP;
-    str += m_username;
-    str += _MTEMP_SEP;
-    str += m_password1;
-    str += _MTEMP_SEP;
-    str += _MTEMP_CONF;
-    /*  imposto lo stato                                                                            */
-    m_state = SendConfiguration;
-    /*  setto la stringa per l'ok                                                                   */
-    m_client->waitFor(_MTEMP_BOARD_OK);
-    /*  mando la configurazione                                                                     */
-    m_client->write(str);
-
+    /*  invio la configurazione                                                                     */
+    sendConf();
 }
 
 void NetworkConfig::notifyError(QAbstractSocket::SocketError){
@@ -282,19 +227,28 @@ void NetworkConfig::notifyDisconnected(){
     this->close();
 }
 
-void NetworkConfig::rxHandler(){
+void NetworkConfig::rxHandler(MClient::BoardAnswer answer){
 
-    if(m_state == WaitAnswer){
-        QMessageBox::information(this, this->windowTitle(), "Centralina configurarata correttamente");
-        m_client->disconnectFromHost();
+    /*  controllo la risposta                                                                       */
+    switch(answer){
+        /*  se ho ricevuto l'ok                                                                     */
+        case MClient::BoardAnswer::TokenReceived:
+            /*  notifico l'ok                                                                       */
+            QMessageBox::information(this, this->windowTitle(), "Centralina configurata correttamente.");
+            /*
+             * salvare configurazione
+             *
+             */
+            break;
+        /*  se ho ricevuto fail o error                                                             */
+        case MClient::BoardAnswer::Error:
+        case MClient::BoardAnswer::Fail:
+            /*  notifico l'errore                                                                   */
+            QMessageBox::critical(this, this->windowTitle(), "Errore nella configurazione della centralina.");
+            break;
     }
-}
-
-void NetworkConfig::txHandler(){
-
-    if(m_state == SendConfiguration){
-        m_state = WaitAnswer;
-    }
+    /*  mi disconnetto                                                                              */
+    m_client->disconnectFromHost();
 }
 
 
@@ -322,6 +276,40 @@ void NetworkConfig::checkAll(){
     }else{
         ui->configureButton->setEnabled(false);
     }
+}
+
+void NetworkConfig::sendConf(){
+    QString str;
+    /*  accodo il nome della rete                                                                   */
+    str += m_networkName;
+    /*  accodo il separatore                                                                        */
+    str += _MTEMP_SEP;
+    /*  accodo la chiave di rete                                                                    */
+    str += m_networkKey;
+    /*  accodo il separatore                                                                        */
+    str += _MTEMP_SEP;
+    /*  accodo l'indirizzo della scheda                                                             */
+    str += m_boardIP;
+    /*  accodo il separatore                                                                        */
+    str += _MTEMP_SEP;
+    /*  accodo la porta                                                                             */
+    str += QString::number(m_boardPort);
+    /*  accodo il separatore                                                                        */
+    str += _MTEMP_SEP;
+    /*  accodo l'username                                                                           */
+    str += m_username;
+    /*  accodo il separatore                                                                        */
+    str += _MTEMP_SEP;
+    /*  accodo la password                                                                          */
+    str += m_password1;
+    /*  accodo il separatore                                                                        */
+    str += _MTEMP_SEP;
+    /*  accodo il comando                                                                           */
+    str += _MTEMP_CONF;
+    /*  setto la stringa per l'ok                                                                   */
+    m_client->waitFor(_MTEMP_BOARD_OK);
+    /*  mando la configurazione                                                                     */
+    m_client->write(str);
 }
 
 

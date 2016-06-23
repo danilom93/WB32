@@ -3,8 +3,9 @@
 
 Loader::Loader(const QString & title, QWidget *parent) : QDialog(parent), ui(new Ui::Loader){
 
-    ui->setupUi(this);
     m_movie = new QMovie(":/ico/img/ajax-loader.gif");
+    ui->setupUi(this);
+    this->setWindowTitle(title);
     ui->text->clear();
     ui->loader->setMovie(m_movie);
     m_movie->start();

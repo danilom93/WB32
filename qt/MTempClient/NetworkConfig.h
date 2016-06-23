@@ -26,12 +26,6 @@ class NetworkConfig : public QDialog{
     Q_OBJECT
 
     public:
-        enum State{
-            NotConnected,
-            Connected,
-            SendConfiguration,
-            WaitAnswer
-        };
 
         explicit NetworkConfig(QWidget *parent = 0);
         ~NetworkConfig();
@@ -65,13 +59,12 @@ class NetworkConfig : public QDialog{
 
         void notifyDisconnected();
 
-        void rxHandler();
-
-        void txHandler();
+        void rxHandler(MClient::BoardAnswer answer);
 
     private:
         void clear();
         void checkAll();
+        void sendConf();
 
 
         Ui::NetworkConfig * ui;
@@ -86,7 +79,6 @@ class NetworkConfig : public QDialog{
         QLabel *            m_pass1Label;
         QLabel *            m_pass2Label;
         Loader *            m_loader;
-        State               m_state;
         QRegExp             m_rx;
 
 };

@@ -32,7 +32,7 @@ class MClient : public QObject{
         void connected();
         void disconnected();
         void error(QAbstractSocket::SocketError lastError);
-        void answerReceived(BoardAnswer res);
+        void answerReceived(MClient::BoardAnswer res);
         void dataSended();
 
     public slots:
