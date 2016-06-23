@@ -430,7 +430,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd) const{
                 if(m_clk->isGood()){
                     
                     time = m_clk->currentTime();
-                    str += AString(time.year() - 2000);
+                    str += AString(time.year());
                     str += _MTEMP_SEP;
                     str += AString(static_cast<uint8>(time.month()));
                     str += _MTEMP_SEP;
