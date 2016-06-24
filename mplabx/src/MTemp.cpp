@@ -486,7 +486,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
             }else if(str == _MTEMP_ROOMSTAT){
                 
                 //(CLIENT)    username*password*R*[ROOMSTAT]
-                //(SERVER)    (R*NAME*ADDRESS*RELAYOUT*STATE*ISFORCEDON*ISFORCEDOFF*[OK] || [FAIL] || [ERROR])
+                //(SERVER)    (R*NAME*ADDRESS*RELAYOUT*STATE*ISFORCEDON*ISFORCEDOFF*TT*[OK] || [FAIL] || [ERROR])
                 index = list->at(2).toInt32(flag);
                 if(flag && index < _MTEMP_ROOM_VEC_SIZE){
                 
@@ -504,6 +504,8 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                     str += (m_rooms[index].isForcedOn() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
                     str += _MTEMP_SEP;
                     str += (m_rooms[index].isForcedOff() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
+                    str += _MTEMP_SEP;
+                    str += AString(m_rooms[index].currentTemperature());
                     str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);
