@@ -634,7 +634,7 @@ AFramework::quint32 AFramework::Room::relayOut() const{
 quint32 AFramework::Room::relayOut() const{
 #endif
 
-    return relayOut();
+    return m_relayOut;
 }
 
 AFramework::Program AFramework::Room::program(const AFramework::ADateTime::Weekdays day) const{
