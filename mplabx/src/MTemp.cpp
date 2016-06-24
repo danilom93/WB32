@@ -337,6 +337,8 @@ bool AFramework::MTempMaster::joinNetwork() const{
 bool AFramework::MTempMaster::programsManager(){                                                //da fare
     
     ADateTime currentClk;
+    Program prg;
+    
     if(!m_flag){
         
         return false;
@@ -344,36 +346,37 @@ bool AFramework::MTempMaster::programsManager(){                                
     if(m_clk->isGood()){
         
         currentClk = m_clk->currentTime();
-        
-//        m_lcd->clear();
-//        m_lcd->write("Memoria\n");
-//        m_lcd->write(AString(static_cast<sint32>(System::memstat())).c_str());
-//        System::delay(1000);
+
         for(uint8 i=0; i < _MTEMP_ROOM_VEC_SIZE; i++){
 
-            if(m_rooms[i].isAuto()){
-               
-                if( m_rooms[i].program(currentClk.Weekday()).isEnabled() &&
-                    m_rooms[i].program(currentClk.Weekday()).startHours() == currentClk.hours() &&
-                    m_rooms[i].program(currentClk.Weekday()).startMinutes() == currentClk.minutes() ){
+            prg = m_rooms[i].program(currentClk.Weekday());
+            
+            if(m_rooms[i].isAuto() && prg.isEnabled()){
                 
-                        m_rooms[i].on();
-                }
-                if( m_rooms[i].program(currentClk.Weekday()).isEnabled() &&
-                    m_rooms[i].program(currentClk.Weekday()).endHours() == currentClk.hours() &&
-                    m_rooms[i].program(currentClk.Weekday()).endMinutes() == currentClk.minutes() ){
-                
-                        m_rooms[i].off();
-                }
+                if( ((prg.startHours() == currentClk.hours() && prg.startMinutes() <= currentClk.minutes())
+                                                             ||
+                                           (prg.startHours() < currentClk.hours()))    
+                                                             &&
+                    ((prg.endHours() == currentClk.hours() && prg.endMinutes() >= currentClk.minutes())
+                                                             ||
+                                            (prg.endHours() > currentClk.hours()))) {
+                    m_rooms[i].on();
+                            
+                }else{
+                    
+                    m_rooms[i].off();
+                }   
             }
             
             if(m_rooms[i].isForcedOff()){           //se lo spegnimento è forzato
-                
+
                 m_rooms[i].off();               //metto off la porta
             }
+            
             if(m_rooms[i].isForcedOn()){            
-                
+
                 m_rooms[i].on();                //metto on la porta
+
             }
         }
     }else{
