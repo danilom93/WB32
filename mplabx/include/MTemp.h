@@ -17,7 +17,7 @@ namespace AFramework{
         public:
                     MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem, AESP8266 *wifi, ALcd *lcd, volatile AHardwarePort *port);
             
-            bool    networkConfig() const;            //configurazione rete
+            bool    networkConfig();            //configurazione rete
             bool    run();  
             
             
@@ -44,7 +44,7 @@ namespace AFramework{
             
             bool    joinNetwork() const;          //si connette alla rete
             
-            bool    programsManager() const;
+            bool    programsManager();
             
             bool    loadAll();             //loads rooms and programs 
             

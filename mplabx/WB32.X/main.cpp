@@ -44,7 +44,8 @@ int main(int argc, char** argv) {
     lcd.lightOn();
     
     MTempMaster app(&mario, &clock, &memory, &wifi, &lcd, &PortC);
-   
+    PortA.setOutput(bit7);
+    PortC.setOutput(Quick::All);
     System::delay(1000);
     
     if(PortB.read(bit4) == Lo){

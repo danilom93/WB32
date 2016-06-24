@@ -31,7 +31,7 @@ AFramework::MTempMaster::MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem,
     }
 }
 
-bool AFramework::MTempMaster::networkConfig() const{
+bool AFramework::MTempMaster::networkConfig(){
     
     AString dataRcv;
     
@@ -60,8 +60,15 @@ bool AFramework::MTempMaster::networkConfig() const{
                         
                         if(m_wifi->send(_MTEMP_BOARD_OK)){
                             
-                            msg("Avvio tra\n1 secondo...");
-                            return true;
+                            if(defaultProgram()){
+                               
+                                msg("Avvio tra\n1 secondo...");
+                                return true;
+                            }else{
+                                msg("Errore...");
+                                return false;
+                            }
+                            
                         }
                     }else{
                         
@@ -91,12 +98,16 @@ bool AFramework::MTempMaster::run(){
             while(1);
         }
             m_wifi->prepareForReceive();
-            
+            PortA.write(bit7, Hi);
+            System::delay(1000);
+            PortA.write(bit7, Lo);
             while(1){
                 
                 if(m_wifi->waitForData(currentCmd, 0)){
-
+                    
+                    PortA.write(bit7, Hi);
                     commandExec(currentCmd);
+                    PortA.write(bit7, Lo);
                     currentCmd.clear();
                 }else{
 
@@ -320,7 +331,7 @@ bool AFramework::MTempMaster::joinNetwork() const{
     return false;
 }
 
-bool AFramework::MTempMaster::programsManager() const{                                                //da fare
+bool AFramework::MTempMaster::programsManager(){                                                //da fare
     
     ADateTime currentClk;
     if(!m_flag){
@@ -331,15 +342,35 @@ bool AFramework::MTempMaster::programsManager() const{                          
         
         currentClk = m_clk->currentTime();
         
-        m_lcd->clear();
-        m_lcd->write("Memoria\n");
-        m_lcd->write(AString(static_cast<sint32>(System::memstat())).c_str());
-        System::delay(1000);
-        
+//        m_lcd->clear();
+//        m_lcd->write("Memoria\n");
+//        m_lcd->write(AString(static_cast<sint32>(System::memstat())).c_str());
+//        System::delay(1000);
         for(uint8 i=0; i < _MTEMP_ROOM_VEC_SIZE; i++){
-            
-            if(m_rooms[i].program(currentClk.Weekday()).startHours() == currentClk.hours()){
+
+            if(m_rooms[i].isAuto()){
+               
+                if( m_rooms[i].program(currentClk.Weekday()).isEnabled() &&
+                    m_rooms[i].program(currentClk.Weekday()).startHours() == currentClk.hours() &&
+                    m_rooms[i].program(currentClk.Weekday()).startMinutes() == currentClk.minutes() ){
                 
+                        m_rooms[i].on();
+                }
+                if( m_rooms[i].program(currentClk.Weekday()).isEnabled() &&
+                    m_rooms[i].program(currentClk.Weekday()).endHours() == currentClk.hours() &&
+                    m_rooms[i].program(currentClk.Weekday()).endMinutes() == currentClk.minutes() ){
+                
+                        m_rooms[i].off();
+                }
+            }
+            
+            if(m_rooms[i].isForcedOff()){           //se lo spegnimento è forzato
+                
+                m_rooms[i].off();               //metto off la porta
+            }
+            if(m_rooms[i].isForcedOn()){            
+                
+                m_rooms[i].on();                //metto on la porta
             }
         }
     }else{

@@ -169,6 +169,8 @@ namespace AFramework{
             bool    forceOff(const bool force);
             bool    setAuto(const bool flg);
             QString toString() const;
+            bool    on();
+            bool    off();
 
         private:
 

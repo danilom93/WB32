@@ -745,15 +745,21 @@ bool AFramework::Room::isOff() const{
 
 bool AFramework::Room::forceOn(const bool force){
 
-    m_forcedOn = force;
-    m_forcedOff = !force;
+    if(force){
+        
+        m_forcedOn = force;
+        m_forcedOff = !force;
+    }
     return true;
 }
 
 bool AFramework::Room::forceOff(const bool force){
 
-    m_forcedOff = force;
-    m_forcedOn = !force;
+    if(force){
+        
+        m_forcedOff = force;
+        m_forcedOn = !force;
+    }
     return true;
 }
 
@@ -786,4 +792,18 @@ QString AFramework::Room::toString() const{
     return str;
 }
 
+bool AFramework::Room::on(){
+    
+    if(isOn()){
+        return true;
+    }
+    return m_relayPort->write(relayOut(), Hi);
+}
 
+bool AFramework::Room::off(){
+    
+    if(isOff()){
+        return true;
+    }
+    return m_relayPort->write(relayOut(), Lo);
+}
