@@ -13,6 +13,7 @@
 #include "NetworkConfig.h"
 #include "Login.h"
 #include "TimeConf.h"
+#include "GuiRoom.h"
 
 namespace Ui {
 
@@ -57,6 +58,14 @@ private slots:
 
     void on_timeSetButton_clicked();
 
+    void updateRequestHandler(Room::RoomNumber num);
+
+    void forceOnRequestHandler(Room::RoomNumber num, QString cmd);
+
+    void forceOffRequestHandler(Room::RoomNumber num, QString cmd);
+
+    void forceAutoRequestHandler(Room::RoomNumber num, QString cmd);
+
 private:
 
     enum Commands{
@@ -78,6 +87,7 @@ private:
     QString           m_pass;
     MClient *         m_client;
     Commands          m_currentComm;
+    GuiRoom           m_rooms[0x08];
 };
 
 #endif // MTEMPCLIENT_H

@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     NetworkConfig.cpp \
     MClient.cpp \
     Loader.cpp \
-    Login.cpp
+    Login.cpp \
+    GuiRoom.cpp
 
 HEADERS  += MTempClient.h \
     MTempDefs.h \
@@ -29,7 +30,8 @@ HEADERS  += MTempClient.h \
     MClient.h \
     Loader.h \
     Login.h \
-    clientdefs.h
+    clientdefs.h \
+    GuiRoom.h
 
 FORMS    += MTempClient.ui \
     NetworkConfig.ui \

@@ -27,9 +27,6 @@ MTempClient::MTempClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::MTem
 
     m_client = new MClient(this);
 
-    enableActions();
-    disableWindow();
-
     connect(m_client, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(notifyError(QAbstractSocket::SocketError)));
     connect(m_client, SIGNAL(connected()),
@@ -38,6 +35,29 @@ MTempClient::MTempClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::MTem
             this, SLOT(rxHandler(MClient::BoardAnswer)));
     connect(m_client, SIGNAL(disconnected()),
             this, SLOT(notifyDisconnected()));
+    /*  configuro le stanze                                                                         */
+    m_rooms[0].init(Room::Room0, ui->roomGroupBox_1, ui->temperatureEdit_1, ui->statusLineEdit_1, ui->forceOnButton_1, ui->forceOffButton_1, ui->setAutoButton_1, ui->updateButton_1, ui->configButton_1);
+    m_rooms[1].init(Room::Room1, ui->roomGroupBox_2, ui->temperatureEdit_2, ui->statusLineEdit_2, ui->forceOnButton_2, ui->forceOffButton_2, ui->setAutoButton_2, ui->updateButton_2, ui->configButton_2);
+    m_rooms[2].init(Room::Room2, ui->roomGroupBox_3, ui->temperatureEdit_3, ui->statusLineEdit_3, ui->forceOnButton_3, ui->forceOffButton_3, ui->setAutoButton_3, ui->updateButton_3, ui->configButton_3);
+    m_rooms[3].init(Room::Room3, ui->roomGroupBox_4, ui->temperatureEdit_4, ui->statusLineEdit_4, ui->forceOnButton_4, ui->forceOffButton_4, ui->setAutoButton_4, ui->updateButton_4, ui->configButton_4);
+    m_rooms[4].init(Room::Room4, ui->roomGroupBox_5, ui->temperatureEdit_5, ui->statusLineEdit_5, ui->forceOnButton_5, ui->forceOffButton_5, ui->setAutoButton_5, ui->updateButton_5, ui->configButton_5);
+    m_rooms[5].init(Room::Room5, ui->roomGroupBox_6, ui->temperatureEdit_6, ui->statusLineEdit_6, ui->forceOnButton_6, ui->forceOffButton_6, ui->setAutoButton_6, ui->updateButton_6, ui->configButton_6);
+    m_rooms[6].init(Room::Room6, ui->roomGroupBox_7, ui->temperatureEdit_7, ui->statusLineEdit_7, ui->forceOnButton_7, ui->forceOffButton_7, ui->setAutoButton_7, ui->updateButton_7, ui->configButton_7);
+    m_rooms[7].init(Room::Room7, ui->roomGroupBox_8, ui->temperatureEdit_8, ui->statusLineEdit_8, ui->forceOnButton_8, ui->forceOffButton_8, ui->setAutoButton_8, ui->updateButton_8, ui->configButton_8);
+    /*  inizializzo le stanze                                                                       */
+    for(int i = 0; i < 8; i++){
+        m_rooms[i].setTemperature(0);
+        m_rooms[i].setStatus(GuiRoom::Off);
+        m_rooms[i].setRoomName("Stanza ?");
+        m_rooms[i].setRoomMode(GuiRoom::Auto);
+        //m_rooms[i].disable();
+        connect(&m_rooms[i], SIGNAL(updateRequest(Room::RoomNumber))           , this, SLOT(updateRequestHandler(Room::RoomNumber))           );
+        connect(&m_rooms[i], SIGNAL(forceAutoRequest(Room::RoomNumber,QString)), this, SLOT(forceAutoRequestHandler(Room::RoomNumber,QString)));
+        connect(&m_rooms[i], SIGNAL(forceOffRequest(Room::RoomNumber,QString)) , this, SLOT(forceOffRequestHandler(Room::RoomNumber,QString)) );
+        connect(&m_rooms[i], SIGNAL(forceOnRequest(Room::RoomNumber,QString))  , this, SLOT(forceOnRequestHandler(Room::RoomNumber,QString))  );
+    }
+    enableActions();
+    disableWindow();
 }
 
 MTempClient::~MTempClient(){
@@ -167,68 +187,10 @@ void MTempClient::disableWindow(){
     ui->timeSetButton->setEnabled(false);
     ui->timeRefreshButton->setEnabled(false);
 
-    ui->configButton_1->setEnabled(false);
-    ui->configButton_2->setEnabled(false);
-    ui->configButton_3->setEnabled(false);
-    ui->configButton_4->setEnabled(false);
-    ui->configButton_5->setEnabled(false);
-    ui->configButton_6->setEnabled(false);
-    ui->configButton_7->setEnabled(false);
-    ui->configButton_8->setEnabled(false);
+    for(int i = 0; i < 8; i++){
+        m_rooms[i].disable();
+    }
 
-    ui->updateButton_1->setEnabled(false);
-    ui->updateButton_2->setEnabled(false);
-    ui->updateButton_3->setEnabled(false);
-    ui->updateButton_4->setEnabled(false);
-    ui->updateButton_5->setEnabled(false);
-    ui->updateButton_6->setEnabled(false);
-    ui->updateButton_7->setEnabled(false);
-    ui->updateButton_8->setEnabled(false);
-
-    ui->forceOffButton_1->setEnabled(false);
-    ui->forceOffButton_2->setEnabled(false);
-    ui->forceOffButton_3->setEnabled(false);
-    ui->forceOffButton_4->setEnabled(false);
-    ui->forceOffButton_5->setEnabled(false);
-    ui->forceOffButton_6->setEnabled(false);
-    ui->forceOffButton_7->setEnabled(false);
-    ui->forceOffButton_8->setEnabled(false);
-
-    ui->forceOnButton_1->setEnabled(false);
-    ui->forceOnButton_2->setEnabled(false);
-    ui->forceOnButton_3->setEnabled(false);
-    ui->forceOnButton_4->setEnabled(false);
-    ui->forceOnButton_5->setEnabled(false);
-    ui->forceOnButton_6->setEnabled(false);
-    ui->forceOnButton_7->setEnabled(false);
-    ui->forceOnButton_8->setEnabled(false);
-
-    ui->setAutoButton_1->setEnabled(false);
-    ui->setAutoButton_2->setEnabled(false);
-    ui->setAutoButton_3->setEnabled(false);
-    ui->setAutoButton_4->setEnabled(false);
-    ui->setAutoButton_5->setEnabled(false);
-    ui->setAutoButton_6->setEnabled(false);
-    ui->setAutoButton_7->setEnabled(false);
-    ui->setAutoButton_8->setEnabled(false);
-
-    ui->temperatureEdit_1->setEnabled(false);
-    ui->temperatureEdit_2->setEnabled(false);
-    ui->temperatureEdit_3->setEnabled(false);
-    ui->temperatureEdit_4->setEnabled(false);
-    ui->temperatureEdit_5->setEnabled(false);
-    ui->temperatureEdit_6->setEnabled(false);
-    ui->temperatureEdit_7->setEnabled(false);
-    ui->temperatureEdit_8->setEnabled(false);
-
-    ui->statusLineEdit_1->setEnabled(false);
-    ui->statusLineEdit_2->setEnabled(false);
-    ui->statusLineEdit_3->setEnabled(false);
-    ui->statusLineEdit_4->setEnabled(false);
-    ui->statusLineEdit_5->setEnabled(false);
-    ui->statusLineEdit_6->setEnabled(false);
-    ui->statusLineEdit_7->setEnabled(false);
-    ui->statusLineEdit_8->setEnabled(false);
 }
 
 void MTempClient::enableWindow(){
@@ -237,68 +199,9 @@ void MTempClient::enableWindow(){
     ui->timeSetButton->setEnabled(true);
     ui->timeRefreshButton->setEnabled(true);
 
-    ui->configButton_1->setEnabled(true);
-    ui->configButton_2->setEnabled(true);
-    ui->configButton_3->setEnabled(true);
-    ui->configButton_4->setEnabled(true);
-    ui->configButton_5->setEnabled(true);
-    ui->configButton_6->setEnabled(true);
-    ui->configButton_7->setEnabled(true);
-    ui->configButton_8->setEnabled(true);
-
-    ui->updateButton_1->setEnabled(true);
-    ui->updateButton_2->setEnabled(true);
-    ui->updateButton_3->setEnabled(true);
-    ui->updateButton_4->setEnabled(true);
-    ui->updateButton_5->setEnabled(true);
-    ui->updateButton_6->setEnabled(true);
-    ui->updateButton_7->setEnabled(true);
-    ui->updateButton_8->setEnabled(true);
-
-    ui->forceOffButton_1->setEnabled(true);
-    ui->forceOffButton_2->setEnabled(true);
-    ui->forceOffButton_3->setEnabled(true);
-    ui->forceOffButton_4->setEnabled(true);
-    ui->forceOffButton_5->setEnabled(true);
-    ui->forceOffButton_6->setEnabled(true);
-    ui->forceOffButton_7->setEnabled(true);
-    ui->forceOffButton_8->setEnabled(true);
-
-    ui->forceOnButton_1->setEnabled(true);
-    ui->forceOnButton_2->setEnabled(true);
-    ui->forceOnButton_3->setEnabled(true);
-    ui->forceOnButton_4->setEnabled(true);
-    ui->forceOnButton_5->setEnabled(true);
-    ui->forceOnButton_6->setEnabled(true);
-    ui->forceOnButton_7->setEnabled(true);
-    ui->forceOnButton_8->setEnabled(true);
-
-    ui->setAutoButton_1->setEnabled(true);
-    ui->setAutoButton_2->setEnabled(true);
-    ui->setAutoButton_3->setEnabled(true);
-    ui->setAutoButton_4->setEnabled(true);
-    ui->setAutoButton_5->setEnabled(true);
-    ui->setAutoButton_6->setEnabled(true);
-    ui->setAutoButton_7->setEnabled(true);
-    ui->setAutoButton_8->setEnabled(true);
-
-    ui->temperatureEdit_1->setEnabled(true);
-    ui->temperatureEdit_2->setEnabled(true);
-    ui->temperatureEdit_3->setEnabled(true);
-    ui->temperatureEdit_4->setEnabled(true);
-    ui->temperatureEdit_5->setEnabled(true);
-    ui->temperatureEdit_6->setEnabled(true);
-    ui->temperatureEdit_7->setEnabled(true);
-    ui->temperatureEdit_8->setEnabled(true);
-
-    ui->statusLineEdit_1->setEnabled(true);
-    ui->statusLineEdit_2->setEnabled(true);
-    ui->statusLineEdit_3->setEnabled(true);
-    ui->statusLineEdit_4->setEnabled(true);
-    ui->statusLineEdit_5->setEnabled(true);
-    ui->statusLineEdit_6->setEnabled(true);
-    ui->statusLineEdit_7->setEnabled(true);
-    ui->statusLineEdit_8->setEnabled(true);
+    for(int i = 0; i < 8; i++){
+        m_rooms[i].enable();
+    }
 }
 
 void MTempClient::timeget(){
@@ -368,4 +271,23 @@ void MTempClient::on_timeRefreshButton_clicked(){
 void MTempClient::on_timeSetButton_clicked(){
 
     timeset();
+}
+
+void MTempClient::updateRequestHandler(Room::RoomNumber num){
+
+}
+
+void MTempClient::forceOnRequestHandler(Room::RoomNumber num, QString cmd){
+
+    m_rooms[static_cast<int>(num)].setRoomMode(GuiRoom::ForcedOn);
+}
+
+void MTempClient::forceOffRequestHandler(Room::RoomNumber num, QString cmd){
+
+    m_rooms[static_cast<int>(num)].setRoomMode(GuiRoom::ForcedOff);
+}
+
+void MTempClient::forceAutoRequestHandler(Room::RoomNumber num, QString cmd){
+
+    m_rooms[static_cast<int>(num)].setRoomMode(GuiRoom::Auto);
 }
