@@ -656,6 +656,8 @@ quint8 AFramework::Room::currentTemperature() const{
 #else
     //GIUSEPPE
 #endif
+    
+    return 36;
 }
 
 bool AFramework::Room::setRoomNumber(const RoomNumber room){

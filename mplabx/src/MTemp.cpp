@@ -356,12 +356,21 @@ bool AFramework::MTempMaster::loadAll(){
     
     for(uint8 i = 0; i <_MTEMP_ROOM_VEC_SIZE; i++){
     
-        m_rooms[i].setRoomNumber(static_cast<Room::RoomNumber>(i));
-        m_rooms[i].loadRoom();
+        if(!m_rooms[i].setRoomNumber(static_cast<Room::RoomNumber>(i))){
+            
+            return false;
+        }
+        if(!m_rooms[i].loadRoom()){
+            
+            return false;
+        }
         
         for(uint8 j = 0; j < _MTEMP_WEEKPROGRAM_VEC_SIZE; j++){
           
-            m_rooms[i].loadProgram(static_cast<ADateTime::Weekdays>(j+1));
+            if(!m_rooms[i].loadProgram(static_cast<ADateTime::Weekdays>(j+1))){
+                
+                return false;
+            }
         }
     }     
     
@@ -477,17 +486,25 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
             }else if(str == _MTEMP_ROOMSTAT){
                 
                 //(CLIENT)    username*password*R*[ROOMSTAT]
-                //(SERVER)    (R*NAME*ADDRESS*RELAYOUT*[OK] || [FAIL] || [ERROR])
+                //(SERVER)    (R*NAME*ADDRESS*RELAYOUT*STATE*ISFORCEDON*ISFORCEDOFF*[OK] || [FAIL] || [ERROR])
                 index = list->at(2).toInt32(flag);
                 if(flag && index < _MTEMP_ROOM_VEC_SIZE){
                 
                     str.clear();
-                    str += list->at(2);
+                    str += list->at(2);         
                     str += _MTEMP_SEP;
                     str += m_rooms[index].roomName();
                     str += _MTEMP_SEP;
                     str += m_rooms[index].sensorAddress();
+                    str += _MTEMP_SEP;
+                    str += AString(static_cast<sint32>(m_rooms[index].relayOut()));
+                    str += _MTEMP_SEP;
                     str += (m_rooms[index].isOn() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
+                    str += _MTEMP_SEP;
+                    str += (m_rooms[index].isForcedOn() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
+                    str += _MTEMP_SEP;
+                    str += (m_rooms[index].isForcedOff() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
+                    str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);
                 }else{
@@ -500,11 +517,11 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                 
                 //(CLIENT)    username*password*R*D*[PROGGET]                           
                 //(SERVER)    (R*D*HS*MS*HE*ME*TT*E*[OK] || [FAIL] || [ERROR])
-                index = list->at(2).toInt32(flag);          //numero stanza
+                index = list->at(2).toInt32(flag);          //numero stanza                 //da riprovare!!!!!
                 if(flag && index < _MTEMP_ROOM_VEC_SIZE){
                     
                     index1 = list->at(3).toInt32(flag);      //numero programma   
-                    if(flag && index1 < _MTEMP_WEEKPROGRAM_VEC_SIZE){
+                    if(flag && index1 > 0 && index1 <= _MTEMP_WEEKPROGRAM_VEC_SIZE){
                         
                         str.clear();
                         str += list->at(2);
@@ -528,7 +545,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                 if(flag && index < _MTEMP_ROOM_VEC_SIZE){
                     
                     index1 = list->at(3).toInt32(flag);      //numero programma   
-                    if(flag && index1 < _MTEMP_WEEKPROGRAM_VEC_SIZE){
+                    if(flag && index1 > 0 && index1 <= _MTEMP_WEEKPROGRAM_VEC_SIZE){                //riprovare
                         
                         str.clear();
                         for(uint8 i = 3; i < 9; i++){
@@ -581,17 +598,20 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                 }
                 delete list;
                 return;    
-            }else{
+            }else{      //altro comando 
                 
-                //altro comando 
                 m_wifi->send(_MTEMP_BOARD_FAIL);
                 delete list;
+                return;
             }
-        }else{
+        }else{              //login fallito
             
             m_wifi->send(_MTEMP_BOARD_ERROR);
+            delete list;
+            return;
         }
-    }
+    }       //split fallita
+    
     if(list){
         
         delete list;
