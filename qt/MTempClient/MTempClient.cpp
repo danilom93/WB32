@@ -123,7 +123,7 @@ void MTempClient::rxHandler(MClient::BoardAnswer answer){
             ui->dateTimeEdit->setDateTime(parseTimeget(str));
             m_client->bufferClear();
             break;
-        case TIMEGET:
+        case TIMESET:
             QMessageBox::information(this, this->windowTitle(), "Ora impostata correttamente.");
             m_client->bufferClear();
             break;
@@ -328,7 +328,6 @@ void MTempClient::timeset(){
     int w = (curr.date().dayOfWeek() == 7 ? 1 : (1 + curr.date().dayOfWeek()));
     int hh = curr.time().hour();
     int mm = curr.time().minute();
-    int ss = curr.time().second();
 
     str += (QString::number(y)  + SEP);
     str += (QString::number(m)  + SEP);
@@ -336,7 +335,7 @@ void MTempClient::timeset(){
     str += (QString::number(w)  + SEP);
     str += (QString::number(hh) + SEP);
     str += (QString::number(mm) + SEP);
-    str += (QString::number(ss) + SEP);
+    str += (QString::number(0)  + SEP);
 
     disableWindow();
     m_currentComm = TIMESET;
