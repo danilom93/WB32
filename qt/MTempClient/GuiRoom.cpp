@@ -110,8 +110,60 @@ GuiRoom::RoomMode GuiRoom::roomMode() const{
     }
 }
 
-void GuiRoom::update(const QString &str){
+void GuiRoom::setRelayOut(const quint32 out){
 
+    m_relayOut = out;
+}
+
+quint32 GuiRoom::relayOut(){
+
+    return m_relayOut;
+}
+
+void GuiRoom::setSensorAddress(quint8 addr){
+
+    m_addr = addr;
+}
+
+quint8 GuiRoom::sensorAddress(){
+
+    return m_addr;
+}
+
+quint8 GuiRoom::roomNumber() const{
+
+    return static_cast<quint8>(m_room);
+}
+
+void GuiRoom::update(const QString &str){
+    /*
+     *  FORMATO STRINGA ROOMSTAT
+     *  (CLIENT)    username*password*R*[ROOMSTAT]
+     *               0 1    2       3        4     5          6           7
+     *  (SERVER)    (R*NAME*ADDRESS*RELAYOUT*STATE*ISFORCEDON*ISFORCEDOFF*TT*[OK] || [FAIL] || [ERROR])
+     */
+    QStringList list = str.split("*");
+    m_room = static_cast<Room::RoomNumber>(list[0].toUInt());
+    setRoomName(list[1]);
+
+    setSensorAddress(list[2].toUInt());
+
+    setRelayOut(list[3].toUInt());
+
+    setStatus((list[4] == QString(_MTEMP_ENABLED) ? On : Off));
+
+    if(list[5] == QString(_MTEMP_ENABLED)){
+
+        setRoomMode(ForcedOn);
+    }else if(list[6] == QString(_MTEMP_ENABLED)){
+
+        setRoomMode(ForcedOff);
+    }else{
+
+        setRoomMode(Auto);
+    }
+
+    setTemperature(list[7].toUInt());
 }
 
 void GuiRoom::enable(const bool all){
@@ -150,21 +202,21 @@ void GuiRoom::raiseUpdate(){
 
 void GuiRoom::raiseForceOn(){
     qDebug() << "raiseForceOn()";
-    emit forceOnRequest(m_room, "test");
+    emit forceOnRequest(m_room);
 }
 
 void GuiRoom::raiseForceOff(){
     qDebug() << "raiseForceOff()";
-    emit forceOffRequest(m_room, "test");
+    emit forceOffRequest(m_room);
 }
 
 void GuiRoom::raiseAuto(){
     qDebug() << "raiseAuto()";
-    emit forceAutoRequest(m_room, "test");
+    emit forceAutoRequest(m_room);
 
 }
 
 void GuiRoom::raiseConfig(){
     qDebug() << "raiseConfig()";
-    emit configRequest(m_room, "test");
+    emit configRequest(m_room);
 }

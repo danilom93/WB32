@@ -51,10 +51,10 @@ MTempClient::MTempClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::MTem
         m_rooms[i].setRoomName("Stanza ?");
         m_rooms[i].setRoomMode(GuiRoom::Auto);
         //m_rooms[i].disable();
-        connect(&m_rooms[i], SIGNAL(updateRequest(Room::RoomNumber))           , this, SLOT(updateRequestHandler(Room::RoomNumber))           );
-        connect(&m_rooms[i], SIGNAL(forceAutoRequest(Room::RoomNumber,QString)), this, SLOT(forceAutoRequestHandler(Room::RoomNumber,QString)));
-        connect(&m_rooms[i], SIGNAL(forceOffRequest(Room::RoomNumber,QString)) , this, SLOT(forceOffRequestHandler(Room::RoomNumber,QString)) );
-        connect(&m_rooms[i], SIGNAL(forceOnRequest(Room::RoomNumber,QString))  , this, SLOT(forceOnRequestHandler(Room::RoomNumber,QString))  );
+        connect(&m_rooms[i], SIGNAL(updateRequest(Room::RoomNumber))   , this, SLOT(updateRequestHandler(Room::RoomNumber))   );
+        connect(&m_rooms[i], SIGNAL(forceAutoRequest(Room::RoomNumber)), this, SLOT(forceAutoRequestHandler(Room::RoomNumber)));
+        connect(&m_rooms[i], SIGNAL(forceOffRequest(Room::RoomNumber)) , this, SLOT(forceOffRequestHandler(Room::RoomNumber)) );
+        connect(&m_rooms[i], SIGNAL(forceOnRequest(Room::RoomNumber))  , this, SLOT(forceOnRequestHandler(Room::RoomNumber))  );
     }
     enableActions();
     disableWindow();
@@ -141,30 +141,41 @@ void MTempClient::rxHandler(MClient::BoardAnswer answer){
     switch (m_currentComm) {
         case TIMEGET:
             ui->dateTimeEdit->setDateTime(parseTimeget(str));
-            m_client->bufferClear();
+            enableWindow();
             break;
         case TIMESET:
             QMessageBox::information(this, this->windowTitle(), "Ora impostata correttamente.");
+            enableWindow();
+            break;
+        case ROOMSTAT:
+            m_currentRoom->update(str);
+            enableWindow();
+            break;
+        case ROOMSET:
             m_client->bufferClear();
+            QThread::msleep(250);
+            updateRequestHandler(static_cast<Room::RoomNumber>(m_currentRoom->roomNumber()));
+            return;
             break;
         default:
             break;
     }
+    m_client->bufferClear();
     m_currentComm = NOCOMM;
 
-    enableWindow();
+
 }
 
 void MTempClient::notifyFailure(){
 
     QMessageBox::critical(this, this->windowTitle(), "Errore centralina.");
-    notifyDisconnected();
+    m_client->disconnectFromHost();
 }
 
 void MTempClient::notifyError(){
 
     QMessageBox::critical(this, this->windowTitle(), "Errore nel login: username o password errati");
-    notifyDisconnected();
+    m_client->disconnectFromHost();
 }
 
 void MTempClient::disableActions(){
@@ -202,6 +213,11 @@ void MTempClient::enableWindow(){
     for(int i = 0; i < 8; i++){
         m_rooms[i].enable();
     }
+}
+
+void MTempClient::setCurrentRoom(Room::RoomNumber room){
+
+    m_currentRoom = &(m_rooms[static_cast<quint8>(room)]);
 }
 
 void MTempClient::timeget(){
@@ -245,7 +261,57 @@ void MTempClient::timeset(){
 
     m_client->waitFor(_MTEMP_BOARD_OK);
     m_client->write(USRPSW + str + QString(_MTEMP_TIMESET));
-    qDebug() << str;
+}
+
+void MTempClient::roomstat(){
+    /*
+     *  FORMATO STRINGA ROOMSTAT
+     *  (CLIENT)    username*password*R*[ROOMSTAT]
+     *  (SERVER)    (R*NAME*ADDRESS*RELAYOUT*STATE*ISFORCEDON*ISFORCEDOFF*TT*[OK] || [FAIL] || [ERROR])
+     */
+    disableWindow();
+    m_currentComm = ROOMSTAT;
+
+    m_client->waitFor(_MTEMP_BOARD_OK);
+    m_client->write(USRPSW + QString::number(m_currentRoom->roomNumber()) + SEP + QString(_MTEMP_ROOMSTAT));
+}
+
+void MTempClient::roomset(QString name, quint8 addr, quint32 relayOut, GuiRoom::RoomMode mode){
+    /*
+     *  FORMATO STRINGA ROOMSET
+     *  (CLIENT)    username*password*R*NAME*ADDRESS*RELAYOUT*FORCEON*FORCEOFF*AUTO*[ROOMSET]
+     *  (SERVER)    ([OK] || [FAIL] || [ERROR])
+     */
+    QString str;
+
+    disableWindow();
+    m_currentComm = ROOMSET;
+
+    str += (QString::number(m_currentRoom->roomNumber()) + SEP);
+    str += (name + SEP);
+    str += (QString::number(addr) + SEP);
+    str += (QString::number(relayOut) + SEP);
+
+    switch(mode){
+        case GuiRoom::Auto:
+            str += (QString(_MTEMP_DISABLED) + SEP);
+            str += (QString(_MTEMP_DISABLED) + SEP);
+            str += (QString(_MTEMP_ENABLED)  + SEP);
+            break;
+        case GuiRoom::ForcedOn:
+            str += (QString(_MTEMP_ENABLED)  + SEP);
+            str += (QString(_MTEMP_DISABLED) + SEP);
+            str += (QString(_MTEMP_DISABLED) + SEP);
+            break;
+        case GuiRoom::ForcedOff:
+            str += (QString(_MTEMP_DISABLED) + SEP);
+            str += (QString(_MTEMP_ENABLED)  + SEP);
+            str += (QString(_MTEMP_DISABLED) + SEP);
+            break;
+    }
+
+    m_client->waitFor(_MTEMP_BOARD_OK);
+    m_client->write(USRPSW + str + QString(_MTEMP_ROOMSET));
 }
 
 QDateTime MTempClient::parseTimeget(const QString &str){
@@ -275,19 +341,35 @@ void MTempClient::on_timeSetButton_clicked(){
 
 void MTempClient::updateRequestHandler(Room::RoomNumber num){
 
+    setCurrentRoom(num);
+    roomstat();
 }
 
-void MTempClient::forceOnRequestHandler(Room::RoomNumber num, QString cmd){
+void MTempClient::forceOnRequestHandler(Room::RoomNumber num){
 
-    m_rooms[static_cast<int>(num)].setRoomMode(GuiRoom::ForcedOn);
+    setCurrentRoom(num);
+    roomset(m_currentRoom->roomName(),
+            m_currentRoom->sensorAddress(),
+            m_currentRoom->relayOut(),
+            GuiRoom::ForcedOn);
 }
 
-void MTempClient::forceOffRequestHandler(Room::RoomNumber num, QString cmd){
+void MTempClient::forceOffRequestHandler(Room::RoomNumber num){
 
-    m_rooms[static_cast<int>(num)].setRoomMode(GuiRoom::ForcedOff);
+    setCurrentRoom(num);
+    roomset(m_currentRoom->roomName(),
+            m_currentRoom->sensorAddress(),
+            m_currentRoom->relayOut(),
+            GuiRoom::ForcedOff);
 }
 
-void MTempClient::forceAutoRequestHandler(Room::RoomNumber num, QString cmd){
+void MTempClient::forceAutoRequestHandler(Room::RoomNumber num){
 
-    m_rooms[static_cast<int>(num)].setRoomMode(GuiRoom::Auto);
+    setCurrentRoom(num);
+    roomset(m_currentRoom->roomName(),
+            m_currentRoom->sensorAddress(),
+            m_currentRoom->relayOut(),
+            GuiRoom::Auto);
 }
+
+

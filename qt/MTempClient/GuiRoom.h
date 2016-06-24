@@ -53,6 +53,14 @@ class GuiRoom : public QObject{
         void setRoomMode(const RoomMode mode);
         RoomMode roomMode() const;
 
+        void setRelayOut(const quint32 out);
+        quint32 relayOut();
+
+        void setSensorAddress(quint8 addr);
+        quint8 sensorAddress();
+
+        quint8 roomNumber() const;
+
         void update(const QString & str);
 
         void enable(const bool all = true);
@@ -62,10 +70,10 @@ class GuiRoom : public QObject{
     signals:
 
         void updateRequest(Room::RoomNumber num);
-        void forceOnRequest(Room::RoomNumber num, QString command);
-        void forceOffRequest(Room::RoomNumber num, QString command);
-        void forceAutoRequest(Room::RoomNumber num, QString command);
-        void configRequest(Room::RoomNumber num, QString command);
+        void forceOnRequest(Room::RoomNumber num);
+        void forceOffRequest(Room::RoomNumber num);
+        void forceAutoRequest(Room::RoomNumber num);
+        void configRequest(Room::RoomNumber num);
 
     private slots:
 
@@ -77,6 +85,8 @@ class GuiRoom : public QObject{
 
     private:
         Room::RoomNumber    m_room;
+        quint8              m_addr;
+        quint32             m_relayOut;
         QGroupBox   *       m_container;
         QLineEdit   *       m_temperature;
         QLineEdit   *       m_status;

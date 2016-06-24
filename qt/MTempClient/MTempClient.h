@@ -60,22 +60,27 @@ private slots:
 
     void updateRequestHandler(Room::RoomNumber num);
 
-    void forceOnRequestHandler(Room::RoomNumber num, QString cmd);
+    void forceOnRequestHandler(Room::RoomNumber num);
 
-    void forceOffRequestHandler(Room::RoomNumber num, QString cmd);
+    void forceOffRequestHandler(Room::RoomNumber num);
 
-    void forceAutoRequestHandler(Room::RoomNumber num, QString cmd);
+    void forceAutoRequestHandler(Room::RoomNumber num);
 
 private:
 
     enum Commands{
         NOCOMM,
         TIMEGET,
-        TIMESET
+        TIMESET,
+        ROOMSTAT,
+        ROOMSET
     };
 
+    void setCurrentRoom(Room::RoomNumber room);
     void timeget();
     void timeset();
+    void roomstat();
+    void roomset(QString name, quint8 addr, quint32 relayOut, GuiRoom::RoomMode mode);
     QDateTime parseTimeget(const QString & str);
 
     Ui::MTempClient * ui;
@@ -88,6 +93,7 @@ private:
     MClient *         m_client;
     Commands          m_currentComm;
     GuiRoom           m_rooms[0x08];
+    GuiRoom *         m_currentRoom;
 };
 
 #endif // MTEMPCLIENT_H

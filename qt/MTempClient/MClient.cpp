@@ -149,6 +149,7 @@ void MClient::errorBouncer(const QAbstractSocket::SocketError err){
 void MClient::rxHandler(){
     /*  accodo quanto ricevuto al buffer                                                            */
     m_buffer += m_sock->readAll();
+    qDebug() << m_buffer;
     /*  se il buffer contiene la keyword                                                            */
     if(m_buffer.contains(m_keyword)){
         /*  emetto il segnale                                                                       */
