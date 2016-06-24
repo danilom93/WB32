@@ -720,6 +720,11 @@ bool AFramework::Room::isForcedOff() const{
     return m_forcedOff;
 }
 
+bool AFramework::Room::isAuto()const{
+    
+    return !(m_forcedOff && m_forcedOn);
+}
+
 bool AFramework::Room::isOn() const{
 #ifdef __32MX270F256D__
     //DANILO
@@ -752,7 +757,14 @@ bool AFramework::Room::forceOff(const bool force){
     return true;
 }
 
-
+bool AFramework::Room::setAuto(const bool flg){
+    
+    if(flg){
+        m_forcedOn = false;
+        m_forcedOff = false;   
+    }
+    return true;
+}
 
 #ifdef __32MX270F256D__
 AFramework::QString AFramework::Room::toString() const{

@@ -97,6 +97,7 @@ bool AFramework::MTempMaster::run(){
                 if(m_wifi->waitForData(currentCmd, 0)){
 
                     commandExec(currentCmd);
+                    currentCmd.clear();
                 }else{
 
                     programsManager();
@@ -330,6 +331,11 @@ bool AFramework::MTempMaster::programsManager() const{                          
         
         currentClk = m_clk->currentTime();
         
+        m_lcd->clear();
+        m_lcd->write("Memoria\n");
+        m_lcd->write(AString(static_cast<sint32>(System::memstat())).c_str());
+        System::delay(1000);
+        
         for(uint8 i=0; i < _MTEMP_ROOM_VEC_SIZE; i++){
             
             if(m_rooms[i].program(currentClk.Weekday()).startHours() == currentClk.hours()){
@@ -456,10 +462,14 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                     str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);
+                    delete list;
+                    return;
                 }else{
                     
                     m_wifi->send(_MTEMP_BOARD_FAIL);
                     msg("Errore...\nOrologio");
+                    delete list;
+                    return;
                 }
                 delete list;
                 return;
@@ -477,9 +487,13 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                     str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);
+                    delete list;
+                    return;
                 }else{
                     
                     m_wifi->send(_MTEMP_BOARD_FAIL);
+                    delete list;
+                    return;
                 }
                 delete list;
                 return;
@@ -513,6 +527,42 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                     
                     m_wifi->send(_MTEMP_BOARD_FAIL);
                 }
+                delete list;
+                return;
+            }else if(str == _MTEMP_ROOMSET){
+                
+                //username*password*R*NAME*ADDRESS*RELAYOUT*FORCEON*FORCEOFF*AUTO*[ROOMSET]
+                //([OK] || [FAIL] || [ERROR])
+                
+                index = list->at(2).toInt32(flag);          //numero stanza                 
+                if(flag && index < _MTEMP_ROOM_VEC_SIZE){
+                
+                    if(m_rooms[index].setRoomName(list->at(3))){
+                        
+                        if(m_rooms[index].setSensorAddress(list->at(4).toInt32(flag)) && flag){
+                            
+                            if(m_rooms[index].setRelayOut(list->at(5).toInt32(flag)) && flag){
+                                
+                                if(m_rooms[index].forceOn(list->at(6) == _MTEMP_ENABLED)){
+                                    
+                                    if(m_rooms[index].forceOff(list->at(7) == _MTEMP_ENABLED)){
+                                        
+                                        if(m_rooms[index].setAuto(list->at(8) == _MTEMP_ENABLED)){
+                                            
+                                            if(m_rooms[index].saveRoom()){
+                                            
+                                                m_wifi->send(_MTEMP_BOARD_OK);
+                                                delete list;
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                m_wifi->send(_MTEMP_BOARD_FAIL);
                 delete list;
                 return;
             }else if(str == _MTEMP_PROGGET){

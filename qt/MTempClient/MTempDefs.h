@@ -179,6 +179,12 @@
  */
 #define _MTEMP_ROOMSTAT             "[ROOMSTAT]"
 
+/*
+ *  FORMATO STRINGA ROOMSET
+ *  (CLIENT)    username*password*R*NAME*ADDRESS*RELAYOUT*FORCEON*FORCEOFF*AUTO*[ROOMSET]
+ *  (SERVER)    ([OK] || [FAIL] || [ERROR])
+ */
+#define _MTEMP_ROOMSET             "[ROOMSET]"
 
 /*
  *  FORMATO STRINGA PROGGET

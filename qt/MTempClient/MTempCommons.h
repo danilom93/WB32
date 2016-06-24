@@ -162,11 +162,12 @@ namespace AFramework{
             bool    setProgram(const ADateTime::Weekdays day, const QString & str);
             bool    isForcedOn() const;
             bool    isForcedOff() const;
+            bool    isAuto()const;
             bool    isOn() const;
             bool    isOff() const;
             bool    forceOn(const bool force);
             bool    forceOff(const bool force);
-
+            bool    setAuto(const bool flg);
             QString toString() const;
 
         private:
