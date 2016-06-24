@@ -65,7 +65,7 @@ bool AFramework::MTempMaster::networkConfig(){
                                 msg("Avvio tra\n1 secondo...");
                                 return true;
                             }else{
-                                msg("Errore...");
+                                msg("Errore!");
                                 return false;
                             }
                             
@@ -127,6 +127,8 @@ bool AFramework::MTempMaster::defaultProgram(){
         return false;
     }
     
+    msg("Salvo programmi\nDi default...");
+    
     for(uint8 i = 0; i <_MTEMP_ROOM_VEC_SIZE; i++){
         
         AString str;
@@ -150,7 +152,8 @@ bool AFramework::MTempMaster::defaultProgram(){
             
             m_rooms[i].saveProgram(static_cast<ADateTime::Weekdays>(j + 1));
         }
-    }   
+    }
+    msg("Programmi\nSalvati...");
     return true;
 }
 

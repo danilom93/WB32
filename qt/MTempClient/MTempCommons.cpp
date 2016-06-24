@@ -791,7 +791,7 @@ QString AFramework::Room::toString() const{
 
     return str;
 }
-
+#ifdef __32MX270F256D__
 bool AFramework::Room::on(){
     
     if(isOn()){
@@ -807,3 +807,4 @@ bool AFramework::Room::off(){
     }
     return m_relayPort->write(relayOut(), Lo);
 }
+#endif

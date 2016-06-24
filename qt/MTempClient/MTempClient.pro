@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     MClient.cpp \
     Loader.cpp \
     Login.cpp \
-    GuiRoom.cpp
+    GuiRoom.cpp \
+    EditRoom.cpp
 
 HEADERS  += MTempClient.h \
     MTempDefs.h \
@@ -31,12 +32,14 @@ HEADERS  += MTempClient.h \
     Loader.h \
     Login.h \
     clientdefs.h \
-    GuiRoom.h
+    GuiRoom.h \
+    EditRoom.h
 
 FORMS    += MTempClient.ui \
     NetworkConfig.ui \
     Loader.ui \
-    Login.ui
+    Login.ui \
+    EditRoom.ui
 
 RESOURCES += \
     resource.qrc

@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     A24LC512 memory(&I2C2, 0x00);
     AXbee    mario(&UART2);
     
-    System::delay(1000);
+    System::delay(2000);
     
     lcd.lightOn();
     

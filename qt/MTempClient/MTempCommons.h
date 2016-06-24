@@ -169,8 +169,10 @@ namespace AFramework{
             bool    forceOff(const bool force);
             bool    setAuto(const bool flg);
             QString toString() const;
+            #ifdef __32MX270F256D__
             bool    on();
             bool    off();
+            #endif
 
         private:
 
