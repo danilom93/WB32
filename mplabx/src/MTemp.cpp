@@ -517,7 +517,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                 
                 //(CLIENT)    username*password*R*D*[PROGGET]                           
                 //(SERVER)    (R*D*HS*MS*HE*ME*TT*E*[OK] || [FAIL] || [ERROR])
-                index = list->at(2).toInt32(flag);          //numero stanza                 //da riprovare!!!!!
+                index = list->at(2).toInt32(flag);          //numero stanza                 
                 if(flag && index < _MTEMP_ROOM_VEC_SIZE){
                     
                     index1 = list->at(3).toInt32(flag);      //numero programma   
@@ -545,7 +545,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                 if(flag && index < _MTEMP_ROOM_VEC_SIZE){
                     
                     index1 = list->at(3).toInt32(flag);      //numero programma   
-                    if(flag && index1 > 0 && index1 <= _MTEMP_WEEKPROGRAM_VEC_SIZE){                //riprovare
+                    if(flag && index1 > 0 && index1 <= _MTEMP_WEEKPROGRAM_VEC_SIZE){                
                         
                         str.clear();
                         for(uint8 i = 3; i < 9; i++){
@@ -554,7 +554,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                             str += _MTEMP_SEP;   
                         }
                         str += list->at(9);
-                        if(m_rooms[index].program(static_cast<ADateTime::Weekdays>(index1)).fromString(str)){
+                        if(m_rooms[index].setProgram((static_cast<ADateTime::Weekdays>(index1)), str)){
                             
                             if(m_rooms[index].saveProgram(static_cast<ADateTime::Weekdays>(index1))){
                                 

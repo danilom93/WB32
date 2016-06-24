@@ -740,12 +740,16 @@ bool AFramework::Room::isOff() const{
 
 bool AFramework::Room::forceOn(const bool force){
 
-    return (m_forcedOn = force);
+    m_forcedOn = force;
+    m_forcedOff = !force;
+    return true;
 }
 
 bool AFramework::Room::forceOff(const bool force){
 
-    return (m_forcedOff = force);
+    m_forcedOff = force;
+    m_forcedOn = !force;
+    return true;
 }
 
 
