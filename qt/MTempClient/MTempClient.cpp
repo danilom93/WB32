@@ -38,7 +38,6 @@ MTempClient::MTempClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::MTem
             this, SLOT(rxHandler(MClient::BoardAnswer)));
     connect(m_client, SIGNAL(disconnected()),
             this, SLOT(notifyDisconnected()));
-
 }
 
 MTempClient::~MTempClient(){
@@ -101,10 +100,6 @@ void MTempClient::notifyDisconnected(){
 void MTempClient::rxHandler(MClient::BoardAnswer answer){
 
     QString     str;
-    QTime       time;
-    QDate       data;
-    QDateTime   dateTime;
-    QStringList list;
 
     if(answer == MClient::BoardAnswer::Fail){
         m_client->bufferClear();
@@ -121,25 +116,23 @@ void MTempClient::rxHandler(MClient::BoardAnswer answer){
 
     str = m_client->dataReceived();
 
-    //str.remove(SEP + QString(_MTEMP_BOARD_OK));
+    str.remove(SEP + QString(_MTEMP_BOARD_OK));
 
     switch (m_currentComm) {
         case TIMEGET:
-            // 0  1  2  3  4  5  6
-            //AA*MM*GG*WD*HH*MM*SS*
-            qDebug() << str;
-            list = str.split("*");
+            ui->dateTimeEdit->setDateTime(parseTimeget(str));
             m_client->bufferClear();
-            data.setDate(list[0].toInt(), list[1].toInt(), list[2].toInt());
-            time.setHMS(list[4].toInt(), list[5].toInt(), list[6].toInt());
-            QMessageBox::information(this, "Ora centralina", data.toString("dd.MM.yyyy") +
-                                                             QString(" ") +
-                                                             time.toString("hh:mm:ss"));
+            break;
+        case TIMEGET:
+            QMessageBox::information(this, this->windowTitle(), "Ora impostata correttamente.");
+            m_client->bufferClear();
             break;
         default:
             break;
     }
     m_currentComm = NOCOMM;
+
+    enableWindow();
 }
 
 void MTempClient::notifyFailure(){
@@ -159,7 +152,6 @@ void MTempClient::disableActions(){
     ui->actionLogin->setEnabled(false);
     ui->actionConfigura->setEnabled(false);
     ui->actionLogout->setEnabled(true);
-    ui->actionInfo_Ora->setEnabled(true);
 }
 
 void MTempClient::enableActions(){
@@ -167,23 +159,214 @@ void MTempClient::enableActions(){
     ui->actionLogin->setEnabled(true);
     ui->actionConfigura->setEnabled(true);
     ui->actionLogout->setEnabled(false);
-    ui->actionInfo_Ora->setEnabled(false);
 }
 
 void MTempClient::disableWindow(){
 
-    qDebug() << "void MTempClient::disableWindow() da implementare";
+    ui->dateTimeEdit->setEnabled(false);
+    ui->timeSetButton->setEnabled(false);
+    ui->timeRefreshButton->setEnabled(false);
+
+    ui->configButton_1->setEnabled(false);
+    ui->configButton_2->setEnabled(false);
+    ui->configButton_3->setEnabled(false);
+    ui->configButton_4->setEnabled(false);
+    ui->configButton_5->setEnabled(false);
+    ui->configButton_6->setEnabled(false);
+    ui->configButton_7->setEnabled(false);
+    ui->configButton_8->setEnabled(false);
+
+    ui->updateButton_1->setEnabled(false);
+    ui->updateButton_2->setEnabled(false);
+    ui->updateButton_3->setEnabled(false);
+    ui->updateButton_4->setEnabled(false);
+    ui->updateButton_5->setEnabled(false);
+    ui->updateButton_6->setEnabled(false);
+    ui->updateButton_7->setEnabled(false);
+    ui->updateButton_8->setEnabled(false);
+
+    ui->forceOffButton_1->setEnabled(false);
+    ui->forceOffButton_2->setEnabled(false);
+    ui->forceOffButton_3->setEnabled(false);
+    ui->forceOffButton_4->setEnabled(false);
+    ui->forceOffButton_5->setEnabled(false);
+    ui->forceOffButton_6->setEnabled(false);
+    ui->forceOffButton_7->setEnabled(false);
+    ui->forceOffButton_8->setEnabled(false);
+
+    ui->forceOnButton_1->setEnabled(false);
+    ui->forceOnButton_2->setEnabled(false);
+    ui->forceOnButton_3->setEnabled(false);
+    ui->forceOnButton_4->setEnabled(false);
+    ui->forceOnButton_5->setEnabled(false);
+    ui->forceOnButton_6->setEnabled(false);
+    ui->forceOnButton_7->setEnabled(false);
+    ui->forceOnButton_8->setEnabled(false);
+
+    ui->setAutoButton_1->setEnabled(false);
+    ui->setAutoButton_2->setEnabled(false);
+    ui->setAutoButton_3->setEnabled(false);
+    ui->setAutoButton_4->setEnabled(false);
+    ui->setAutoButton_5->setEnabled(false);
+    ui->setAutoButton_6->setEnabled(false);
+    ui->setAutoButton_7->setEnabled(false);
+    ui->setAutoButton_8->setEnabled(false);
+
+    ui->temperatureEdit_1->setEnabled(false);
+    ui->temperatureEdit_2->setEnabled(false);
+    ui->temperatureEdit_3->setEnabled(false);
+    ui->temperatureEdit_4->setEnabled(false);
+    ui->temperatureEdit_5->setEnabled(false);
+    ui->temperatureEdit_6->setEnabled(false);
+    ui->temperatureEdit_7->setEnabled(false);
+    ui->temperatureEdit_8->setEnabled(false);
+
+    ui->statusLineEdit_1->setEnabled(false);
+    ui->statusLineEdit_2->setEnabled(false);
+    ui->statusLineEdit_3->setEnabled(false);
+    ui->statusLineEdit_4->setEnabled(false);
+    ui->statusLineEdit_5->setEnabled(false);
+    ui->statusLineEdit_6->setEnabled(false);
+    ui->statusLineEdit_7->setEnabled(false);
+    ui->statusLineEdit_8->setEnabled(false);
 }
 
 void MTempClient::enableWindow(){
 
-    qDebug() << "void MTempClient::enableWindow() da implementare";
+    ui->dateTimeEdit->setEnabled(true);
+    ui->timeSetButton->setEnabled(true);
+    ui->timeRefreshButton->setEnabled(true);
+
+    ui->configButton_1->setEnabled(true);
+    ui->configButton_2->setEnabled(true);
+    ui->configButton_3->setEnabled(true);
+    ui->configButton_4->setEnabled(true);
+    ui->configButton_5->setEnabled(true);
+    ui->configButton_6->setEnabled(true);
+    ui->configButton_7->setEnabled(true);
+    ui->configButton_8->setEnabled(true);
+
+    ui->updateButton_1->setEnabled(true);
+    ui->updateButton_2->setEnabled(true);
+    ui->updateButton_3->setEnabled(true);
+    ui->updateButton_4->setEnabled(true);
+    ui->updateButton_5->setEnabled(true);
+    ui->updateButton_6->setEnabled(true);
+    ui->updateButton_7->setEnabled(true);
+    ui->updateButton_8->setEnabled(true);
+
+    ui->forceOffButton_1->setEnabled(true);
+    ui->forceOffButton_2->setEnabled(true);
+    ui->forceOffButton_3->setEnabled(true);
+    ui->forceOffButton_4->setEnabled(true);
+    ui->forceOffButton_5->setEnabled(true);
+    ui->forceOffButton_6->setEnabled(true);
+    ui->forceOffButton_7->setEnabled(true);
+    ui->forceOffButton_8->setEnabled(true);
+
+    ui->forceOnButton_1->setEnabled(true);
+    ui->forceOnButton_2->setEnabled(true);
+    ui->forceOnButton_3->setEnabled(true);
+    ui->forceOnButton_4->setEnabled(true);
+    ui->forceOnButton_5->setEnabled(true);
+    ui->forceOnButton_6->setEnabled(true);
+    ui->forceOnButton_7->setEnabled(true);
+    ui->forceOnButton_8->setEnabled(true);
+
+    ui->setAutoButton_1->setEnabled(true);
+    ui->setAutoButton_2->setEnabled(true);
+    ui->setAutoButton_3->setEnabled(true);
+    ui->setAutoButton_4->setEnabled(true);
+    ui->setAutoButton_5->setEnabled(true);
+    ui->setAutoButton_6->setEnabled(true);
+    ui->setAutoButton_7->setEnabled(true);
+    ui->setAutoButton_8->setEnabled(true);
+
+    ui->temperatureEdit_1->setEnabled(true);
+    ui->temperatureEdit_2->setEnabled(true);
+    ui->temperatureEdit_3->setEnabled(true);
+    ui->temperatureEdit_4->setEnabled(true);
+    ui->temperatureEdit_5->setEnabled(true);
+    ui->temperatureEdit_6->setEnabled(true);
+    ui->temperatureEdit_7->setEnabled(true);
+    ui->temperatureEdit_8->setEnabled(true);
+
+    ui->statusLineEdit_1->setEnabled(true);
+    ui->statusLineEdit_2->setEnabled(true);
+    ui->statusLineEdit_3->setEnabled(true);
+    ui->statusLineEdit_4->setEnabled(true);
+    ui->statusLineEdit_5->setEnabled(true);
+    ui->statusLineEdit_6->setEnabled(true);
+    ui->statusLineEdit_7->setEnabled(true);
+    ui->statusLineEdit_8->setEnabled(true);
 }
 
+void MTempClient::timeget(){
 
-void MTempClient::on_actionInfo_Ora_triggered(){
-
+    /*
+     *  FORMATO STRINGA TIMEGET
+     *  (CLIENT)        username*password*[TIMEGET]
+     *  (SERVER)        (AA*MM*GG*WD*HH*MM*SS*[OK] || [FAIL] || [ERROR])
+     */
+    disableWindow();
     m_currentComm = TIMEGET;
     m_client->waitFor(_MTEMP_BOARD_OK);
     m_client->write(USRPSW + QString(_MTEMP_TIMEGET));
+}
+
+void MTempClient::timeset(){
+
+    /*
+     *  FORMATO STRINGA TIMESET
+     *  (CLIENT)        username*password*AA*MM*GG*WD*HH*MM*SS*[TIMESET]
+     */
+    QString str;
+    QDateTime curr = ui->dateTimeEdit->dateTime();
+    int y = curr.date().year() - 2000;
+    int m = curr.date().month();
+    int d = curr.date().day();
+    int w = (curr.date().dayOfWeek() == 7 ? 1 : (1 + curr.date().dayOfWeek()));
+    int hh = curr.time().hour();
+    int mm = curr.time().minute();
+    int ss = curr.time().second();
+
+    str += (QString::number(y)  + SEP);
+    str += (QString::number(m)  + SEP);
+    str += (QString::number(d)  + SEP);
+    str += (QString::number(w)  + SEP);
+    str += (QString::number(hh) + SEP);
+    str += (QString::number(mm) + SEP);
+    str += (QString::number(ss) + SEP);
+
+    disableWindow();
+    m_currentComm = TIMESET;
+
+    m_client->waitFor(_MTEMP_BOARD_OK);
+    m_client->write(USRPSW + str + QString(_MTEMP_TIMESET));
+    qDebug() << str;
+}
+
+QDateTime MTempClient::parseTimeget(const QString &str){
+
+    QDate date;
+    QTime time;
+    QDateTime res;
+    QStringList list = str.split("*");
+    date.setDate(2000 + list[0].toInt(), list[1].toInt(), list[2].toInt());
+    time.setHMS(list[4].toInt(), list[5].toInt(), list[6].toInt());
+
+    res.setTime(time);
+    res.setDate(date);
+
+    return res;
+}
+
+void MTempClient::on_timeRefreshButton_clicked(){
+
+    timeget();
+}
+
+void MTempClient::on_timeSetButton_clicked(){
+
+    timeset();
 }

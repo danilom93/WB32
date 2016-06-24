@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>746</width>
-    <height>438</height>
+    <width>752</width>
+    <height>458</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,54 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+    <item row="0" column="0" colspan="2">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Ora Centralina</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDateTimeEdit" name="dateTimeEdit">
+         <property name="date">
+          <date>
+           <year>2016</year>
+           <month>1</month>
+           <day>1</day>
+          </date>
+         </property>
+         <property name="calendarPopup">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="timeSetButton">
+         <property name="text">
+          <string>Imposta</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="timeRefreshButton">
+         <property name="text">
+          <string>Aggiorna</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
      <widget class="QGroupBox" name="roomGroupBox_1">
       <property name="title">
        <string>Stanza 1</string>
@@ -97,7 +144,7 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="1" column="1">
      <widget class="QGroupBox" name="roomGroupBox_2">
       <property name="title">
        <string>Stanza 1</string>
@@ -126,6 +173,88 @@
        </item>
        <item row="1" column="1" colspan="2">
         <widget class="QLineEdit" name="statusLineEdit_2">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="setAutoButton_2">
+         <property name="text">
+          <string>Auto</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" rowspan="2">
+        <widget class="QPushButton" name="configButton_2">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/ico/img/Settings-52.png</normaloff>:/ico/img/Settings-52.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QPushButton" name="forceOnButton_2">
+         <property name="text">
+          <string>Accendi</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QPushButton" name="forceOffButton_2">
+         <property name="text">
+          <string>Spegni</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QPushButton" name="updateButton_2">
+         <property name="text">
+          <string>Aggiorna</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QGroupBox" name="roomGroupBox_3">
+      <property name="title">
+       <string>Stanza 1</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Temperatura</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QLineEdit" name="temperatureEdit_3">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Stato</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QLineEdit" name="statusLineEdit_3">
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -179,35 +308,35 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QGroupBox" name="roomGroupBox_3">
+    <item row="1" column="3">
+     <widget class="QGroupBox" name="roomGroupBox_4">
       <property name="title">
        <string>Stanza 1</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_4">
+      <layout class="QGridLayout" name="gridLayout_5">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_7">
+        <widget class="QLabel" name="label_9">
          <property name="text">
           <string>Temperatura</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="temperatureEdit_3">
+        <widget class="QLineEdit" name="temperatureEdit_4">
          <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_8">
+        <widget class="QLabel" name="label_10">
          <property name="text">
           <string>Stato</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="statusLineEdit_3">
+        <widget class="QLineEdit" name="statusLineEdit_4">
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -261,35 +390,35 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="3">
-     <widget class="QGroupBox" name="roomGroupBox_4">
+    <item row="2" column="0">
+     <widget class="QGroupBox" name="roomGroupBox_5">
       <property name="title">
        <string>Stanza 1</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_5">
+      <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_9">
+        <widget class="QLabel" name="label_11">
          <property name="text">
           <string>Temperatura</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="temperatureEdit_4">
+        <widget class="QLineEdit" name="temperatureEdit_5">
          <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_10">
+        <widget class="QLabel" name="label_12">
          <property name="text">
           <string>Stato</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="statusLineEdit_4">
+        <widget class="QLineEdit" name="statusLineEdit_5">
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -343,35 +472,35 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QGroupBox" name="roomGroupBox_5">
+    <item row="2" column="1">
+     <widget class="QGroupBox" name="roomGroupBox_6">
       <property name="title">
        <string>Stanza 1</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_6">
+      <layout class="QGridLayout" name="gridLayout_7">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_11">
+        <widget class="QLabel" name="label_13">
          <property name="text">
           <string>Temperatura</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="temperatureEdit_5">
+        <widget class="QLineEdit" name="temperatureEdit_6">
          <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_12">
+        <widget class="QLabel" name="label_14">
          <property name="text">
           <string>Stato</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="statusLineEdit_5">
+        <widget class="QLineEdit" name="statusLineEdit_6">
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -425,35 +554,35 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="1">
-     <widget class="QGroupBox" name="roomGroupBox_6">
+    <item row="2" column="2">
+     <widget class="QGroupBox" name="roomGroupBox_7">
       <property name="title">
        <string>Stanza 1</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_7">
+      <layout class="QGridLayout" name="gridLayout_8">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_13">
+        <widget class="QLabel" name="label_15">
          <property name="text">
           <string>Temperatura</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="temperatureEdit_6">
+        <widget class="QLineEdit" name="temperatureEdit_7">
          <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_14">
+        <widget class="QLabel" name="label_16">
          <property name="text">
           <string>Stato</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="statusLineEdit_6">
+        <widget class="QLineEdit" name="statusLineEdit_7">
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -507,35 +636,35 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="2">
-     <widget class="QGroupBox" name="roomGroupBox_7">
+    <item row="2" column="3">
+     <widget class="QGroupBox" name="roomGroupBox_8">
       <property name="title">
        <string>Stanza 1</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_8">
+      <layout class="QGridLayout" name="gridLayout_9">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_15">
+        <widget class="QLabel" name="label_17">
          <property name="text">
           <string>Temperatura</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="temperatureEdit_7">
+        <widget class="QLineEdit" name="temperatureEdit_8">
          <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_16">
+        <widget class="QLabel" name="label_18">
          <property name="text">
           <string>Stato</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="statusLineEdit_7">
+        <widget class="QLineEdit" name="statusLineEdit_8">
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -589,88 +718,6 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="3">
-     <widget class="QGroupBox" name="roomGroupBox_8">
-      <property name="title">
-       <string>Stanza 1</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_9">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_17">
-         <property name="text">
-          <string>Temperatura</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="temperatureEdit_8">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_18">
-         <property name="text">
-          <string>Stato</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="statusLineEdit_8">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QPushButton" name="setAutoButton_9">
-         <property name="text">
-          <string>Auto</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2" rowspan="2">
-        <widget class="QPushButton" name="configButton_9">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resource.qrc">
-           <normaloff>:/ico/img/Settings-52.png</normaloff>:/ico/img/Settings-52.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QPushButton" name="forceOnButton_9">
-         <property name="text">
-          <string>Accendi</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QPushButton" name="forceOffButton_9">
-         <property name="text">
-          <string>Spegni</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QPushButton" name="updateButton_9">
-         <property name="text">
-          <string>Aggiorna</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -678,7 +725,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>746</width>
+     <width>752</width>
      <height>21</height>
     </rect>
    </property>
@@ -689,7 +736,6 @@
     <addaction name="actionConfigura"/>
     <addaction name="actionLogin"/>
     <addaction name="actionLogout"/>
-    <addaction name="actionInfo_Ora"/>
    </widget>
    <addaction name="menuOpzioni"/>
   </widget>
@@ -724,14 +770,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+U</string>
-   </property>
-  </action>
-  <action name="actionInfo_Ora">
-   <property name="text">
-    <string>Info Ora</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>

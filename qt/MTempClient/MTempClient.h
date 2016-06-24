@@ -12,6 +12,7 @@
 #include "clientdefs.h"
 #include "NetworkConfig.h"
 #include "Login.h"
+#include "TimeConf.h"
 
 namespace Ui {
 
@@ -52,8 +53,9 @@ private slots:
 
     void enableWindow();
 
+    void on_timeRefreshButton_clicked();
 
-    void on_actionInfo_Ora_triggered();
+    void on_timeSetButton_clicked();
 
 private:
 
@@ -62,6 +64,10 @@ private:
         TIMEGET,
         TIMESET
     };
+
+    void timeget();
+    void timeset();
+    QDateTime parseTimeget(const QString & str);
 
     Ui::MTempClient * ui;
 
