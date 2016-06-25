@@ -722,7 +722,7 @@ bool AFramework::Room::isForcedOff() const{
 
 bool AFramework::Room::isAuto()const{
     
-    return !(m_forcedOff && m_forcedOn);
+    return ((!m_forcedOff) && (!m_forcedOn));
 }
 
 bool AFramework::Room::isOn() const{

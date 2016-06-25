@@ -54,6 +54,8 @@ namespace AFramework{
             
             void    msg(const char * s, const uint32 ms = 1000) const;
             
+            uint8   readTemp(AString &addr, const uint32 ms);
+            
     };
 }
 

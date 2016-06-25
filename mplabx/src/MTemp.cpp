@@ -28,6 +28,12 @@ AFramework::MTempMaster::MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem,
         m_port = port;
         Room::setEEPROM(m_memory);
         Room::setPORT(m_port);
+        m_xbee->initXbee();
+        m_xbee->setMode(AXbee::CoordMode, "Master");
+        m_xbee->joinNotification(AXbee::CoordMode);
+        m_xbee->joinVerification(AXbee::CoordMode);
+        m_xbee->setDestHigh(AXbee::CoordMode);
+        m_xbee->setDestLow(AXbee::CoordMode);
     }
 }
 
@@ -351,9 +357,11 @@ bool AFramework::MTempMaster::programsManager(){                                
 
             prg = m_rooms[i].program(currentClk.Weekday());
             
-            if(m_rooms[i].isAuto() && prg.isEnabled()){
+            if(m_rooms[i].isAuto()){
                 
-                if( ((prg.startHours() == currentClk.hours() && prg.startMinutes() <= currentClk.minutes())
+                if(prg.isEnabled()){
+                    
+                    if( ((prg.startHours() == currentClk.hours() && prg.startMinutes() <= currentClk.minutes())
                                                              ||
                                            (prg.startHours() < currentClk.hours()))    
                                                              &&
@@ -362,10 +370,14 @@ bool AFramework::MTempMaster::programsManager(){                                
                                             (prg.endHours() > currentClk.hours()))) {
                     m_rooms[i].on();
                             
-                }else{
+                    }else{
                     
+                        m_rooms[i].off();
+                    }   
+                }else{
+                
                     m_rooms[i].off();
-                }   
+                }
             }
             
             if(m_rooms[i].isForcedOff()){           //se lo spegnimento è forzato
@@ -520,7 +532,9 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                     str.clear();
                     str += list->at(2);
                     str += _MTEMP_SEP;
-                    str += AString(m_rooms[index].currentTemperature());                ///////////da fare per casa
+                    AString prova = m_rooms[index].sensorAddress();
+                    str += AString(readTemp(prova, 1000));
+                    //str += AString(m_rooms[index].currentTemperature());                ///////////da fare per casa
                     str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);
@@ -730,4 +744,28 @@ void AFramework::MTempMaster::msg(const char * s, const uint32 ms) const{
         m_lcd->write(s);    
     }
     System::delay(ms);
+}
+
+AFramework::uint8 AFramework::MTempMaster::readTemp(AString &addr, const uint32 ms){
+
+    AString str;
+    AStringList *list;
+    bool    flag = false;
+    if(!m_xbee){
+    
+        return 0;
+    }
+    addr += _MTEMP_SEP;
+    addr += _MTEMP_TEMPGET;
+    m_xbee->send(addr);
+    if(m_xbee->receive(_MTEMP_BOARD_OK, ms)){
+        
+        m_xbee->read(str); 
+        list = str.split(_MTEMP_SEP);
+        str.clear();
+        str = list->at(1);
+        delete list;
+        return static_cast<uint8>(str.toInt32(flag));
+    }
+    return 0;
 }

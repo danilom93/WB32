@@ -16,17 +16,19 @@ extern "C"{
         
         UART1.rxHandler();
     }
+    void __ISR(_UART_2_VECTOR, IPL1AUTO) UART_2_HANDLER(){
+        
+        UART2.rxHandler();
+    }
+    
 }
 
 int main(int argc, char** argv) {
     
     System::init(16392, &PortB, bit15);
-    
-    bool test = true;
-    
+        
     UART1.getReceiverEventController()->enableInterrupt(Ip1, Isp0);
-    UART2.open(AUARTDriver::Baud9600, AUARTDriver::Data8bitNoParity, AUARTDriver::Stop1bit);
-    
+    UART2.getReceiverEventController()->enableInterrupt(Ip1, Isp0);
     System::outputMap(RPA0R, U1TXR);
     System::inputMap(RPA4R, U1RXR);
     
@@ -38,11 +40,11 @@ int main(int argc, char** argv) {
     APCF8563 clock(&I2C2);
     A24LC512 memory(&I2C2, 0x00);
     AXbee    mario(&UART2);
-    
     System::delay(2000);
     
     lcd.lightOn();
-    
+    lcd.clear();
+    lcd << "Avvio\nModuli";
     MTempMaster app(&mario, &clock, &memory, &wifi, &lcd, &PortC);
     PortA.setOutput(bit7);
     PortC.setOutput(Quick::All);
