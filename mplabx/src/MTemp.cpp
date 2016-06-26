@@ -733,6 +733,7 @@ void AFramework::MTempMaster::msg(const QString & s, const uint32 ms) const{
         m_lcd->write(s.c_str());    
     }
     System::delay(ms);
+    return;
 }
 
 void AFramework::MTempMaster::msg(const char * s, const uint32 ms) const{
@@ -744,6 +745,7 @@ void AFramework::MTempMaster::msg(const char * s, const uint32 ms) const{
         m_lcd->write(s);    
     }
     System::delay(ms);
+    return;
 }
 
 AFramework::uint8 AFramework::MTempMaster::readTemp(AString &addr, const uint32 ms){
