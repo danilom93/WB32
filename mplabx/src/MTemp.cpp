@@ -28,12 +28,6 @@ AFramework::MTempMaster::MTempMaster(AXbee * xbee, APCF8563 *clk, A24LC512 *mem,
         m_port = port;
         Room::setEEPROM(m_memory);
         Room::setPORT(m_port);
-        m_xbee->initXbee();
-        m_xbee->setMode(AXbee::CoordMode, "Master");
-        m_xbee->joinNotification(AXbee::CoordMode);
-        m_xbee->joinVerification(AXbee::CoordMode);
-        m_xbee->setDestHigh(AXbee::CoordMode);
-        m_xbee->setDestLow(AXbee::CoordMode);
     }
 }
 

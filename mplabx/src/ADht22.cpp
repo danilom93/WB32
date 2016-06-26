@@ -20,17 +20,18 @@ AFramework::ADht22::ATempHum AFramework::ADht22::read(const uint32 ms){
     m_port->setOutput(m_pin);
     m_port->write(m_pin, Lo);
 
-    System::delay(18);
+    //System::delay(18);
+    System::delay(1);
     
     m_port->write(m_pin, Hi);
     
     Timer1.setSynchronousInternal16(0.001);
     Timer1.clear();
-    Timer1.open();
-    while(Timer1.elapsedTime() < 0.00004);
-    Timer1.close();
+//    Timer1.open();
+//    while(Timer1.elapsedTime() < 0.00004);
+//    Timer1.close();
     
-    m_port->write(m_pin, Lo);
+//    m_port->write(m_pin, Lo);
     m_port->setInput(m_pin);
    
     while(!m_port->read(m_pin));
@@ -47,7 +48,7 @@ AFramework::ADht22::ATempHum AFramework::ADht22::read(const uint32 ms){
     }
 
     for(i = 0; i < 40; i++){
-        bits[i] = (raws[i] > 0.000030 ? 1 : 0);
+        bits[i] = (raws[i] > 0.000050 ? 1 : 0);
     }
     for(i = 15; i >= 0; i--){
         if(bits[i]){
@@ -64,5 +65,17 @@ AFramework::ADht22::ATempHum AFramework::ADht22::read(const uint32 ms){
     }
     res.hum /= 10;
     res.temp /= 10;
+    
+#define DHT11
+#ifdef DHT11
+    res.temp = 0;
+    for(i = 23; i >= 16; i--){
+        if(bits[i]){
+            res.temp += (bits[i] << (23 - i));
+        }
+    }
+    
+#endif
+    
     return res;
 }

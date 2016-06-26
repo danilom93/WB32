@@ -14,9 +14,8 @@ namespace AFramework{
                 float   hum;
             }ATempHum;
             
-            ADht22(volatile AHardwarePort *port, const uint32 pin);
-            ATempHum read(const uint32 ms = 1000);
-            
+                        ADht22(volatile AHardwarePort *port, const uint32 pin);
+            ATempHum    read(const uint32 ms = 1000);
             
         private:
             
