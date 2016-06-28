@@ -155,6 +155,7 @@ namespace AFramework{
             Program program(const ADateTime::Weekdays day) const;
             quint8  currentTemperature() const;
 
+            bool    setTemperature(const quint8 temp);
             bool    setRoomNumber(const RoomNumber room);
             bool    setRoomName(const QString & name);
             bool    setSensorAddress(const quint8 addr);
@@ -191,6 +192,7 @@ namespace AFramework{
             bool       m_forcedOn;
             bool       m_forcedOff;
             RoomNumber m_number;
+            quint8     m_temp;
     };
 
 }

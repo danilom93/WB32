@@ -85,6 +85,10 @@ bool AFramework::MTempMaster::networkConfig(){
 bool AFramework::MTempMaster::run(){
     
     AString currentCmd;
+    AString str;
+    AString sensAdd;
+    uint8 temp = 0;
+    
     if(!m_flag){
         
         return false;
@@ -97,10 +101,41 @@ bool AFramework::MTempMaster::run(){
             msg("Errore\nCaricamento", 0);
             while(1);
         }
+        
+            //cerco per due volte i sensori vicini
+            readTemp(str);
+            for(uint8 i = 0; i < _MTEMP_ROOM_VEC_SIZE; i++){
+
+                str.clear();
+                str = m_rooms[i].sensorAddress();
+                sensAdd = "Ricerco\nSensore ";
+                sensAdd += m_rooms[i].sensorAddress();
+                msg(sensAdd);
+                temp = 0;
+                temp = readTemp(str);
+                m_rooms[i].setTemperature(temp);
+                if(temp != 0){
+                    sensAdd.clear();
+                    sensAdd += "Sensore ";
+                    sensAdd += m_rooms[i].sensorAddress();
+                    sensAdd += "\nTrovato";
+                    msg(sensAdd);
+                }else{
+                    sensAdd.clear();
+                    sensAdd += "Sensore ";
+                    sensAdd += m_rooms[i].sensorAddress();
+                    sensAdd += "\nNon trovato";
+                    msg(sensAdd);
+                }
+            }
+            
+            msg("In ascolto...", 0);
             m_wifi->prepareForReceive();
             PortA.write(bit7, Hi);
             System::delay(1000);
             PortA.write(bit7, Lo);
+            ATime time = System::aliveTime();
+            time.addMinutes(1);
             while(1){
                 
                 if(m_wifi->waitForData(currentCmd, 0)){
@@ -110,8 +145,14 @@ bool AFramework::MTempMaster::run(){
                     PortA.write(bit7, Lo);
                     currentCmd.clear();
                 }else{
-
-                    programsManager();
+                    if(System::aliveTime() <= time){
+                        
+                        programsManager(false);
+                    }else{
+                        
+                        programsManager(true);
+                        time.addMinutes(1);
+                    }
                 }
             }
     }else{
@@ -334,14 +375,27 @@ bool AFramework::MTempMaster::joinNetwork() const{
     return false;
 }
 
-bool AFramework::MTempMaster::programsManager(){                                                //da fare
+bool AFramework::MTempMaster::programsManager(const bool read){                                                //da fare
     
     ADateTime currentClk;
     Program prg;
+    AString str;
     
     if(!m_flag){
         
         return false;
+    }
+    
+    if(read){
+        for(uint8 i = 0; i < _MTEMP_ROOM_VEC_SIZE; i++){
+            
+            if(m_rooms[i].currentTemperature() != 0){           //se il sensore è vivo
+                
+                str.clear();
+                str = m_rooms[i].sensorAddress();
+                m_rooms[i].setTemperature(readTemp(str, 1000));      //aggiorno la temperatura
+            }
+        }
     }
     if(m_clk->isGood()){
         
@@ -363,7 +417,7 @@ bool AFramework::MTempMaster::programsManager(){                                
                                                              ||
                                             (prg.endHours() > currentClk.hours()))) {
                         
-                        if(prg.targetTemperature() <= m_rooms[i].currentTemperature()){
+                        if(m_rooms[i].currentTemperature() <= prg.targetTemperature()){
                            
                             m_rooms[i].on();
                         }else{
@@ -532,9 +586,14 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                     str.clear();
                     str += list->at(2);
                     str += _MTEMP_SEP;
-                    AString prova = m_rooms[index].sensorAddress();
-                    str += AString(readTemp(prova, 1000));
-                    //str += AString(m_rooms[index].currentTemperature());                ///////////da fare per casa
+                    
+                    /////////////////////////////////////////////////////////////////////////////////////////
+                    //AString prova = m_rooms[index].sensorAddress();
+                    //str += AString(readTemp(prova, 500));
+                    
+                    str += AString(m_rooms[index].currentTemperature());                ///////////da fare per casa
+                    
+                    /////////////////////////////////////////////////////////////////////////////////////////////
                     str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);
@@ -566,9 +625,12 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                     str += _MTEMP_SEP;
                     str += (m_rooms[index].isForcedOff() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
                     str += _MTEMP_SEP;
-                    AString prova = m_rooms[index].sensorAddress();
-                    str += AString(readTemp(prova, 1000));
-                    //str += AString(m_rooms[index].currentTemperature());
+                    ///////////////////////////////////////////////////////////////////////////////////////////
+                    //AString prova = m_rooms[index].sensorAddress();
+                    //str += AString(readTemp(prova, 1000));
+                    str += AString(m_rooms[index].currentTemperature());
+                    //////////////////////////////////////////////////////////////////////////////////////////
+                    
                     str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);

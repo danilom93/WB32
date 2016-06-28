@@ -478,7 +478,8 @@ AFramework::Room::Room() : m_sensorAddrees(0),
                            m_relayOut(0),
                            m_forcedOn(false),
                            m_forcedOff(false),
-                           m_number(Room0){
+                           m_number(Room0), 
+                           m_temp(0){
     memset(m_roomName   , 0x00,_MTEMP_ROOM_NAME_VEC_SIZE  );
     memset(m_weekProgram, 0x00, (sizeof(Program) * _MTEMP_WEEKPROGRAM_VEC_SIZE));
 
@@ -658,7 +659,12 @@ quint8 AFramework::Room::currentTemperature() const{
     //GIUSEPPE
 #endif
     
-    return 36;
+    return m_temp;
+}
+
+bool AFramework::Room::setTemperature(const quint8 temp){
+    
+    m_temp = temp;
 }
 
 bool AFramework::Room::setRoomNumber(const RoomNumber room){

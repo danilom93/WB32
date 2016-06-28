@@ -44,7 +44,7 @@ namespace AFramework{
             
             bool    joinNetwork() const;          //si connette alla rete
             
-            bool    programsManager();
+            bool    programsManager(const bool read);
             
             bool    loadAll();             //loads rooms and programs 
             
@@ -54,7 +54,7 @@ namespace AFramework{
             
             void    msg(const char * s, const uint32 ms = 1000) const;
             
-            uint8   readTemp(AString &addr, const uint32 ms);
+            uint8   readTemp(AString &addr, const uint32 ms = 1000);
             
     };
 }
