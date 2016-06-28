@@ -80,7 +80,8 @@ bool AFramework::Program::fromString(const QString &program){
     QString eMinutes;
     QString en;
     QString targetTemp;
-
+//0123456789ABCDEF01    
+//D*HS*MS*HE*ME*TT*E
     if(program.size() != 0x12){
 
         ok = false;
@@ -353,7 +354,7 @@ bool AFramework::Program::setEndMinutes(const quint8 eMinutes){
         return false;
     }
 
-    if(eMinutes <= m_endMinutes && m_startHours == m_endHours){
+    if(eMinutes <= m_startMinutes && m_startHours == m_endHours){
 
         return false;
     }

@@ -20,18 +20,17 @@ AFramework::ADht22::ATempHum AFramework::ADht22::read(const uint32 ms){
     m_port->setOutput(m_pin);
     m_port->write(m_pin, Lo);
 
-    //System::delay(18);
-    System::delay(1);
+    System::delay(18);
     
     m_port->write(m_pin, Hi);
     
     Timer1.setSynchronousInternal16(0.001);
     Timer1.clear();
-//    Timer1.open();
-//    while(Timer1.elapsedTime() < 0.00004);
-//    Timer1.close();
+    Timer1.open();
+    while(Timer1.elapsedTime() < 0.00004);
+    Timer1.close();
     
-//    m_port->write(m_pin, Lo);
+    m_port->write(m_pin, Lo);
     m_port->setInput(m_pin);
    
     while(!m_port->read(m_pin));

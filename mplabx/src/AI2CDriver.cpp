@@ -96,7 +96,7 @@ bool AFramework::AI2CDriver::start() volatile{
     /*  abilito l'invio della sequenza di start                                 */
     m_reg->I2CxCON.SET = _I2CxCON_SEN_MASK;
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto che la sequenza di start sia stata inviata                      */
     while(m_reg->I2CxCON.isHi(_I2CxCON_SEN_MASK));
     /*  ritorno true                                                            */
@@ -112,7 +112,7 @@ bool AFramework::AI2CDriver::stop() volatile{
     /*  abilito l'invio della sequenza di stop                                  */
     m_reg->I2CxCON.SET = _I2CxCON_PEN_MASK;
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto che la sequenza di start sia stata inviata                      */
     while(m_reg->I2CxCON.isHi(_I2CxCON_PEN_MASK));
     /*  ritorno true                                                            */
@@ -128,7 +128,7 @@ bool AFramework::AI2CDriver::restart() volatile{
     /*  abilito l'invio della sequenza di stop                                  */
     m_reg->I2CxCON.SET = _I2CxCON_RSEN_MASK;
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto che la sequenza di start sia stata inviata                      */
     while(m_reg->I2CxCON.isHi(_I2CxCON_RSEN_MASK));
     /*  ritorno true                                                            */
@@ -144,17 +144,17 @@ bool AFramework::AI2CDriver::write(const uint8 data) volatile{
     /*  Scrivo il dato nel registro transmit                                    */
     m_reg->I2CxTRN.REG = static_cast<uint32>(data);
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto che avvenga la trasmissione                                     */
-    while(m_reg->I2CxSTAT.isHi(_I2CxSTAT_TRSTAT_MASK));
+    while(m_reg->I2CxSTAT.REG &_I2CxSTAT_TRSTAT_MASK);
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto che il buffer si sia svuotata                                   */
-    while(m_reg->I2CxSTAT.isHi(_I2CxSTAT_TBF_MASK));
+    while(m_reg->I2CxSTAT.REG & (_I2CxSTAT_TBF_MASK));
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto l'ack                                                           */
-    while(m_reg->I2CxSTAT.isHi(_I2CxSTAT_ACKSTAT_MASK));
+    while(m_reg->I2CxSTAT.REG & (_I2CxSTAT_ACKSTAT_MASK));
     /*  ritorno true                                                            */
     return true;
 }
@@ -163,15 +163,15 @@ AFramework::uint8 AFramework::AI2CDriver::read() volatile{
     /*  abilito la ricezione                                                    */
     m_reg->I2CxCON.SET = _I2CxCON_RCEN_MASK;
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+ //   asm volatile("nop");
     /*  aspetto che la ricezione completata                                     */
-    while(m_reg->I2CxCON.isHi(_I2CxCON_RCEN_MASK));
+    while(m_reg->I2CxCON.REG &(_I2CxCON_RCEN_MASK));
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto che il buffer di ricezione sia pieno                            */
-    while(m_reg->I2CxSTAT.isLo(_I2CxSTAT_RBF_MASK));
+    while(!(m_reg->I2CxSTAT.REG & _I2CxSTAT_RBF_MASK));
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  ritorno il dato opportunamente troncato                                 */
     return static_cast<uint8>(m_reg->I2CxRCV.REG & 0xFF);
 }
@@ -185,11 +185,11 @@ bool AFramework::AI2CDriver::nack() volatile{
     /*  imposto il bit per la trasmissione di un nack                           */
     m_reg->I2CxCON.SET = _I2CxCON_ACKDT_MASK;
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  avvio la trasmissione del nack                                          */
     m_reg->I2CxCON.SET = _I2CxCON_ACKEN_MASK;
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto che la sequenza sia stata inviata                               */
     while(m_reg->I2CxCON.isHi(_I2CxCON_ACKEN_MASK));
     /*  ritorno true                                                            */
@@ -205,11 +205,11 @@ bool AFramework::AI2CDriver::ack() volatile{
     /*  imposto il bit per la trasmissione di un nack                           */
     m_reg->I2CxCON.CLR = _I2CxCON_ACKDT_MASK;
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+ //   asm volatile("nop");
     /*  avvio la trasmissione del nack                                          */
     m_reg->I2CxCON.SET = _I2CxCON_ACKEN_MASK;
     /*  piccolo delay                                                           */
-    asm volatile("nop");
+//    asm volatile("nop");
     /*  aspetto che la sequenza sia stata inviata                               */
     while(m_reg->I2CxCON.isHi(_I2CxCON_ACKEN_MASK));
     /*  ritorno true                                                            */

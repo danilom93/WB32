@@ -64,31 +64,41 @@ bool AFramework::A24LC512::read(const uint16 address, AString & str){
         /*  se non è così ritorno false                                         */
         return false;
     }
-    /*  Inizio la trasmissione                                                  */
-    m_driver->start();
-    /*  scrivo l'indirizzo in scrittura                                         */
-    m_driver->write(_24LC512_WRITE_ADDRESS);
-    /*  imposto gli MSB dell'indirizzo                                          */
-    m_driver->write(static_cast<uint8>((address & _24LC512_UPPER_ADDRESS_MASK) >> 0x08));
-    /*  imposto gli LSB dell'indirizzo                                          */
-    m_driver->write(static_cast<uint8>(address & _24LC512_LOWER_ADDRESS_MASK));
-    /*  mando la sequenza di restart                                            */
-    m_driver->restart();
-    /*  scrivo l'indirizzo in lettura                                           */
-    m_driver->write(_24LC512_READ_ADDRESS);
-    /*  fino a che non trovo la terminazione                                    */
-    while((res = m_driver->read()) != '\0'){
-        /*  accodo il carattere                                                 */
+    uint16 prova = address;
+    
+    while((res = read(prova++)) != '\0'){
+        
         str += res;
-        /*  mando la sequenza di ack                                            */
-        m_driver->ack();
     }
-    /*  mando la sequenza di nack                                               */
-    m_driver->nack();
-    /*  mando la sequenza di stop                                               */
-    m_driver->stop();
-    /*  ritorno lo stato della stringa                                          */    
     return str.good();
+    
+    
+    
+    /*  Inizio la trasmissione                                                  */
+//    m_driver->start();
+//    /*  scrivo l'indirizzo in scrittura                                         */
+//    m_driver->write(_24LC512_WRITE_ADDRESS);
+//    /*  imposto gli MSB dell'indirizzo                                          */
+//    m_driver->write(static_cast<uint8>((address & _24LC512_UPPER_ADDRESS_MASK) >> 0x08));
+//    /*  imposto gli LSB dell'indirizzo                                          */
+//    m_driver->write(static_cast<uint8>(address & _24LC512_LOWER_ADDRESS_MASK));
+//    /*  mando la sequenza di restart                                            */
+//    m_driver->restart();
+//    /*  scrivo l'indirizzo in lettura                                           */
+//    m_driver->write(_24LC512_READ_ADDRESS);
+//    /*  fino a che non trovo la terminazione                                    */
+//    while((res = m_driver->read()) != '\0'){
+//        /*  accodo il carattere                                                 */
+//        str += res;
+//        /*  mando la sequenza di ack                                            */
+//        m_driver->ack();
+//    }
+//    /*  mando la sequenza di nack                                               */
+//    m_driver->nack();
+//    /*  mando la sequenza di stop                                               */
+//    m_driver->stop();
+//    /*  ritorno lo stato della stringa                                          */    
+//    return str.good();
 }
 
 bool AFramework::A24LC512::write(const uint16 address, const char data){

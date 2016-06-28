@@ -10,7 +10,8 @@ namespace AFramework{
         public:
             enum XbeeMode{
                 CoordMode,
-                RouterMode
+                RouterMode,
+                EndDeviceMode
             };
             AXbee(AUARTDriver * driver, const AUARTDriver::Baud baud = AUARTDriver::Baud9600);
             bool initXbee(const uint32 ms = 1000) const;

@@ -362,8 +362,14 @@ bool AFramework::MTempMaster::programsManager(){                                
                     ((prg.endHours() == currentClk.hours() && prg.endMinutes() >= currentClk.minutes())
                                                              ||
                                             (prg.endHours() > currentClk.hours()))) {
-                    m_rooms[i].on();
+                        
+                        if(prg.targetTemperature() <= m_rooms[i].currentTemperature()){
+                           
+                            m_rooms[i].on();
+                        }else{
                             
+                            m_rooms[i].off();
+                        }    
                     }else{
                     
                         m_rooms[i].off();
@@ -468,7 +474,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                                                     str.clear();
                                                     str = m_clk->currentTime().timeToString();
                                                     str.prepend("Ora settata\n");
-                                                    msg(str);
+                                                    msg(str, 0);
                                                     delete list;
                                                     return;
                                                 }
@@ -545,7 +551,7 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
             }else if(str == _MTEMP_ROOMSTAT){
                 
                 //(CLIENT)    username*password*R*[ROOMSTAT]
-                //(SERVER)    (R*NAME*ADDRESS*RELAYOUT*STATE*ISFORCEDON*ISFORCEDOFF*TT*[OK] || [FAIL] || [ERROR])
+                //(SERVER)    (R*NAME*STATE*ISFORCEDON*ISFORCEDOFF*TT*[OK] || [FAIL] || [ERROR])
                 index = list->at(2).toInt32(flag);
                 if(flag && index < _MTEMP_ROOM_VEC_SIZE){
                 
@@ -554,17 +560,15 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                     str += _MTEMP_SEP;
                     str += m_rooms[index].roomName();
                     str += _MTEMP_SEP;
-                    str += m_rooms[index].sensorAddress();
-                    str += _MTEMP_SEP;
-                    str += AString(static_cast<sint32>(m_rooms[index].relayOut()));
-                    str += _MTEMP_SEP;
                     str += (m_rooms[index].isOn() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
                     str += _MTEMP_SEP;
                     str += (m_rooms[index].isForcedOn() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
                     str += _MTEMP_SEP;
                     str += (m_rooms[index].isForcedOff() ? _MTEMP_ENABLED : _MTEMP_DISABLED);
                     str += _MTEMP_SEP;
-                    str += AString(m_rooms[index].currentTemperature());
+                    AString prova = m_rooms[index].sensorAddress();
+                    str += AString(readTemp(prova, 1000));
+                    //str += AString(m_rooms[index].currentTemperature());
                     str += _MTEMP_SEP;
                     str += _MTEMP_BOARD_OK;
                     m_wifi->send(str);
@@ -576,31 +580,25 @@ void AFramework::MTempMaster::commandExec(const AString &cmd){
                 return;
             }else if(str == _MTEMP_ROOMSET){
                 
-                //username*password*R*NAME*ADDRESS*RELAYOUT*FORCEON*FORCEOFF*AUTO*[ROOMSET]
+                //username*password*R*NAME*FORCEON*FORCEOFF*AUTO*[ROOMSET]
                 //([OK] || [FAIL] || [ERROR])
                 
                 index = list->at(2).toInt32(flag);          //numero stanza                 
                 if(flag && index < _MTEMP_ROOM_VEC_SIZE){
                 
                     if(m_rooms[index].setRoomName(list->at(3))){
-                        
-                        if(m_rooms[index].setSensorAddress(list->at(4).toInt32(flag)) && flag){
-                            
-                            if(m_rooms[index].setRelayOut(list->at(5).toInt32(flag)) && flag){
-                                
-                                if(m_rooms[index].forceOn(list->at(6) == _MTEMP_ENABLED)){
-                                    
-                                    if(m_rooms[index].forceOff(list->at(7) == _MTEMP_ENABLED)){
-                                        
-                                        if(m_rooms[index].setAuto(list->at(8) == _MTEMP_ENABLED)){
-                                            
-                                            if(m_rooms[index].saveRoom()){
-                                            
-                                                m_wifi->send(_MTEMP_BOARD_OK);
-                                                delete list;
-                                                return;
-                                            }
-                                        }
+
+                        if(m_rooms[index].forceOn(list->at(4) == _MTEMP_ENABLED)){
+
+                            if(m_rooms[index].forceOff(list->at(5) == _MTEMP_ENABLED)){
+
+                                if(m_rooms[index].setAuto(list->at(6) == _MTEMP_ENABLED)){
+
+                                    if(m_rooms[index].saveRoom()){
+
+                                        m_wifi->send(_MTEMP_BOARD_OK);
+                                        delete list;
+                                        return;
                                     }
                                 }
                             }
